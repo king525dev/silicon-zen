@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOXEL — Personal Design Language</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@400;600;700&family=Lora:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ───────────────────────────────────────── */
+:root {
+  --bg-base:        #0D0D0D;
+  --bg-surface:     #141414;
+  --bg-elevated:    #1C1C1C;
+  --bg-subtle:      #222222;
+  --border:         #2A2A2A;
+  --border-strong:  #3A3A3A;
+  --text-primary:   #EDEDED;
+  --text-secondary: #999999;
+  --text-tertiary:  #555555;
+  --warm:           #C96A3A;
+  --warm-hi:        #E07A45;
+  --teal:           #3DC9B0;
+  --teal-hi:        #55DBC3;
+  --red:            #C0392B;
+  --green:          #27AE60;
+  --blue:           #2980B9;
+  --yellow:         #F1C40F;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-ui:    'DM Sans', system-ui, sans-serif;
+  --font-mono:  'JetBrains Mono', 'Courier New', monospace;
+  --font-read:  'Lora', Georgia, serif;
+  --ease-out:   cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dot: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+}
+[data-theme="light"] {
+  --bg-base:        #EBEBEB;
+  --bg-surface:     #F4F4F4;
+  --bg-elevated:    #FFFFFF;
+  --bg-subtle:      #E2E2E2;
+  --border:         #D0D0D0;
+  --border-strong:  #AAAAAA;
+  --text-primary:   #1A1A1A;
+  --text-secondary: #666666;
+  --text-tertiary:  #AAAAAA;
+  --warm:           #B85D30;
+  --warm-hi:        #D06A38;
+  --teal:           #2BA896;
+  --teal-hi:        #35BEA9;
+  --dot: radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px);
+}
+
+/* ─── RESET ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
+  cursor: default;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+::selection { background: rgba(201,106,58,0.35); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+
+/* ─── NAV ────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px;
+  background: rgba(13,13,13,0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s;
+}
+[data-theme="light"] nav { background: rgba(235,235,235,0.88); }
+.nav-logo {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--warm);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  font-size: 14px; color: var(--text-secondary); text-decoration: none;
+  position: relative; transition: color 0.2s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 2px; background: var(--warm);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.2s var(--ease-out);
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-right { display: flex; gap: 12px; align-items: center; }
+.theme-toggle {
+  width: 32px; height: 32px; border: 1px solid var(--border-strong);
+  background: transparent; color: var(--text-secondary); cursor: pointer;
+  font-size: 14px; display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, color 0.2s;
+}
+.theme-toggle:hover { border-color: var(--warm); color: var(--warm); }
+
+/* ─── HERO ───────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 80px 40px 60px;
+  background: var(--bg-base);
+  background-image: var(--dot);
+  background-size: 20px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px; color: var(--teal);
+  letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 24px;
+  opacity: 0; animation: fadeUp 0.6s 0.2s var(--ease-out) forwards;
+}
+.hero-title {
+  font-family: var(--font-pixel);
+  font-size: clamp(28px, 5vw, 56px);
+  color: var(--text-primary);
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  opacity: 0; animation: fadeUp 0.6s 0.5s var(--ease-out) forwards;
+}
+.hero-title span { color: var(--warm); }
+.hero-cursor {
+  display: inline-block;
+  width: 3px; height: 1.1em;
+  background: var(--warm);
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: blink 0.7s steps(1, end) infinite;
+}
+.hero-sub {
+  font-size: 18px; color: var(--text-secondary);
+  max-width: 520px; margin: 24px auto 40px;
+  opacity: 0; animation: fadeUp 0.6s 0.8s var(--ease-out) forwards;
+}
+.hero-btns {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.6s 1s var(--ease-out) forwards;
+}
+.hero-art {
+  margin-top: 60px;
+  opacity: 0; animation: fadeUp 0.8s 1.2s var(--ease-out) forwards;
+}
+.hero-scroll {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+/* isometric pixel art SVG ─ rendered via canvas */
+.pixel-canvas { image-rendering: pixelated; display: block; margin: 0 auto; }
+
+/* ─── SECTIONS ──────────────────────────────────────── */
+section {
+  padding: 100px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.section-full {
+  max-width: none;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.section-full > .inner { max-width: 1200px; margin: 0 auto; padding: 100px 40px; }
+.section-dotgrid {
+  background-image: var(--dot);
+  background-size: 16px 16px;
+}
+.section-tag {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--teal); letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-heading {
+  font-size: 32px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 16px; line-height: 1.25;
+}
+.section-sub {
+  font-size: 16px; color: var(--text-secondary);
+  max-width: 560px; margin-bottom: 56px;
+}
+.divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 0;
+}
+
+/* ─── REVEAL ANIMATIONS ─────────────────────────────── */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ─── BUTTONS ───────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-ui); font-size: 14px;
+  font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  border: none; cursor: pointer; border-radius: 0;
+  text-decoration: none; transition: all 0.15s var(--ease-out);
+  white-space: nowrap;
+}
+.btn-primary { background: var(--warm); color: #fff; }
+.btn-primary:hover { background: var(--warm-hi); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(2px); }
+.btn-secondary {
+  background: transparent; color: var(--text-primary);
+  border: 1px solid var(--border-strong); padding: 9px 19px;
+}
+.btn-secondary:hover { border-color: var(--warm); }
+.btn-ghost { background: transparent; color: var(--text-secondary); }
+.btn-ghost:hover { color: var(--text-primary); text-decoration: underline; }
+.btn-pixel {
+  background: var(--warm); color: #fff;
+  font-family: var(--font-pixel); font-size: 8px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  box-shadow: 3px 3px 0px var(--text-primary);
+  padding: 12px 16px;
+}
+.btn-pixel:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px var(--text-primary); }
+.btn-pixel:active { transform: translate(3px, 3px); box-shadow: none; }
+.btn-teal { background: var(--teal); color: #0D0D0D; }
+.btn-teal:hover { background: var(--teal-hi); transform: translateY(-1px); }
+
+/* Disabled */
+.btn:disabled, .btn.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+/* ─── INPUTS ────────────────────────────────────────── */
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+.input-label {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--text-secondary);
+}
+.input {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  padding: 10px 12px; font-family: var(--font-mono); font-size: 14px;
+  color: var(--text-primary); border-radius: 0; outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.input::placeholder { color: var(--text-tertiary); }
+.input:focus { border-color: var(--teal); }
+.input.error { border-color: var(--red); }
+.input-error-msg { font-family: var(--font-mono); font-size: 11px; color: var(--red); }
+
+/* checkbox */
+.check-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.check-box {
+  width: 14px; height: 14px; border: 1px solid var(--border-strong);
+  background: var(--bg-surface); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+input[type=checkbox]:checked + .check-label .check-box,
+.check-group.checked .check-box {
+  background: var(--warm); border-color: var(--warm);
+}
+.check-label { font-size: 14px; color: var(--text-primary); user-select: none; }
+
+/* ─── COLORS GRID ───────────────────────────────────── */
+.colors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+.swatch {
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: default;
+  transition: transform 0.15s;
+}
+.swatch:hover { transform: translateY(-3px); }
+.swatch-color { height: 64px; transition: height 0.2s; }
+.swatch:hover .swatch-color { height: 80px; }
+.swatch-meta { padding: 8px 10px; background: var(--bg-surface); }
+.swatch-name { font-size: 11px; font-weight: 600; color: var(--text-primary); }
+.swatch-hex { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); }
+
+/* ─── TYPOGRAPHY SHOWCASE ───────────────────────────── */
+.type-scale { display: flex; flex-direction: column; gap: 2px; }
+.type-row {
+  display: flex; align-items: baseline; gap: 24px;
+  padding: 16px 0; border-bottom: 1px solid var(--border);
+}
+.type-row:last-child { border-bottom: none; }
+.type-meta {
+  min-width: 160px; flex-shrink: 0;
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary);
+}
+.type-sample { line-height: 1.2; }
+
+/* ─── CARDS ─────────────────────────────────────────── */
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+.card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  padding: 24px; transition: transform 0.2s var(--ease-out), border-color 0.2s;
+  position: relative;
+}
+.card:hover { transform: translateY(-3px); border-color: var(--border-strong); }
+.card-accent { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--warm); }
+.card-tag {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--teal); letter-spacing: 0.14em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.card-title { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+.card-body { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
+.card-footer { display: flex; align-items: center; justify-content: space-between; }
+.card-date { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); }
+
+/* ─── BADGES ────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  border-radius: 0;
+}
+.badge-warm { background: var(--warm); color: #fff; }
+.badge-teal { background: var(--teal); color: #0a0a0a; }
+.badge-red { background: var(--red); color: #fff; }
+.badge-green { background: var(--green); color: #fff; }
+.badge-yellow { background: var(--yellow); color: #111; }
+.badge-outline { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-strong); }
+
+/* ─── WINDOW CHROME ─────────────────────────────────── */
+.window {
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+.window-bar {
+  height: 28px; background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 10px; gap: 6px;
+}
+.win-dot { width: 8px; height: 8px; flex-shrink: 0; }
+.win-dot-r { background: #C0392B; }
+.win-dot-g { background: #27AE60; }
+.win-dot-b { background: #2980B9; }
+.window-title {
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.1em; margin: 0 auto;
+}
+.window-body { padding: 16px; }
+
+/* ─── DASHBOARD ─────────────────────────────────────── */
+.dashboard {
+  display: grid;
+  grid-template-columns: 200px 1fr 260px;
+  height: 480px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--bg-base);
+}
+.dash-sidebar {
+  border-right: 1px solid var(--border);
+  background: var(--bg-surface);
+  display: flex; flex-direction: column;
+}
+.dash-logo {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-pixel); font-size: 10px; color: var(--warm);
+  letter-spacing: 0.04em;
+}
+.dash-section-label {
+  font-family: var(--font-mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.15em;
+  color: var(--text-tertiary); padding: 16px 14px 6px;
+}
+.dash-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; font-size: 13px; color: var(--text-secondary);
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+  border-left: 2px solid transparent;
+  user-select: none;
+}
+.dash-nav-item:hover { background: var(--bg-subtle); color: var(--text-primary); }
+.dash-nav-item.active { color: var(--text-primary); border-left-color: var(--warm); background: var(--bg-subtle); }
+.dash-nav-icon { width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.dash-main { display: flex; flex-direction: column; overflow: hidden; }
+.dash-toolbar {
+  height: 40px; border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+  display: flex; align-items: center; padding: 0 20px; gap: 12px;
+  flex-shrink: 0;
+}
+.dash-toolbar-title { font-size: 14px; font-weight: 600; flex: 1; }
+.dash-content { padding: 20px; overflow-y: auto; flex: 1; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  padding: 14px; transition: border-color 0.15s;
+}
+.stat-card:hover { border-color: var(--border-strong); }
+.stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
+.stat-value { font-size: 22px; font-weight: 600; color: var(--text-primary); }
+.stat-value.accent { color: var(--warm); }
+.stat-sub { font-family: var(--font-mono); font-size: 10px; color: var(--teal); margin-top: 2px; }
+.dash-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dash-table th {
+  text-align: left; padding: 6px 10px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border);
+}
+.dash-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+.dash-table td.mono { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); }
+.dash-table tr:hover td { background: var(--bg-subtle); }
+.dash-panel {
+  border-left: 1px solid var(--border);
+  background: var(--bg-surface);
+  display: flex; flex-direction: column;
+}
+.dash-panel-bar {
+  height: 28px; background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 10px;
+}
+.dash-panel-title { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; }
+.panel-body { padding: 14px; flex: 1; overflow-y: auto; }
+.panel-field { margin-bottom: 14px; }
+.panel-field-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+.panel-field-value { font-size: 13px; color: var(--text-primary); }
+.panel-field-value.mono { font-family: var(--font-mono); font-size: 12px; color: var(--teal); }
+
+/* ─── PROGRESS BAR (pixel style) ───────────────────── */
+.progress-wrap { background: var(--bg-subtle); height: 6px; border: 1px solid var(--border); overflow: hidden; position: relative; }
+.progress-fill {
+  height: 100%; background: var(--teal);
+  transition: width 1.5s steps(20, end);
+}
+
+/* ─── CLI ───────────────────────────────────────────── */
+.cli {
+  background: #0A0A0A; border: 1px solid #222;
+  padding: 20px 24px;
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.75;
+  position: relative; overflow: hidden;
+}
+.cli-scanline {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent, transparent 2px,
+    rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px
+  );
+  opacity: 0.4;
+}
+.c-prompt { color: #C96A3A; }
+.c-path   { color: #3DC9B0; }
+.c-white  { color: #EDEDED; }
+.c-muted  { color: #555555; }
+.c-ok     { color: #27AE60; }
+.c-warn   { color: #F1C40F; }
+.c-err    { color: #C0392B; }
+.c-teal   { color: #3DC9B0; }
+.c-hi     { background: rgba(61,201,176,0.2); }
+.cli-line { display: block; }
+.cli-cursor {
+  display: inline-block; width: 8px; height: 1em;
+  background: #C96A3A; vertical-align: text-bottom;
+  animation: blink 0.7s steps(1, end) infinite;
+}
+
+/* ─── LOADING DEMO ──────────────────────────────────── */
+.loading-demo {
+  background: var(--bg-base); border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 240px; gap: 20px; position: relative; overflow: hidden;
+  background-image: var(--dot); background-size: 16px 16px;
+}
+.loader-sprite {
+  image-rendering: pixelated;
+  animation: walk 0.4s steps(3) infinite;
+}
+.loader-text {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);
+  letter-spacing: 0.04em;
+}
+.loader-bar {
+  width: 160px; height: 4px; background: var(--border);
+  position: relative; overflow: hidden;
+}
+.loader-bar-fill {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  background: var(--teal);
+  animation: loading-tick 2s steps(16) infinite;
+}
+
+/* ─── MOTION DEMOS ──────────────────────────────────── */
+.motion-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.motion-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px;
+  cursor: pointer;
+}
+.motion-card-label { font-size: 12px; color: var(--text-tertiary); text-align: center; font-family: var(--font-mono); }
+.motion-box {
+  width: 48px; height: 48px; background: var(--warm);
+}
+.motion-card:hover .m-hover { transform: translateY(-6px); }
+.motion-card:hover .m-rotate { transform: rotate(45deg); }
+.motion-card:hover .m-scale { transform: scale(1.2); }
+.motion-card:hover .m-color { background: var(--teal); }
+.motion-box { transition: all 0.2s var(--ease-out); }
+.motion-box.m-pulse { animation: pulse-border 2s ease-in-out infinite; }
+.motion-box.m-blink-box { animation: pixel-blink 0.6s steps(1, end) infinite; }
+
+/* ─── FOCUS RING DEMO ───────────────────────────────── */
+.focus-demo {
+  outline: 2px solid var(--warm); outline-offset: 2px;
+}
+
+/* ─── SCROLLBAR DEMO ────────────────────────────────── */
+.scroll-demo {
+  height: 120px; overflow-y: scroll;
+  border: 1px solid var(--border); padding: 12px; background: var(--bg-surface);
+  font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+}
+.scroll-demo::-webkit-scrollbar { width: 6px; }
+.scroll-demo::-webkit-scrollbar-track { background: transparent; }
+.scroll-demo::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+
+/* ─── LINK STYLES ───────────────────────────────────── */
+.styled-link {
+  color: var(--teal);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-underline-offset: 3px;
+  transition: color 0.15s;
+}
+.styled-link:hover { color: var(--teal-hi); text-decoration-style: solid; }
+
+/* ─── MODAL DEMO ────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg-elevated); border: 1px solid var(--border-strong);
+  padding: 32px; max-width: 480px; width: 90%;
+  transform: scale(0.96); transition: transform 0.2s var(--ease-spring);
+}
+.modal-overlay.open .modal { transform: scale(1); }
+.modal-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+.modal-title { font-size: 18px; font-weight: 600; }
+.modal-close {
+  width: 32px; height: 32px; background: transparent; border: none;
+  font-size: 20px; color: var(--text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.15s;
+}
+.modal-close:hover { color: var(--text-primary); }
+.modal-body { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px; }
+.modal-footer { display: flex; gap: 12px; justify-content: flex-end; }
+
+/* ─── PLATFORM SECTION ──────────────────────────────── */
+.platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.platform-label {
+  font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.16em; color: var(--text-tertiary);
+  margin-bottom: 10px;
+}
+.mobile-frame {
+  width: 200px; margin: 0 auto;
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+  background: var(--bg-base);
+}
+.mobile-status {
+  background: var(--bg-surface); padding: 8px 14px;
+  font-family: var(--font-mono); font-size: 9px; color: var(--text-tertiary);
+  display: flex; justify-content: space-between;
+}
+.mobile-nav {
+  background: var(--bg-elevated); border-top: 1px solid var(--border);
+  display: flex; padding: 8px 0 12px;
+}
+.mobile-nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 9px; color: var(--text-tertiary);
+}
+.mobile-nav-item.active { color: var(--warm); }
+.mobile-nav-dot { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+/* ─── FOOTER ────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-surface);
+  padding: 48px 40px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-logo { font-family: var(--font-pixel); font-size: 13px; color: var(--warm); margin-bottom: 8px; }
+.footer-copy { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); }
+.footer-cols { display: flex; gap: 48px; }
+.footer-col h4 { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-secondary); margin-bottom: 12px; }
+.footer-col a { display: block; font-size: 13px; color: var(--text-tertiary); text-decoration: none; margin-bottom: 8px; transition: color 0.15s; }
+.footer-col a:hover { color: var(--warm); }
+
+/* ─── KEYFRAMES ─────────────────────────────────────── */
+@keyframes blink { 0%,100%{ opacity:1 } 50%{ opacity:0 } }
+@keyframes bounce { 0%,100%{ transform: translateX(-50%) translateY(0) } 50%{ transform: translateX(-50%) translateY(-8px) } }
+@keyframes fadeUp { from{ opacity:0; transform:translateY(20px) } to{ opacity:1; transform:translateY(0) } }
+@keyframes walk { 0%{transform:translateX(0)} 33%{transform:translateX(-2px)} 66%{transform:translateX(2px)} 100%{transform:translateX(0)} }
+@keyframes loading-tick { from{width:0} to{width:100%} }
+@keyframes pulse-border { 0%,100%{ box-shadow:0 0 0 0 rgba(201,106,58,0.4) } 50%{ box-shadow:0 0 0 6px rgba(201,106,58,0) } }
+@keyframes pixel-blink { 0%,100%{ background:var(--warm) } 50%{ background:var(--bg-subtle) } }
+@keyframes scanline-reveal { from{ clip-path: inset(0 0 100% 0) } to{ clip-path: inset(0 0 0% 0) } }
+@keyframes typewriter { from{ width:0 } to{ width:100% } }
+
+/* ─── RESPONSIVE ────────────────────────────────────── */
+@media(max-width:768px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  section { padding: 60px 20px; }
+  .dashboard { grid-template-columns: 1fr; height: auto; }
+  .dash-sidebar { display: none; }
+  .dash-panel { display: none; }
+  .platform-grid { grid-template-columns: 1fr; }
+  footer { flex-direction: column; }
+  .hero-title { font-size: clamp(18px, 6vw, 32px); }
+}
+
+/* ─── COMPONENT DEMO GRID ───────────────────────────── */
+.comp-demo { display: flex; flex-direction: column; gap: 32px; }
+.comp-row-label {
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 12px;
+}
+.comp-items { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+/* ─── TIMELINE (about section) ──────────────────────── */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before {
+  content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+  width: 1px; background: var(--border);
+}
+.timeline-item { position: relative; padding-bottom: 32px; }
+.timeline-item::before {
+  content: '■'; position: absolute; left: -28px; top: 2px;
+  font-size: 8px; color: var(--warm); line-height: 1;
+}
+.timeline-date { font-family: var(--font-mono); font-size: 11px; color: var(--teal); margin-bottom: 4px; }
+.timeline-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.timeline-desc { font-size: 14px; color: var(--text-secondary); }
+
+/* ─── TOKENS TABLE ──────────────────────────────────── */
+.tokens-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tokens-table th {
+  text-align: left; padding: 8px 12px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border);
+}
+.tokens-table td {
+  padding: 8px 12px; border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);
+}
+.tokens-table td.token-name { color: var(--teal); }
+.tokens-table td.token-val { color: var(--text-primary); }
+.tokens-table tr:hover td { background: var(--bg-subtle); }
+
+/* tag chip */
+.tag { display: inline-block; padding: 2px 8px; font-size: 11px; background: var(--bg-subtle); color: var(--text-tertiary); border: 1px solid var(--border); font-family: var(--font-mono); margin: 2px; }
+.tag.warm { color: var(--warm); border-color: var(--warm); background: rgba(201,106,58,0.1); }
+.tag.teal { color: var(--teal); border-color: var(--teal); background: rgba(61,201,176,0.1); }
+
+/* notice / callout */
+.callout {
+  border-left: 3px solid var(--warm);
+  padding: 14px 18px;
+  background: rgba(201,106,58,0.06);
+  font-size: 14px; color: var(--text-secondary);
+  margin: 24px 0;
+}
+.callout.info { border-left-color: var(--teal); background: rgba(61,201,176,0.06); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav>
+  <a class="nav-logo" href="#hero">VOXEL</a>
+  <div class="nav-links">
+    <a href="#colors">Colors</a>
+    <a href="#typography">Type</a>
+    <a href="#components">Components</a>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#cli">CLI</a>
+    <a href="#motion">Motion</a>
+    <a href="#tokens">Tokens</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" id="themeToggle" title="Toggle theme">☀</button>
+    <button class="btn btn-primary" onclick="document.getElementById('modal').classList.add('open')">Open Modal</button>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-eyebrow">Design System / v1.0.0 / cross-platform</div>
+  <div class="hero-title">
+    <span id="typeTarget"></span><span class="hero-cursor"></span>
+  </div>
+  <p class="hero-sub">
+    A unified personal design language — pixel craft meets modern clarity.
+    Built for developers who care about both aesthetics and function.
+  </p>
+  <div class="hero-btns">
+    <a href="#components" class="btn btn-primary">View Components</a>
+    <a href="#tokens" class="btn btn-secondary">Design Tokens</a>
+    <a href="#cli" class="btn btn-ghost">CLI Guide ↓</a>
+  </div>
+
+  <!-- Isometric pixel art drawn on canvas -->
+  <div class="hero-art">
+    <canvas class="pixel-canvas" id="isoCanvas" width="320" height="200"></canvas>
+  </div>
+
+  <div class="hero-scroll">scroll ↓</div>
+</section>
+
+<!-- ═══════════════ COLORS ═══════════════ -->
+<section id="colors">
+  <div class="section-tag reveal">01 — Color System</div>
+  <h2 class="section-heading reveal reveal-delay-1">Every pixel has a purpose</h2>
+  <p class="section-sub reveal reveal-delay-2">
+    Two accents, one warm and one cool. Strict semantic signals. Near-black and near-white everywhere — never pure values.
+  </p>
+
+  <div class="colors-grid reveal reveal-delay-2">
+    <div class="swatch"><div class="swatch-color" style="background:#0D0D0D"></div><div class="swatch-meta"><div class="swatch-name">bg-base</div><div class="swatch-hex">#0D0D0D</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#141414"></div><div class="swatch-meta"><div class="swatch-name">bg-surface</div><div class="swatch-hex">#141414</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#1C1C1C"></div><div class="swatch-meta"><div class="swatch-name">bg-elevated</div><div class="swatch-hex">#1C1C1C</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#222222"></div><div class="swatch-meta"><div class="swatch-name">bg-subtle</div><div class="swatch-hex">#222222</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#EDEDED;border:1px solid #ccc;margin-bottom:-1px"></div><div class="swatch-meta"><div class="swatch-name">text-primary</div><div class="swatch-hex">#EDEDED</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#999999"></div><div class="swatch-meta"><div class="swatch-name">text-secondary</div><div class="swatch-hex">#999999</div></div></div>
+    <div class="swatch" style="border-color:var(--warm)"><div class="swatch-color" style="background:#C96A3A"></div><div class="swatch-meta"><div class="swatch-name">accent-warm ★</div><div class="swatch-hex">#C96A3A</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#E07A45"></div><div class="swatch-meta"><div class="swatch-name">warm-hover</div><div class="swatch-hex">#E07A45</div></div></div>
+    <div class="swatch" style="border-color:var(--teal)"><div class="swatch-color" style="background:#3DC9B0"></div><div class="swatch-meta"><div class="swatch-name">accent-teal ★</div><div class="swatch-hex">#3DC9B0</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#55DBC3"></div><div class="swatch-meta"><div class="swatch-name">teal-hover</div><div class="swatch-hex">#55DBC3</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#C0392B"></div><div class="swatch-meta"><div class="swatch-name">signal-red</div><div class="swatch-hex">#C0392B</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#27AE60"></div><div class="swatch-meta"><div class="swatch-name">signal-green</div><div class="swatch-hex">#27AE60</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#2980B9"></div><div class="swatch-meta"><div class="swatch-name">signal-blue</div><div class="swatch-hex">#2980B9</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#F1C40F"></div><div class="swatch-meta"><div class="swatch-name">signal-yellow</div><div class="swatch-hex">#F1C40F</div></div></div>
+  </div>
+
+  <div class="callout reveal" style="margin-top:40px">
+    <strong>Rule:</strong> Maximum <em>one</em> warm accent element per viewport. Teal is reserved for technical/code contexts. Signal colors are strictly semantic — never decorative.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════ TYPOGRAPHY ═══════════════ -->
+<div class="section-full section-dotgrid" id="typography">
+  <div class="inner">
+    <div class="section-tag reveal">02 — Typography</div>
+    <h2 class="section-heading reveal reveal-delay-1">Three registers, one voice</h2>
+    <p class="section-sub reveal reveal-delay-2">
+      Pixel for brand identity. DM Sans for human UI. Monospace for everything technical.
+      Lora reserved for long-form reading.
+    </p>
+
+    <div class="type-scale reveal reveal-delay-2">
+      <div class="type-row">
+        <div class="type-meta">--font-pixel<br>hero / brand</div>
+        <div class="type-sample" style="font-family:var(--font-pixel);font-size:28px;color:var(--warm);letter-spacing:0.06em;line-height:1.4">VOXEL</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">DM Sans 600<br>32px / h1</div>
+        <div class="type-sample" style="font-size:32px;font-weight:600">The quick brown fox</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">DM Sans 600<br>24px / h2</div>
+        <div class="type-sample" style="font-size:24px;font-weight:600">Section Heading Style</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">DM Sans 400<br>16px / body</div>
+        <div class="type-sample" style="font-size:16px;max-width:480px;color:var(--text-secondary)">Body text is set in DM Sans at 16px with a line-height of 1.5. It reads cleanly at all sizes and pairs well with the heavier display weights above it.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">Monospace<br>14px / code</div>
+        <div class="type-sample" style="font-family:var(--font-mono);font-size:14px;color:var(--teal)">~/projects/site [main] &gt; build --out ./dist</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">DM Sans 400<br>12px / micro</div>
+        <div class="type-sample" style="font-size:12px;color:var(--text-tertiary);letter-spacing:0.06em">LAST MODIFIED · 2 HOURS AGO · REVISION 14</div>
+      </div>
+      <div class="type-row" style="border:none">
+        <div class="type-meta">Lora 400<br>reading only</div>
+        <div class="type-sample" style="font-family:var(--font-read);font-size:16px;max-width:500px;color:var(--text-secondary);line-height:1.75">Long-form prose uses Lora for its warmth and legibility. Reserved strictly for documentation, blog posts, and any context where the user reads more than two paragraphs.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ COMPONENTS ═══════════════ -->
+<section id="components">
+  <div class="section-tag reveal">03 — Components</div>
+  <h2 class="section-heading reveal reveal-delay-1">Every state. Every variant.</h2>
+  <p class="section-sub reveal reveal-delay-2">
+    Sharp edges by default. Rounded only for mobile and consumer-facing contexts.
+    All interactions have immediate feedback — 0ms for press, 200ms for transitions.
+  </p>
+
+  <div class="comp-demo">
+    <!-- Buttons -->
+    <div class="reveal">
+      <div class="comp-row-label">Buttons</div>
+      <div class="comp-items">
+        <button class="btn btn-primary">Primary Action</button>
+        <button class="btn btn-secondary">Secondary</button>
+        <button class="btn btn-ghost">Ghost Link</button>
+        <button class="btn btn-pixel">Pixel Style</button>
+        <button class="btn btn-teal">Teal Action</button>
+        <button class="btn btn-primary disabled">Disabled</button>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="reveal reveal-delay-1">
+      <div class="comp-row-label">Badges & Tags</div>
+      <div class="comp-items">
+        <span class="badge badge-warm">Active</span>
+        <span class="badge badge-teal">Compiled</span>
+        <span class="badge badge-green">Success</span>
+        <span class="badge badge-red">Error</span>
+        <span class="badge badge-yellow">Warning</span>
+        <span class="badge badge-outline">Draft</span>
+        <span class="tag warm">pixel</span>
+        <span class="tag teal">monospace</span>
+        <span class="tag">retro</span>
+        <span class="tag">minimal</span>
+      </div>
+    </div>
+
+    <!-- Inputs -->
+    <div class="reveal reveal-delay-2">
+      <div class="comp-row-label">Inputs & Forms</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px">
+        <div class="input-group">
+          <label class="input-label">File Path</label>
+          <input class="input" placeholder="~/projects/site" value="~/projects/site">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Focus State</label>
+          <input class="input focus-demo" placeholder="focused input" value="">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Error State</label>
+          <input class="input error" value="invalid entry">
+          <span class="input-error-msg">✗ field is required</span>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Checkboxes</label>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+            <label class="check-group" onclick="this.classList.toggle('checked')">
+              <div class="check-box">✓</div>
+              <span class="check-label">Enable pixel animations</span>
+            </label>
+            <label class="check-group checked" onclick="this.classList.toggle('checked')">
+              <div class="check-box">✓</div>
+              <span class="check-label">Dark mode (default)</span>
+            </label>
+            <label class="check-group" onclick="this.classList.toggle('checked')">
+              <div class="check-box">✓</div>
+              <span class="check-label">Sound design (optional)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="reveal reveal-delay-3">
+      <div class="comp-row-label">Cards</div>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-accent"></div>
+          <div class="card-tag">Project</div>
+          <div class="card-title">Uxntal Emulator</div>
+          <div class="card-body">A minimal stack-based virtual machine built on the Varvara platform. Written entirely in assembly.</div>
+          <div class="card-footer">
+            <span class="card-date">2024-07-25</span>
+            <span class="badge badge-teal">Active</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-tag">Log Entry</div>
+          <div class="card-title">On Constraint-Based Design</div>
+          <div class="card-body">Working within tight memory budgets forces you to think differently about what's truly essential to show the user.</div>
+          <div class="card-footer">
+            <span class="card-date">2024-06-12</span>
+            <span class="badge badge-outline">Essay</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-tag">Tool</div>
+          <div class="card-title">dot-grid Generator</div>
+          <div class="card-body">Generates dot-grid SVG backgrounds from a simple configuration. CSS-only output, no dependencies.</div>
+          <div class="card-footer">
+            <span class="card-date">2024-05-03</span>
+            <span class="badge badge-warm">v2.1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Window chrome -->
+    <div class="reveal reveal-delay-1">
+      <div class="comp-row-label">Window Chrome (Desktop App Panel)</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+        <div class="window">
+          <div class="window-bar">
+            <div class="win-dot win-dot-r"></div>
+            <div class="win-dot win-dot-g"></div>
+            <div class="win-dot win-dot-b"></div>
+            <div class="window-title">NOTEPAD</div>
+          </div>
+          <div class="window-body">
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary);line-height:1.8">
+              ○ allow display with enter cycle<br>
+              ● acid tests<br>
+              ○ merge live buffer /dirs<br>
+              ○ move lhs/rhs buffers in ZP
+            </div>
+          </div>
+        </div>
+        <div class="window">
+          <div class="window-bar">
+            <div class="win-dot win-dot-r"></div>
+            <div class="win-dot win-dot-g"></div>
+            <div class="win-dot win-dot-b"></div>
+            <div class="window-title">ASSEMBLER</div>
+          </div>
+          <div class="window-body">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div class="input-group">
+                <label class="input-label">Tal Source File</label>
+                <input class="input" value="Git/neur/src/neur.tal">
+              </div>
+              <div class="input-group">
+                <label class="input-label">Rom Output File</label>
+                <input class="input" value="Git/neur/bin/neur.rom">
+              </div>
+              <button class="btn btn-secondary" style="width:100%;justify-content:center">Assemble</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scrollbar + link + callout -->
+    <div class="reveal reveal-delay-2">
+      <div class="comp-row-label">Links, Scrollbar & Callout</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div>
+          <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px">
+            Inline links like <a href="#" class="styled-link">this reference</a> use teal with a dashed underline that becomes solid on hover.
+            External links append a small <a href="#" class="styled-link">glyph ↗</a> after the text.
+          </p>
+          <div class="callout info">
+            <strong style="color:var(--teal)">Note:</strong> Callouts use a 3px left border. Warm for warnings, teal for info, never more than one per visible viewport.
+          </div>
+        </div>
+        <div class="scroll-demo">
+          Custom scrollbars are 6px wide with rounded thumbs.
+          The track is transparent — only the thumb is visible.
+          Scroll content lives inside a surface-colored container with a 1px border.
+          <br><br>
+          Content continues here to demonstrate the scrollbar behavior.
+          Notice how it stays minimal and unobtrusive, matching the overall
+          design language without adding visual noise.
+          <br><br>
+          More content to ensure the scrollbar appears and functions correctly in this demo area.
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress bars -->
+    <div class="reveal reveal-delay-3">
+      <div class="comp-row-label">Progress Bars (Pixel Steps)</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)">build</span>
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--teal)" id="p1val">78%</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill" id="p1" style="width:78%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)">optimize</span>
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--warm)" id="p2val">42%</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill" id="p2" style="width:42%;background:var(--warm)"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)">deploy</span>
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--green)" id="p3val">100%</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill" id="p3" style="width:100%;background:var(--green)"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div class="section-full" id="dashboard">
+  <div class="inner">
+    <div class="section-tag reveal">04 — Dashboard UI</div>
+    <h2 class="section-heading reveal reveal-delay-1">Data-dense. Intentionally quiet.</h2>
+    <p class="section-sub reveal reveal-delay-2">
+      Three-column layout: sidebar navigation, main content area, detail panel.
+      Every element earns its place. Monospace for all data values.
+    </p>
+
+    <div class="dashboard reveal reveal-delay-2">
+      <!-- Sidebar -->
+      <div class="dash-sidebar">
+        <div class="dash-logo">VOXEL</div>
+        <div class="dash-section-label">Workspace</div>
+        <div class="dash-nav-item active" onclick="setActive(this)">
+          <div class="dash-nav-icon">◈</div> Overview
+        </div>
+        <div class="dash-nav-item" onclick="setActive(this)">
+          <div class="dash-nav-icon">▤</div> Projects
+        </div>
+        <div class="dash-nav-item" onclick="setActive(this)">
+          <div class="dash-nav-icon">◎</div> Assets
+        </div>
+        <div class="dash-nav-item" onclick="setActive(this)">
+          <div class="dash-nav-icon">⌘</div> Tools
+        </div>
+        <div class="dash-section-label">System</div>
+        <div class="dash-nav-item" onclick="setActive(this)">
+          <div class="dash-nav-icon">◉</div> Settings
+        </div>
+        <div class="dash-nav-item" onclick="setActive(this)">
+          <div class="dash-nav-icon">◌</div> Log
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div class="dash-main">
+        <div class="dash-toolbar">
+          <div class="dash-toolbar-title">Overview</div>
+          <button class="btn btn-secondary" style="padding:4px 12px;font-size:12px">Refresh</button>
+          <button class="btn btn-primary" style="padding:4px 12px;font-size:12px">+ New</button>
+        </div>
+        <div class="dash-content">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Build Time</div>
+              <div class="stat-value accent">1.4s</div>
+              <div class="stat-sub">↓ 0.3s from last</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Output Size</div>
+              <div class="stat-value">1.1 mb</div>
+              <div class="stat-sub">↓ 66% compressed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Files Changed</div>
+              <div class="stat-value">14</div>
+              <div class="stat-sub">3 templates · 11 assets</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Uptime</div>
+              <div class="stat-value">99.8%</div>
+              <div class="stat-sub">↑ all systems nominal</div>
+            </div>
+          </div>
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Hash</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>index.html</td>
+                <td class="mono">html</td>
+                <td class="mono">4.2 kb</td>
+                <td class="mono">a4f2c1</td>
+                <td><span class="badge badge-green">✓ ok</span></td>
+              </tr>
+              <tr>
+                <td>style.css</td>
+                <td class="mono">css</td>
+                <td class="mono">18.1 kb</td>
+                <td class="mono">b3d9a2</td>
+                <td><span class="badge badge-green">✓ ok</span></td>
+              </tr>
+              <tr>
+                <td>main.js</td>
+                <td class="mono">js</td>
+                <td class="mono">82.4 kb</td>
+                <td class="mono">f1e8c7</td>
+                <td><span class="badge badge-green">✓ ok</span></td>
+              </tr>
+              <tr>
+                <td>assets/hero.png</td>
+                <td class="mono">img</td>
+                <td class="mono">94.0 kb</td>
+                <td class="mono">2a9b3d</td>
+                <td><span class="badge badge-yellow">⚠ large</span></td>
+              </tr>
+              <tr>
+                <td>fonts/pixel.woff2</td>
+                <td class="mono">font</td>
+                <td class="mono">12.8 kb</td>
+                <td class="mono">c8f3e1</td>
+                <td><span class="badge badge-green">✓ ok</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Panel -->
+      <div class="dash-panel">
+        <div class="dash-panel-bar">
+          <div class="win-dot win-dot-r"></div>
+          <div class="win-dot win-dot-g" style="margin:0 4px"></div>
+          <div class="win-dot win-dot-b"></div>
+          <div class="dash-panel-title" style="margin-left:8px">DETAIL</div>
+        </div>
+        <div class="panel-body">
+          <div class="panel-field">
+            <div class="panel-field-label">File</div>
+            <div class="panel-field-value">assets/hero.png</div>
+          </div>
+          <div class="panel-field">
+            <div class="panel-field-label">Path</div>
+            <div class="panel-field-value mono">./dist/assets/</div>
+          </div>
+          <div class="panel-field">
+            <div class="panel-field-label">Hash</div>
+            <div class="panel-field-value mono">2a9b3d</div>
+          </div>
+          <div class="panel-field">
+            <div class="panel-field-label">Size</div>
+            <div class="panel-field-value">94.0 kb</div>
+          </div>
+          <div class="panel-field">
+            <div class="panel-field-label">Compress</div>
+            <div class="progress-wrap" style="height:4px;margin-top:6px"><div style="width:62%;height:100%;background:var(--warm)"></div></div>
+          </div>
+          <div class="panel-field">
+            <div class="panel-field-label">Status</div>
+            <span class="badge badge-yellow">⚠ large</span>
+          </div>
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:12px;padding:8px">Optimize</button>
+            <button class="btn btn-secondary" style="width:100%;justify-content:center;font-size:12px;padding:7px">View File</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CLI ═══════════════ -->
+<section id="cli">
+  <div class="section-tag reveal">05 — CLI Interface</div>
+  <h2 class="section-heading reveal reveal-delay-1">The terminal has personality too</h2>
+  <p class="section-sub reveal reveal-delay-2">
+    Terracotta prompt. Teal paths and success. Semantic signal colors. ASCII only for startup.
+    Monospace throughout. No emoji on automated output.
+  </p>
+
+  <div class="cli reveal reveal-delay-2">
+    <div class="cli-scanline"></div>
+    <span class="cli-line" style="color:var(--text-tertiary);letter-spacing:0.06em">
+ ██╗   ██╗ ██████╗ ██╗  ██╗███████╗██╗
+ ██║   ██║██╔═══██╗╚██╗██╔╝██╔════╝██║
+ ██║   ██║██║   ██║ ╚███╔╝ █████╗  ██║
+ ╚██╗ ██╔╝██║   ██║ ██╔██╗ ██╔══╝  ██║
+  ╚████╔╝ ╚██████╔╝██╔╝ ██╗███████╗███████╗
+   ╚═══╝   ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝
+</span>
+    <span class="cli-line"><span class="cli-muted"> v1.0.0 — personal design toolchain</span></span>
+    <span class="cli-line"> </span>
+    <span class="cli-line"><span class="cli-prompt">■ </span><span class="cli-path">~/projects/site</span><span class="cli-white"> [main]</span></span>
+    <span class="cli-line"><span class="cli-white">&gt; voxel build --out ./dist</span></span>
+    <span class="cli-line"> </span>
+    <span class="cli-line"><span class="cli-muted">── BUILD ────────────────────────────────────────────</span></span>
+    <span class="cli-line"><span class="cli-ok">  ✓</span><span class="cli-white"> parsed 14 files in 0.1s</span></span>
+    <span class="cli-line"><span class="cli-ok">  ✓</span><span class="cli-white"> compiled 8 templates</span></span>
+    <span class="cli-line"><span class="cli-warn">  ⚠</span><span class="cli-white"> deprecated: use --out instead of --output</span></span>
+    <span class="cli-line"><span class="cli-ok">  ✓</span><span class="cli-white"> optimized assets (3.2mb → 1.1mb)</span></span>
+    <span class="cli-line"> </span>
+    <span class="cli-line"><span class="cli-muted">── OUTPUT ───────────────────────────────────────────</span></span>
+    <span class="cli-line"><span class="cli-muted">  NAME                    SIZE     HASH</span></span>
+    <span class="cli-line"><span class="cli-muted">  ────────────────────    ─────    ────────</span></span>
+    <span class="cli-line"><span class="cli-white">  index.html</span><span class="cli-muted">             4.2 kb   </span><span class="cli-teal">a4f2c1</span></span>
+    <span class="cli-line"><span class="cli-white">  style.css</span><span class="cli-muted">              18.1 kb  </span><span class="cli-teal">b3d9a2</span></span>
+    <span class="cli-line"><span class="cli-white">  main.js</span><span class="cli-muted">                82.4 kb  </span><span class="cli-teal">f1e8c7</span></span>
+    <span class="cli-line"><span class="cli-white">  assets/hero.png</span><span class="cli-muted">        94.0 kb  </span><span class="cli-teal">2a9b3d</span></span>
+    <span class="cli-line"> </span>
+    <span class="cli-line"><span class="cli-ok">  ✓ built to ./dist in 1.4s</span></span>
+    <span class="cli-line"> </span>
+    <span class="cli-line"><span class="cli-prompt">■ </span><span class="cli-path">~/projects/site</span><span class="cli-white"> [main] &gt; </span><span class="cli-cursor"></span></span>
+  </div>
+
+  <div style="margin-top:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px" class="reveal">
+    <div class="callout"><span style="color:var(--warm)">■</span> Prompt prefix in warm terracotta</div>
+    <div class="callout info"><span style="color:var(--teal)">✓</span> Success output in teal</div>
+    <div class="callout" style="border-color:var(--yellow)"><span style="color:var(--yellow)">⚠</span> Warnings in signal yellow</div>
+    <div class="callout" style="border-color:var(--red)"><span style="color:var(--red)">✗</span> Errors in signal red</div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════ MOTION ═══════════════ -->
+<div class="section-full section-dotgrid" id="motion">
+  <div class="inner">
+    <div class="section-tag reveal">06 — Motion & Loading</div>
+    <h2 class="section-heading reveal reveal-delay-1">Instant or deliberate. Nothing in between.</h2>
+    <p class="section-sub reveal reveal-delay-2">
+      Hover the cards below. Modern elements use smooth easing; pixel elements use <code style="font-family:var(--font-mono);font-size:13px;color:var(--teal)">steps()</code> for discrete jumps.
+    </p>
+
+    <div class="motion-grid reveal reveal-delay-2">
+      <div class="motion-card">
+        <div class="motion-box m-hover"></div>
+        <div class="motion-card-label">hover: translateY(-6px)<br>ease-out 200ms</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-box m-rotate"></div>
+        <div class="motion-card-label">hover: rotate(45deg)<br>ease-out 200ms</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-box m-scale"></div>
+        <div class="motion-card-label">hover: scale(1.2)<br>ease-spring 200ms</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-box m-color"></div>
+        <div class="motion-card-label">hover: warm → teal<br>color transition 200ms</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-box m-pulse"></div>
+        <div class="motion-card-label">auto: pulse ring<br>2s ease-in-out ∞</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-box m-blink-box"></div>
+        <div class="motion-card-label">pixel: steps(1,end)<br>blink 0.6s ∞</div>
+      </div>
+    </div>
+
+    <div style="margin-top:48px">
+      <div class="comp-row-label reveal">Loading States</div>
+      <div class="loading-demo reveal reveal-delay-1">
+        <canvas id="spriteCanvas" width="32" height="32" class="loader-sprite" style="width:64px;height:64px"></canvas>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div class="loader-text" id="loaderText">initializing...</div>
+          <div class="loader-bar"><div class="loader-bar-fill" style="width:0" id="loaderBarFill"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px" class="reveal">
+      <div class="token-row-block">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:6px">DURATIONS</div>
+        <div style="font-family:var(--font-mono);font-size:12px;line-height:2;color:var(--text-secondary)">
+          fast: <span style="color:var(--teal)">100ms</span><br>
+          normal: <span style="color:var(--teal)">200ms</span><br>
+          slow: <span style="color:var(--teal)">300ms</span><br>
+          crawl: <span style="color:var(--teal)">500ms</span><br>
+          blink: <span style="color:var(--teal)">700ms</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:6px">EASINGS</div>
+        <div style="font-family:var(--font-mono);font-size:12px;line-height:2;color:var(--text-secondary)">
+          ease-out: <span style="color:var(--warm)">enter</span><br>
+          ease-in: <span style="color:var(--warm)">exit</span><br>
+          ease-spring: <span style="color:var(--warm)">playful</span><br>
+          steps(N,end): <span style="color:var(--warm)">pixel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PLATFORM ═══════════════ -->
+<section id="platform">
+  <div class="section-tag reveal">07 — Platform Adaptation</div>
+  <h2 class="section-heading reveal reveal-delay-1">One language, every surface</h2>
+  <p class="section-sub reveal reveal-delay-2">
+    The same tokens — different density, border-radius, and interaction model depending on the device.
+  </p>
+
+  <div class="platform-grid reveal reveal-delay-2">
+    <div>
+      <div class="platform-label">Mobile App</div>
+      <div class="mobile-frame">
+        <div class="mobile-status"><span>9:41</span><span>◼◼◼</span></div>
+        <div style="padding:16px;background:var(--bg-base)">
+          <div style="font-family:var(--font-pixel);font-size:11px;color:var(--warm);margin-bottom:16px">VOXEL</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="background:var(--bg-surface);border:1px solid var(--border);padding:12px;border-radius:12px">
+              <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Build Status</div>
+              <div style="font-size:18px;font-weight:600;color:var(--green)">✓ Passing</div>
+            </div>
+            <div style="background:var(--bg-surface);border:1px solid var(--border);padding:12px;border-radius:12px">
+              <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Last Deploy</div>
+              <div style="font-size:14px;font-weight:600">1.4s ago</div>
+            </div>
+            <div style="background:var(--bg-surface);border:1px solid var(--border);padding:12px;border-radius:12px">
+              <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Files</div>
+              <div style="font-size:14px;font-weight:600">14 changed</div>
+            </div>
+          </div>
+        </div>
+        <div class="mobile-nav">
+          <div class="mobile-nav-item active">
+            <div class="mobile-nav-dot">◈</div>
+            <span>Home</span>
+          </div>
+          <div class="mobile-nav-item">
+            <div class="mobile-nav-dot">▤</div>
+            <span>Files</span>
+          </div>
+          <div class="mobile-nav-item">
+            <div class="mobile-nav-dot">◎</div>
+            <span>Tools</span>
+          </div>
+          <div class="mobile-nav-item">
+            <div class="mobile-nav-dot">◉</div>
+            <span>Settings</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:13px;color:var(--text-tertiary);text-align:center;font-family:var(--font-mono)">
+        border-radius: 12px on mobile<br>bottom tab bar · 44px min touch targets
+      </div>
+    </div>
+
+    <div>
+      <div class="platform-label">Desktop App Toolbar</div>
+      <div class="window" style="margin-bottom:16px">
+        <div class="window-bar">
+          <div class="win-dot win-dot-r"></div>
+          <div class="win-dot win-dot-g" style="margin:0 4px"></div>
+          <div class="win-dot win-dot-b"></div>
+          <div class="window-title">VOXEL EDITOR — main.tal</div>
+        </div>
+        <div style="height:36px;background:var(--bg-elevated);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:4px">
+          <button style="width:28px;height:28px;background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center" title="New">◻</button>
+          <button style="width:28px;height:28px;background:var(--bg-subtle);border:none;color:var(--warm);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center" title="Save">●</button>
+          <div style="width:1px;height:18px;background:var(--border);margin:0 4px"></div>
+          <button style="width:28px;height:28px;background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px" title="Undo">↩</button>
+          <button style="width:28px;height:28px;background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px" title="Redo">↪</button>
+          <div style="flex:1"></div>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)">ln 42 · col 8 · 1024 bytes</span>
+        </div>
+        <div style="display:flex;height:180px">
+          <div style="width:120px;border-right:1px solid var(--border);padding:8px;background:var(--bg-surface);overflow:auto">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.1em">Files</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--teal);padding:2px 4px;background:var(--bg-subtle)">main.tal</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);padding:2px 4px">utils.tal</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);padding:2px 4px">build.sh</div>
+          </div>
+          <div style="flex:1;padding:12px;background:var(--bg-base);overflow:auto">
+            <div style="font-family:var(--font-mono);font-size:12px;line-height:1.8;color:var(--text-secondary)">
+              <span style="color:var(--text-tertiary);margin-right:16px">01</span><span style="color:var(--teal)">|hello</span> <span style="color:var(--warm)">"Hello, World!"</span><br>
+              <span style="color:var(--text-tertiary);margin-right:16px">02</span><span style="color:var(--teal)">|main</span><br>
+              <span style="color:var(--text-tertiary);margin-right:16px">03</span>  <span style="color:var(--text-secondary)">#18 DEO</span><br>
+              <span style="color:var(--text-tertiary);margin-right:16px">04</span>  <span style="color:var(--text-secondary)">;hello</span><br>
+              <span style="color:var(--text-tertiary);margin-right:16px;color:var(--warm)">05</span>  <span style="color:var(--text-primary)">,loop</span>
+            </div>
+          </div>
+        </div>
+        <div style="height:22px;background:var(--bg-elevated);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 12px;justify-content:space-between">
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)">main.tal · 1024 bytes</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--teal)">TAL · UTF-8</span>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text-tertiary);font-family:var(--font-mono)">
+        border-radius: 0px on desktop<br>status bar 22px · title bar 28px · toolbar 36px
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════ TOKENS ═══════════════ -->
+<div class="section-full" id="tokens">
+  <div class="inner">
+    <div class="section-tag reveal">08 — Design Tokens</div>
+    <h2 class="section-heading reveal reveal-delay-1">The atomic source of truth</h2>
+    <p class="section-sub reveal reveal-delay-2">
+      Every value in the system maps to a token. If you're hardcoding a hex color or pixel value,
+      you're breaking the system.
+    </p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px" class="reveal reveal-delay-2">
+      <div>
+        <div class="comp-row-label">Color Tokens</div>
+        <table class="tokens-table">
+          <thead><tr><th>Token</th><th>Value</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td class="token-name">--bg-base</td><td class="token-val">#0D0D0D</td><td>Canvas</td></tr>
+            <tr><td class="token-name">--bg-surface</td><td class="token-val">#141414</td><td>Cards</td></tr>
+            <tr><td class="token-name">--bg-elevated</td><td class="token-val">#1C1C1C</td><td>Modals</td></tr>
+            <tr><td class="token-name">--warm</td><td class="token-val">#C96A3A</td><td>Primary accent</td></tr>
+            <tr><td class="token-name">--teal</td><td class="token-val">#3DC9B0</td><td>Technical accent</td></tr>
+            <tr><td class="token-name">--red</td><td class="token-val">#C0392B</td><td>Error only</td></tr>
+            <tr><td class="token-name">--green</td><td class="token-val">#27AE60</td><td>Success only</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="comp-row-label">Spacing & Sizing</div>
+        <table class="tokens-table">
+          <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td class="token-name">--space-1</td><td class="token-val">4px</td><td>Fine detail</td></tr>
+            <tr><td class="token-name">--space-2</td><td class="token-val">8px</td><td>Tight padding</td></tr>
+            <tr><td class="token-name">--space-4</td><td class="token-val">16px</td><td>Standard</td></tr>
+            <tr><td class="token-name">--space-5</td><td class="token-val">24px</td><td>Card padding</td></tr>
+            <tr><td class="token-name">--space-6</td><td class="token-val">32px</td><td>Section gap</td></tr>
+            <tr><td class="token-name">--radius-none</td><td class="token-val">0px</td><td>Technical</td></tr>
+            <tr><td class="token-name">--radius-lg</td><td class="token-val">12px</td><td>Mobile/cards</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div>
+    <div class="footer-logo">VOXEL</div>
+    <div class="footer-copy">Personal Design Language — v1.0.0<br>Built for craftspeople who care.</div>
+  </div>
+  <div class="footer-cols">
+    <div class="footer-col">
+      <h4>System</h4>
+      <a href="#colors">Colors</a>
+      <a href="#typography">Typography</a>
+      <a href="#tokens">Tokens</a>
+    </div>
+    <div class="footer-col">
+      <h4>Surfaces</h4>
+      <a href="#components">Components</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#cli">CLI</a>
+    </div>
+    <div class="footer-col">
+      <h4>References</h4>
+      <a href="#">100r.co ↗</a>
+      <a href="#">Zen Browser ↗</a>
+      <a href="#">XXIIVV ↗</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════ MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">VOXEL — Component Modal</div>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-body">
+      Modals appear with a scale spring animation. The overlay is 70% black.
+      Sharp corners, 1px border on <code style="font-family:var(--font-mono);color:var(--teal);font-size:13px">--bg-elevated</code>.
+      Dismiss by clicking outside or pressing the close button.
+    </div>
+    <div class="input-group" style="margin-bottom:20px">
+      <label class="input-label">Command</label>
+      <input class="input" placeholder="voxel build --watch">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('modal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="document.getElementById('modal').classList.remove('open')">Execute</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ JS ═══════════════ -->
+<script>
+/* ── theme toggle ─────────────────── */
+const html = document.documentElement;
+const toggle = document.getElementById('themeToggle');
+toggle.addEventListener('click', () => {
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  toggle.textContent = isDark ? '☾' : '☀';
+});
+
+/* ── typewriter hero ─────────────── */
+const words = ['VOXEL', 'PIXEL.', 'CRAFT.', 'VOXEL'];
+let wi = 0, ci = 0, deleting = false;
+const target = document.getElementById('typeTarget');
+function type() {
+  const word = words[wi];
+  if (!deleting) {
+    target.textContent = word.slice(0, ci + 1);
+    ci++;
+    if (ci === word.length) {
+      deleting = true;
+      setTimeout(type, wi === words.length - 1 ? 99999 : 1200);
+      return;
+    }
+  } else {
+    target.textContent = word.slice(0, ci - 1);
+    ci--;
+    if (ci === 0) {
+      deleting = false;
+      wi = (wi + 1) % words.length;
+    }
+  }
+  setTimeout(type, deleting ? 60 : 110);
+}
+setTimeout(type, 800);
+
+/* ── isometric pixel art ──────────── */
+(function drawIso() {
+  const c = document.getElementById('isoCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const S = 6; // cell size
+
+  function isoProject(x, y, z) {
+    return {
+      sx: W/2 + (x - y) * S,
+      sy: H/2 + (x + y) * S * 0.5 - z * S
+    };
+  }
+
+  function drawCube(x, y, z, top, right, left) {
+    const p = isoProject;
+    const tl = p(x,   y,   z+1);
+    const tr = p(x+1, y,   z+1);
+    const tm = p(x+1, y+1, z+1);
+    const bl = p(x,   y+1, z+1);
+    const rtr= p(x+1, y,   z);
+    const rtm= p(x+1, y+1, z);
+    const lbl= p(x,   y+1, z);
+
+    // top
+    ctx.beginPath();
+    ctx.moveTo(tl.sx, tl.sy);
+    ctx.lineTo(tr.sx, tr.sy);
+    ctx.lineTo(tm.sx, tm.sy);
+    ctx.lineTo(bl.sx, bl.sy);
+    ctx.closePath();
+    ctx.fillStyle = top; ctx.fill();
+    ctx.strokeStyle = '#0D0D0D'; ctx.lineWidth = 0.5; ctx.stroke();
+
+    // right face
+    ctx.beginPath();
+    ctx.moveTo(tr.sx, tr.sy);
+    ctx.lineTo(rtr.sx, rtr.sy);
+    ctx.lineTo(rtm.sx, rtm.sy);
+    ctx.lineTo(tm.sx, tm.sy);
+    ctx.closePath();
+    ctx.fillStyle = right; ctx.fill(); ctx.stroke();
+
+    // left face
+    ctx.beginPath();
+    ctx.moveTo(bl.sx, bl.sy);
+    ctx.lineTo(tm.sx, tm.sy);
+    ctx.lineTo(rtm.sx, rtm.sy);
+    ctx.lineTo(lbl.sx, lbl.sy);
+    ctx.closePath();
+    ctx.fillStyle = left; ctx.fill(); ctx.stroke();
+  }
+
+  ctx.clearRect(0, 0, W, H);
+
+  // floor
+  for (let x = -3; x <= 3; x++)
+    for (let y = -3; y <= 3; y++)
+      drawCube(x, y, -1, '#2A2A2A', '#1C1C1C', '#222222');
+
+  // back wall left
+  for (let z = 0; z <= 3; z++) drawCube(-3, -3, z, '#2A2A2A','#1C1C1C','#222');
+  for (let z = 0; z <= 3; z++) drawCube(-2, -3, z, '#2A2A2A','#1C1C1C','#222');
+  for (let z = 0; z <= 3; z++) drawCube(-1, -3, z, '#2A2A2A','#1C1C1C','#222');
+
+  // server racks (left side)
+  drawCube(-3, -1, 0, '#333','#252525','#2A2A2A');
+  drawCube(-3, -1, 1, '#C96A3A','#8B4520','#A0541F');
+  drawCube(-3, -1, 2, '#333','#252525','#2A2A2A');
+  drawCube(-3,  0, 0, '#333','#252525','#2A2A2A');
+  drawCube(-3,  0, 1, '#3DC9B0','#1E8570','#22957D');
+  drawCube(-3,  0, 2, '#333','#252525','#2A2A2A');
+
+  // monitor / desk
+  drawCube(0, 0, 0, '#1C1C1C','#141414','#161616');
+  drawCube(0, 0, 1, '#0D0D0D','#090909','#0A0A0A');
+  drawCube(-1,0, 0, '#222','#1A1A1A','#1C1C1C');
+  drawCube(1, 0, 0, '#222','#1A1A1A','#1C1C1C');
+
+  // character (simple box bot)
+  drawCube(0, 1, 0, '#C96A3A','#8B4520','#A0541F');
+  drawCube(0, 1, 1, '#EDEDED','#AAAAAA','#CCCCCC');
+
+  // floating orb accent
+  drawCube(2, -1, 1, '#3DC9B0','#22957D','#1E8570');
+  drawCube(2, -1, 2, '#55DBC3','#35BEA9','#3DC9B0');
+
+})();
+
+/* ── sprite (pixel walker) ─────────── */
+(function drawSprite() {
+  const c = document.getElementById('spriteCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  const S = 2;
+  const frames = [
+    // frame 0
+    (ctx) => {
+      ctx.fillStyle = '#C96A3A';
+      ctx.fillRect(6,0,4,4); // head
+      ctx.fillStyle = '#EDEDED';
+      ctx.fillRect(5,4,6,5); // body
+      ctx.fillStyle = '#C96A3A';
+      ctx.fillRect(4,9,3,5); // left leg
+      ctx.fillRect(9,9,3,5); // right leg
+      ctx.fillRect(3,4,2,4); // left arm
+      ctx.fillRect(11,4,2,4);// right arm
+    },
+    // frame 1
+    (ctx) => {
+      ctx.fillStyle = '#C96A3A';
+      ctx.fillRect(6,1,4,4);
+      ctx.fillStyle = '#EDEDED';
+      ctx.fillRect(5,5,6,5);
+      ctx.fillStyle = '#C96A3A';
+      ctx.fillRect(4,10,3,4);
+      ctx.fillRect(9,10,3,4);
+      ctx.fillRect(3,5,2,4);
+      ctx.fillRect(11,5,2,4);
+    }
+  ];
+  let f = 0;
+  function draw() {
+    ctx.clearRect(0,0,16,16);
+    frames[f](ctx);
+    f = (f+1)%2;
+  }
+  draw();
+  setInterval(draw, 300);
+})();
+
+/* ── loader text cycle ───────────── */
+(function loaderCycle() {
+  const msgs = ['initializing...', 'loading tokens...', 'parsing assets...', 'compiling...', 'READY.'];
+  let i = 0;
+  const el = document.getElementById('loaderText');
+  const bar = document.getElementById('loaderBarFill');
+  function next() {
+    if (!el) return;
+    el.textContent = msgs[i];
+    bar.style.width = ((i+1)/(msgs.length))*100+'%';
+    i = (i+1)%msgs.length;
+    setTimeout(next, i===0?800:600);
+  }
+  setTimeout(next, 400);
+})();
+
+/* ── reveal on scroll ────────────── */
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => io.observe(el));
+
+/* ── dashboard nav active ─────────── */
+function setActive(el) {
+  document.querySelectorAll('.dash-nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ── keyboard: Escape closes modal ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('modal').classList.remove('open');
+});
+</script>
+</body>
+</html>

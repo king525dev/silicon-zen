@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silicon Zen | Design System</title>
+    <style>
+        /* 1. DESIGN TOKENS */
+        :root {
+            --obsidian: #0D0D0D;
+            --parchment: #F4F4F1;
+            --teal: #5BA8A0;
+            --amber: #FFB86C;
+            --wireframe: #333333;
+            --surface-low: #1A1A1A;
+            
+            --grid: 4px;
+            --font-serif: "Newsreader", "Source Serif 4", Georgia, serif;
+            --font-pixel: "Courier New", Courier, monospace; /* Fallback for Chicago12 */
+            
+            --transition-snap: 150ms cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        /* 2. BASE STYLES */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect width="8" height="8" fill="black"/><rect x="1" y="1" width="6" height="6" fill="white"/></svg>'), auto;
+        }
+
+        body {
+            background-color: var(--parchment);
+            color: var(--obsidian);
+            font-family: var(--font-serif);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 100px;
+        }
+
+        /* Dithered Background Pattern */
+        .dither-bg {
+            background-image: radial-gradient(var(--wireframe) 0.5px, transparent 0.5px);
+            background-size: 8px 8px;
+            opacity: 0.1;
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+        }
+
+        /* 3. LAYOUT & TYPOGRAPHY */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: calc(var(--grid) * 10);
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 400;
+            margin-bottom: calc(var(--grid) * 4);
+            letter-spacing: -0.02em;
+        }
+
+        .label {
+            font-family: var(--font-pixel);
+            text-transform: uppercase;
+            font-size: 12px;
+            color: var(--teal);
+            letter-spacing: 1px;
+        }
+
+        /* 4. COMPONENTS */
+        
+        /* The "Sandbox" Card */
+        .card {
+            background: white;
+            border: 1px solid var(--wireframe);
+            margin-bottom: calc(var(--grid) * 8);
+            box-shadow: 0 0 0 0 transparent;
+            transition: var(--transition-snap);
+        }
+
+        .card-header {
+            background: var(--teal);
+            border-bottom: 1px solid var(--wireframe);
+            padding: calc(var(--grid) * 2) calc(var(--grid) * 4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-family: var(--font-pixel);
+            font-size: 14px;
+            color: var(--obsidian);
+        }
+
+        .card-body {
+            padding: calc(var(--grid) * 6);
+        }
+
+        /* Silicon Zen Buttons */
+        .btn {
+            display: inline-block;
+            background: transparent;
+            border: 1px solid var(--wireframe);
+            padding: calc(var(--grid) * 3) calc(var(--grid) * 6);
+            font-family: var(--font-pixel);
+            text-decoration: none;
+            color: var(--obsidian);
+            position: relative;
+            transition: var(--transition-snap);
+        }
+
+        .btn:hover {
+            background: var(--teal);
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px var(--wireframe);
+        }
+
+        .btn:active {
+            transform: translate(0, 0);
+            box-shadow: 0px 0px 0px var(--wireframe);
+        }
+
+        /* CLI Component */
+        .cli-container {
+            background: var(--obsidian);
+            color: var(--parchment);
+            font-family: var(--font-pixel);
+            padding: calc(var(--grid) * 4);
+            border: 1px solid var(--wireframe);
+            min-height: 200px;
+            position: relative;
+        }
+
+        .cli-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--teal);
+            vertical-align: middle;
+            animation: blink 1s steps(2) infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Floating Nav Dock */
+        .dock {
+            position: fixed;
+            bottom: calc(var(--grid) * 6);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(13, 13, 13, 0.9);
+            border: 1px solid var(--wireframe);
+            padding: calc(var(--grid) * 2);
+            display: flex;
+            gap: calc(var(--grid) * 4);
+            backdrop-filter: blur(4px);
+        }
+
+        .dock-item {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-family: var(--font-pixel);
+            font-size: 12px;
+        }
+
+        .dock-item:hover {
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+
+        /* Flicker-in Animation */
+        .flicker {
+            animation: flicker-in 0.3s steps(3);
+        }
+
+        @keyframes flicker-in {
+            0% { opacity: 0; }
+            33% { opacity: 0.5; }
+            66% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+
+        /* 5. UTILITIES */
+        .mt-4 { margin-top: calc(var(--grid) * 4); }
+        .flex { display: flex; gap: calc(var(--grid) * 4); }
+    </style>
+</head>
+<body>
+    <div class="dither-bg"></div>
+
+    <div class="container flicker">
+        <!-- HERO SECTION -->
+        <header style="margin-bottom: 80px;">
+            <p class="label">v1.0.4 — Build_00</p>
+            <h1>High-Fidelity<br>Nostalgia.</h1>
+            <p style="font-size: 20px; max-width: 600px; margin-bottom: 24px;">
+                Silicon Zen is a design language for the modern craftsman. It treats the pixel as a deliberate unit of construction for the calm internet.
+            </p>
+            <a href="#" class="btn">[ EXPLORE_SYSTEM ]</a>
+        </header>
+
+        <!-- DASHBOARD SECTION -->
+        <div class="flex">
+            <div class="card" style="flex: 2;">
+                <div class="card-header">
+                    <span class="card-title">PROJECT_OS.EXE</span>
+                    <span class="card-title">_ □ x</span>
+                </div>
+                <div class="card-body">
+                    <p class="label" style="margin-bottom: 8px;">Technical Specification</p>
+                    <p>Unlike traditional retro systems, we prioritize negative space and clear hierarchy. Every component follows a strict 4px grid.</p>
+                    <div class="mt-4">
+                        <div style="height: 100px; border: 1px dashed var(--wireframe); display: flex; align-items: flex-end; padding: 10px; gap: 4px;">
+                            <div style="background: var(--teal); width: 20px; height: 40%;"></div>
+                            <div style="background: var(--teal); width: 20px; height: 70%;"></div>
+                            <div style="background: var(--amber); width: 20px; height: 90%;"></div>
+                            <div style="background: var(--teal); width: 20px; height: 60%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="flex: 1;">
+                <div class="card-header">
+                    <span class="card-title">STATS</span>
+                </div>
+                <div class="card-body" style="font-family: var(--font-pixel); font-size: 13px;">
+                    <div>CPU: 42%</div>
+                    <div style="background: var(--wireframe); height: 4px; width: 100%; margin: 8px 0;">
+                        <div style="background: var(--teal); height: 100%; width: 42%;"></div>
+                    </div>
+                    <div>MEM: 128KB</div>
+                    <div style="background: var(--wireframe); height: 4px; width: 100%; margin: 8px 0;">
+                        <div style="background: var(--teal); height: 100%; width: 68%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLI SECTION -->
+        <div class="cli-container mt-4">
+            <div id="cli-output">Initializing Silicon Zen Kernel...<br>Status: OK<br>> </div>
+            <span class="cli-cursor"></span>
+        </div>
+    </div>
+
+    <!-- DOCK NAVIGATION -->
+    <nav class="dock">
+        <a href="#" class="dock-item">HME</a>
+        <a href="#" class="dock-item">SYS</a>
+        <a href="#" class="dock-item" style="background: var(--teal); color: var(--obsidian);">USR</a>
+        <a href="#" class="dock-item">CFG</a>
+    </nav>
+
+    <script>
+        // CLI Simulation Logic
+        const output = document.getElementById('cli-output');
+        const commands = [
+            "fetching_manifest...",
+            "applying_dither_patterns...",
+            "optimizing_whitespace...",
+            "system_ready."
+        ];
+        let i = 0;
+
+        function typeCommand() {
+            if (i < commands.length) {
+                output.innerHTML += `<br>> ${commands[i]}`;
+                i++;
+                setTimeout(typeCommand, 1500);
+            }
+        }
+
+        // Trigger after initial load
+        window.onload = () => {
+            setTimeout(typeCommand, 1000);
+        };
+
+        // Micro-interaction: Hard flicker on button click
+        document.querySelector('.btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.style.backgroundColor = 'var(--teal)';
+            setTimeout(() => {
+                document.body.style.backgroundColor = 'var(--parchment)';
+            }, 50);
+        });
+    </script>
+</body>
+</html>

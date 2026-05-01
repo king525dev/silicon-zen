@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Pragma · Clarity through Constraint</title>
+    <!-- Google Fonts: modern (Inter), pixel accent (Silkscreen) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ---------- DESIGN TOKENS (LIGHT MODE - default) ---------- */
+        :root {
+            --pragma-primary: #1A1C1E;
+            --pragma-bg: #F8F9FA;
+            --pragma-surface: #FFFFFF;
+            --pragma-border: #E5E7EB;
+            --pragma-accent: #0066CC;
+            --pragma-accent-hover: #0052A3;
+            --pragma-pixel: #FF3366;
+            --pragma-success: #159B6D;
+
+            /* spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+
+            /* typography */
+            --font-modern: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'SF Mono', 'JetBrains Mono', 'Berkeley Mono', monospace;
+            --font-pixel: 'Silkscreen', monospace;
+
+            /* border / radius */
+            --radius-sm: 0.25rem;
+            --radius-md: 0.5rem;
+            --border-standard: 1px solid var(--pragma-border);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+
+            --transition-fast: 0.15s ease-out;
+            --transition-base: 0.2s ease-out;
+            --ease-pixel: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* DARK MODE OVERRIDES */
+        .dark {
+            --pragma-primary: #EDEDED;
+            --pragma-bg: #121316;
+            --pragma-surface: #1C1E22;
+            --pragma-border: #2C2E33;
+            --pragma-accent: #4D9EFF;
+            --pragma-accent-hover: #3385FF;
+            --pragma-pixel: #FF6699;
+            --pragma-success: #2CC48A;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background-color: var(--pragma-bg);
+            color: var(--pragma-primary);
+            font-family: var(--font-modern);
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: background-color var(--transition-base), color var(--transition-base);
+            scroll-behavior: smooth;
+        }
+
+        /* 4px grid utility */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+
+        section {
+            margin-bottom: var(--space-16);
+        }
+
+        /* typography */
+        h1, h2, h3 {
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            font-family: var(--font-modern);
+            margin-bottom: var(--space-4);
+        }
+
+        .pixel-headline {
+            font-family: var(--font-pixel);
+            font-size: 2rem;
+            letter-spacing: 2px;
+            color: var(--pragma-accent);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin-bottom: var(--space-4);
+            border-left: 4px solid var(--pragma-accent);
+            padding-left: var(--space-3);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin-bottom: var(--space-2);
+        }
+
+        .mono-meta {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--pragma-primary);
+            opacity: 0.7;
+        }
+
+        /* cards */
+        .card {
+            background: var(--pragma-surface);
+            border: var(--border-standard);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            transition: transform var(--transition-fast), box-shadow var(--transition-base);
+            box-shadow: var(--shadow-md);
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* pixel corner accent (fold) */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 16px;
+            height: 16px;
+            background: var(--pragma-accent);
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            border-radius: 0 0 0 var(--radius-sm);
+        }
+
+        /* buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            font-family: var(--font-modern);
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--pragma-accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--pragma-accent-hover);
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            border: var(--border-standard);
+            background: var(--pragma-surface);
+            color: var(--pragma-primary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--pragma-accent);
+            transform: scale(0.98);
+        }
+
+        .btn-pixel {
+            background: var(--pragma-pixel);
+            font-family: var(--font-mono);
+            font-weight: bold;
+            color: var(--pragma-primary);
+            padding: var(--space-2) var(--space-6);
+            text-transform: uppercase;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+        }
+
+        .btn-pixel:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        /* inputs */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+        }
+
+        label {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, textarea {
+            background: var(--pragma-bg);
+            border: var(--border-standard);
+            padding: var(--space-3);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            color: var(--pragma-primary);
+            transition: outline var(--transition-fast);
+        }
+
+        input:focus, textarea:focus {
+            outline: 4px solid var(--pragma-accent);
+            border-color: transparent;
+        }
+
+        /* custom checkbox pixel style */
+        .checkbox-pixel {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            cursor: pointer;
+        }
+        .checkbox-pixel input {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--pragma-primary);
+            background: var(--pragma-surface);
+            border-radius: 2px;
+            display: inline-block;
+            position: relative;
+        }
+        .checkbox-pixel input:checked {
+            background: var(--pragma-accent);
+            border-color: var(--pragma-accent);
+            box-shadow: inset 0 0 0 2px var(--pragma-surface);
+        }
+
+        /* pixel grid & icons canvas */
+        .icon-canvas {
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: pixelated;
+            width: 32px;
+            height: 32px;
+            display: block;
+        }
+
+        /* navigation bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-4) 0;
+            border-bottom: 4px solid var(--pragma-accent);
+            margin-bottom: var(--space-8);
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-family: var(--font-pixel);
+            font-size: 1.8rem;
+            color: var(--pragma-primary);
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: var(--space-4);
+            align-items: center;
+        }
+
+        /* dashboard table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+        .data-table th, .data-table td {
+            border-bottom: var(--border-standard);
+            padding: var(--space-3);
+            text-align: left;
+        }
+        .data-table th {
+            background: var(--pragma-surface);
+            font-weight: 600;
+        }
+
+        /* cli terminal */
+        .terminal {
+            background: #0B0C10;
+            color: #CCD6F0;
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            font-family: var(--font-mono);
+            border-left: 4px solid var(--pragma-accent);
+            box-shadow: var(--shadow-md);
+        }
+        .terminal-line {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+        .prompt {
+            color: var(--pragma-accent);
+        }
+        .blink {
+            background-color: var(--pragma-accent);
+            width: 10px;
+            display: inline-block;
+            animation: blink-animation 1s step-end infinite;
+        }
+        @keyframes blink-animation {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* loading pixel bar */
+        .load-bar {
+            height: 8px;
+            background: var(--pragma-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: var(--space-4) 0;
+        }
+        .load-fill {
+            width: 0%;
+            height: 100%;
+            background: repeating-linear-gradient(90deg, var(--pragma-accent), var(--pragma-accent) 8px, var(--pragma-pixel) 8px, var(--pragma-pixel) 16px);
+            transition: width 0.3s ease-out;
+        }
+
+        /* modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: var(--pragma-surface);
+            border: 4px solid var(--pragma-accent);
+            border-radius: var(--radius-md);
+            max-width: 400px;
+            width: 90%;
+            padding: var(--space-6);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: var(--space-3);
+            right: var(--space-3);
+            font-family: var(--font-mono);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+        }
+
+        /* grid layout flex */
+        .grid-2, .grid-3 {
+            display: grid;
+            gap: var(--space-6);
+        }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+
+        @media (max-width: 720px) {
+            .navbar { flex-direction: column; gap: var(--space-3); align-items: start; }
+            .container { padding: 0 var(--space-4); }
+        }
+
+        footer {
+            border-top: var(--border-standard);
+            padding: var(--space-8) 0;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            margin-top: var(--space-12);
+        }
+        hr {
+            border-color: var(--pragma-border);
+            margin: var(--space-6) 0;
+        }
+        .pixel-badge {
+            background: var(--pragma-pixel);
+            color: #1A1C1E;
+            font-family: var(--font-pixel);
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- navigation with pixel icons (canvas) -->
+    <div class="navbar">
+        <div class="logo">PRAGMA</div>
+        <div class="nav-icons">
+            <canvas id="icon-home" class="icon-canvas" width="16" height="16" style="width:32px;height:32px;"></canvas>
+            <canvas id="icon-dashboard" class="icon-canvas" width="16" height="16" style="width:32px;height:32px;"></canvas>
+            <canvas id="icon-terminal" class="icon-canvas" width="16" height="16" style="width:32px;height:32px;"></canvas>
+            <button id="darkmode-toggle" class="btn btn-secondary" style="margin-left: 8px;">🌓 Dark/Light</button>
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <section>
+        <h1>Clarity through <span class="pixel-headline">Constraint</span></h1>
+        <p style="font-size: 1.2rem; max-width: 640px;">Pragma design system — retro pixel rigor meets modern minimalism. Every pixel, space, and interaction has intent.</p>
+        <div style="margin-top: var(--space-4); display: flex; gap: 16px; flex-wrap: wrap;">
+            <button class="btn btn-primary" id="showModalBtn">📐 Launch Modal</button>
+            <button class="btn btn-pixel" id="simulateLoadBtn">⏳ Simulate Pixel Load</button>
+        </div>
+    </section>
+
+    <!-- color & typography demo + card grid -->
+    <section>
+        <h2>Visual System · Cards & Colors</h2>
+        <div class="grid-3">
+            <div class="card">
+                <h3>Primary Surface</h3>
+                <p class="mono-meta">Modern body text & neutral hierarchy</p>
+                <div class="pixel-badge" style="display: inline-block;">Pixel accent</div>
+                <p style="margin-top:12px">Inter 16px / 1.5 leading. Crisp and calm.</p>
+            </div>
+            <div class="card">
+                <h3>Monospace Data</h3>
+                <div class="mono-meta">total_sessions: 12,403</div>
+                <div class="mono-meta">active_users: ▲ 14%</div>
+                <button class="btn btn-primary" style="margin-top: 12px;">View metrics</button>
+            </div>
+            <div class="card">
+                <h3>Pixel Art Icon + Chunky Border</h3>
+                <canvas id="icon-sample" width="32" height="32" style="image-rendering: pixelated; width: 48px; height: 48px; margin-bottom: 8px;"></canvas>
+                <p>16x16 system icons. No anti-aliasing.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard-like table and KPI cards -->
+    <section>
+        <h2>📊 Dashboard · Chunky Table & KPI</h2>
+        <div class="grid-2">
+            <div class="card">
+                <span class="mono-meta">📈 TOTAL REQUESTS</span>
+                <div style="font-family: var(--font-mono); font-size: 2rem;">84,621</div>
+                <div class="mono-meta" style="color: var(--pragma-success)">+12% vs last week</div>
+            </div>
+            <div class="card">
+                <span class="mono-meta">⚡ ACTIVE SESSIONS</span>
+                <div style="font-family: var(--font-mono); font-size: 2rem;">1,242</div>
+                <div class="load-bar" style="margin-top: 12px;"><div class="load-fill" style="width: 74%;"></div></div>
+            </div>
+        </div>
+        <div class="card" style="margin-top: 24px; overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                <tr><th>Mission</th><th>Status</th><th>Bytes</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>sapphire14.uf2</td><td>✓ loaded</td><td>8448</td></tr>
+                    <tr><td>akane20x10.icn</td><td>✓ active</td><td>4096</td></tr>
+                    <tr><td>uxn.rom</td><td>pending</td><td>─</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- forms + custom pixel checkbox -->
+    <section>
+        <h2>⚙️ Inputs & Controls</h2>
+        <div class="grid-2">
+            <div class="card">
+                <div class="input-group">
+                    <label>username (monospace)</label>
+                    <input type="text" placeholder="pragma_user" value="100r_enthusiast">
+                </div>
+                <div class="checkbox-pixel">
+                    <input type="checkbox" id="pixelCheck" checked> <label for="pixelCheck">Enable retro UI mode</label>
+                </div>
+                <div style="margin-top: 16px;">
+                    <button class="btn btn-secondary">Cancel</button>
+                    <button class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="mono-meta">Keybind example</div>
+                <kbd style="background: var(--pragma-surface); border:1px solid var(--pragma-border); padding:4px 8px;">⌘ + ←</kbd> <kbd>⌘ + →</kbd>
+                <p style="margin-top: 12px;">Pixel-perfect focus ring (4px accent)</p>
+                <button class="btn btn-pixel">PIXEL ACTION</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CLI Terminal Section -->
+    <section>
+        <h2>🖥️ Terminal · Low-level Craft</h2>
+        <div class="terminal">
+            <div class="terminal-line"><span class="prompt">$</span> <span>ls -la /roms/</span></div>
+            <div class="terminal-line"><span class="prompt">></span> <span>drwxr-xr-x   pragma  128  Apr 30  uxn.rom</span></div>
+            <div class="terminal-line"><span class="prompt">></span> <span>-rw-r--r--   pragma  4096 Apr 30  orca.rom</span></div>
+            <div class="terminal-line"><span class="prompt">></span> <span>-rw-r--r--   pragma  1019 Apr 30  loader.tal</span></div>
+            <div class="terminal-line" style="margin-top: 12px;"><span class="prompt">❯</span> <span>build complete. <span class="blink">_</span></span></div>
+        </div>
+        <p class="mono-meta" style="margin-top: 12px;">✧ ASCII borders | prompt accent | monospace data</p>
+    </section>
+
+    <!-- Loading + Motion demo -->
+    <section>
+        <h2>🎮 Motion & Micro-interactions</h2>
+        <div class="grid-2">
+            <div class="card">
+                <div>Pixel March Loader</div>
+                <div class="load-bar" id="dynamicLoadBar"><div class="load-fill" id="loadFillAnim" style="width: 0%;"></div></div>
+                <div id="loadStatus" class="mono-meta">Ready</div>
+                <button id="startLoadBtn" class="btn btn-primary" style="margin-top: 12px;">▶ Start loading</button>
+            </div>
+            <div class="card">
+                <div>Hover pixel button (scale + snap)</div>
+                <button class="btn btn-pixel" id="demoPixelBtn">⟳ RETRO CLICK</button>
+                <p class="mono-meta" style="margin-top: 10px">Active: scale(0.98) / 0.05s instant snap</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<footer>
+    <div class="container">PRAGMA — Clarity through Constraint · 4px rhythm · pixel icons · dark/light ready</div>
+</footer>
+
+<!-- Modal -->
+<div id="pragmaModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" id="closeModalBtn">✕</button>
+        <h3 style="font-family: var(--font-pixel);">Pixel Perfect</h3>
+        <p>This modal features 4px accent border, pixel close icon and smooth overlay transition.</p>
+        <button class="btn btn-primary" id="modalConfirmBtn">Close</button>
+    </div>
+</div>
+
+<script>
+    // ---- Pixel icon drawing library (dynamic theming) ----
+    const iconDefs = {
+        home: (ctx, accent, primary) => {
+            ctx.fillStyle = accent;
+            ctx.fillRect(4, 6, 8, 8);
+            ctx.fillStyle = primary;
+            ctx.fillRect(6, 9, 4, 5);
+            ctx.fillStyle = accent;
+            ctx.fillRect(7, 4, 2, 3);
+        },
+        dashboard: (ctx, accent, primary) => {
+            ctx.fillStyle = accent;
+            ctx.fillRect(2, 2, 5, 5);
+            ctx.fillRect(9, 2, 5, 5);
+            ctx.fillRect(2, 9, 5, 5);
+            ctx.fillRect(9, 9, 5, 5);
+            ctx.fillStyle = primary;
+            ctx.fillRect(3, 3, 3, 3);
+            ctx.fillRect(10,3,3,3);
+        },
+        terminal: (ctx, accent, primary) => {
+            ctx.fillStyle = accent;
+            ctx.fillRect(2, 4, 12, 8);
+            ctx.fillStyle = primary;
+            ctx.fillRect(4, 6, 8, 4);
+            ctx.fillStyle = accent;
+            ctx.fillRect(4, 5, 2, 1);
+        }
+    };
+    function drawIcon(canvasId, type) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const computed = getComputedStyle(document.documentElement);
+        const accent = computed.getPropertyValue('--pragma-accent').trim() || '#0066CC';
+        const primary = computed.getPropertyValue('--pragma-primary').trim() || '#1A1C1E';
+        ctx.clearRect(0, 0, 16, 16);
+        if (iconDefs[type]) iconDefs[type](ctx, accent, primary);
+        else {
+            // fallback star
+            ctx.fillStyle = accent;
+            ctx.fillRect(6, 2, 4, 12);
+            ctx.fillRect(2, 6, 12, 4);
+        }
+    }
+
+    function drawAllIcons() {
+        drawIcon('icon-home', 'home');
+        drawIcon('icon-dashboard', 'dashboard');
+        drawIcon('icon-terminal', 'terminal');
+        // sample icon for card
+        const sampleCanvas = document.getElementById('icon-sample');
+        if (sampleCanvas) {
+            const ctx = sampleCanvas.getContext('2d');
+            sampleCanvas.width = 32; sampleCanvas.height = 32;
+            const computed = getComputedStyle(document.documentElement);
+            const accent = computed.getPropertyValue('--pragma-accent').trim();
+            const pixelColor = computed.getPropertyValue('--pragma-pixel').trim();
+            ctx.clearRect(0,0,32,32);
+            ctx.fillStyle = accent;
+            for(let i=0;i<4;i++) for(let j=0;j<4;j++) ctx.fillRect(4+i*6, 4+j*6, 4,4);
+            ctx.fillStyle = pixelColor;
+            ctx.fillRect(14,14,4,4);
+        }
+    }
+
+    // ---- DARK MODE ----
+    const htmlEl = document.documentElement;
+    const toggleBtn = document.getElementById('darkmode-toggle');
+    let isDark = false;
+    function setTheme(dark) {
+        if (dark) htmlEl.classList.add('dark');
+        else htmlEl.classList.remove('dark');
+        drawAllIcons();
+        // re-trigger canvas icons redraw for all
+    }
+    toggleBtn.addEventListener('click', () => {
+        isDark = !isDark;
+        setTheme(isDark);
+    });
+    // init icons
+    drawAllIcons();
+    
+    // modal logic
+    const modal = document.getElementById('pragmaModal');
+    const showModalBtn = document.getElementById('showModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalConfirm = document.getElementById('modalConfirmBtn');
+    function openModal() { modal.style.display = 'flex'; }
+    function closeModal() { modal.style.display = 'none'; }
+    showModalBtn?.addEventListener('click', openModal);
+    closeModalBtn?.addEventListener('click', closeModal);
+    modalConfirm?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+    
+    // Loading simulation with Pixel March
+    const startLoad = document.getElementById('startLoadBtn');
+    const loadFill = document.getElementById('loadFillAnim');
+    const loadStatus = document.getElementById('loadStatus');
+    let loadingInterval;
+    function simulateLoading() {
+        if (loadingInterval) clearInterval(loadingInterval);
+        let progress = 0;
+        loadFill.style.width = '0%';
+        loadStatus.innerText = 'loading pixels... █▒▒';
+        loadingInterval = setInterval(() => {
+            progress += Math.random() * 15 + 5;
+            if (progress >= 100) {
+                progress = 100;
+                loadFill.style.width = '100%';
+                loadStatus.innerText = '✓ Complete. Pixel march done.';
+                clearInterval(loadingInterval);
+                loadingInterval = null;
+            } else {
+                loadFill.style.width = progress + '%';
+                loadStatus.innerText = `loading ${Math.floor(progress)}% █`.repeat(Math.floor(progress/10)) + '▒'.repeat(10-Math.floor(progress/10));
+            }
+        }, 110);
+    }
+    startLoad?.addEventListener('click', simulateLoading);
+    
+    const simulateLoadBtn = document.getElementById('simulateLoadBtn');
+    simulateLoadBtn?.addEventListener('click', () => {
+        if(loadingInterval) clearInterval(loadingInterval);
+        simulateLoading();
+    });
+    
+    // pixel button micro-interaction active effect (CSS already)
+    const pixelBtns = document.querySelectorAll('.btn-pixel');
+    pixelBtns.forEach(btn => {
+        btn.addEventListener('mousedown', () => { btn.style.transform = 'translateY(2px)'; });
+        btn.addEventListener('mouseup', () => { btn.style.transform = ''; });
+        btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+    });
+    
+    // keyboard shortcut demo: just for console chill
+    console.log("Pragma system ready — 4px discipline, pixel icons, calm UI");
+</script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel Modernism Demo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
+
+<style>
+/* =========================
+   DESIGN TOKENS
+========================= */
+:root {
+  --bg: #0F1115;
+  --surface: #2A2D34;
+  --border: #B8B5B0;
+  --text: #E8E6E3;
+
+  --primary: #8AB4F8;
+  --accent-green: #6EE7B7;
+  --accent-amber: #F59E0B;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 32px;
+
+  --radius: 4px;
+
+  --anim-fast: 120ms;
+  --anim-base: 200ms;
+}
+
+/* =========================
+   GLOBAL
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar {
+  width: 220px;
+  background: #14161B;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3);
+}
+
+.sidebar h1 {
+  font-family: "JetBrains Mono";
+  font-size: 14px;
+  margin-bottom: var(--space-4);
+  opacity: 0.7;
+}
+
+.nav-item {
+  padding: var(--space-2);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all var(--anim-fast);
+}
+
+.nav-item:hover {
+  color: var(--primary);
+  transform: translateX(2px);
+}
+
+/* =========================
+   MAIN
+========================= */
+.main {
+  flex: 1;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* =========================
+   HEADER
+========================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h2 {
+  font-weight: 500;
+}
+
+/* =========================
+   GRID
+========================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--space-3);
+  transition: all var(--anim-base);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+
+.card h3 {
+  font-size: 14px;
+  margin-bottom: var(--space-2);
+  font-family: "JetBrains Mono";
+  opacity: 0.8;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.button {
+  border: 2px solid var(--border);
+  padding: 6px 12px;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+  transition: all var(--anim-fast);
+  font-family: "JetBrains Mono";
+}
+
+.button:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+/* =========================
+   INPUT
+========================= */
+input {
+  width: 100%;
+  padding: 8px;
+  background: #111;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: "JetBrains Mono";
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* =========================
+   TERMINAL
+========================= */
+.terminal {
+  background: black;
+  border: 1px solid var(--border);
+  padding: var(--space-3);
+  font-family: "JetBrains Mono";
+  font-size: 13px;
+  height: 180px;
+  overflow-y: auto;
+}
+
+.line {
+  margin-bottom: 4px;
+}
+
+.ok { color: var(--accent-green); }
+.warn { color: var(--accent-amber); }
+
+/* =========================
+   LOADING PIXEL
+========================= */
+.loader {
+  display: flex;
+  gap: 4px;
+}
+
+.pixel {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  animation: blink 1s infinite;
+}
+
+.pixel:nth-child(2) { animation-delay: 0.2s; }
+.pixel:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%,100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+/* =========================
+   FOOTER
+========================= */
+.footer {
+  font-family: "JetBrains Mono";
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h1>[ sandbox ]</h1>
+
+  <div class="nav-item">▣ Dashboard</div>
+  <div class="nav-item">▣ Projects</div>
+  <div class="nav-item">▣ Terminal</div>
+  <div class="nav-item">▣ Notes</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h2>Overview</h2>
+    <button class="button" onclick="addLog()">Run</button>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid">
+
+    <div class="card">
+      <h3>To-do</h3>
+      <p>▢ Build UI system</p>
+      <p>▢ Refine spacing</p>
+      <p>▣ Ship product</p>
+    </div>
+
+    <div class="card">
+      <h3>Quick Notes</h3>
+      <input placeholder="write something..." />
+    </div>
+
+    <div class="card">
+      <h3>Status</h3>
+      <div class="loader">
+        <div class="pixel"></div>
+        <div class="pixel"></div>
+        <div class="pixel"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TERMINAL -->
+  <div class="terminal" id="terminal">
+    <div class="line">> initializing sandbox...</div>
+    <div class="line ok">[ OK ] modules loaded</div>
+    <div class="line ok">[ OK ] ui ready</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    [user@sandbox ~]$
+  </div>
+
+</div>
+
+<script>
+function addLog() {
+  const terminal = document.getElementById("terminal");
+
+  const line = document.createElement("div");
+  line.className = "line warn";
+  line.textContent = "[ .. ] running task...";
+
+  terminal.appendChild(line);
+  terminal.scrollTop = terminal.scrollHeight;
+
+  setTimeout(() => {
+    const done = document.createElement("div");
+    done.className = "line ok";
+    done.textContent = "[ OK ] task completed";
+
+    terminal.appendChild(done);
+    terminal.scrollTop = terminal.scrollHeight;
+  }, 1000);
+}
+</script>
+
+</body>
+</html>
