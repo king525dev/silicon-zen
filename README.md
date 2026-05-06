@@ -675,7 +675,7 @@ Designed and built Silicon Zen — a design language for the calm internet.
 - Demo: [`demo.html`](./demo.html)
 - Design philosophy: [`philosophy.html`](./philosophy.html)
 - Documentation: [`sz-docs.html`](./sz-docs.html)
-- Library: [`library/sz.css`](./library/sz.css) · [`library/sz.js`](./library/sz.js)
+- Library: [`library/sz.css`](https://king525dev.github.io/silicon-zen/library/sz.css) · [`library/sz.js`](https://king525dev.github.io/silicon-zen/library/sz.js)
 - View this page as a [website](https://king525dev.github.io/silicon-zen/)
 
 ---
