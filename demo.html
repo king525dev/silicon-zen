@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en" data-sz-theme="obsidian" data-nav="dock">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>king525dev — Terminal Craftsman</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="library/sz.css">
+
+<style>
+/* ── Site-specific overrides on top of sz.css ── */
+
+html { scroll-behavior: smooth; }
+
+body.sz-body {
+  padding-bottom: 100px; /* space for dock */
+  overflow-x: hidden;
+}
+body.sz-body.nav-bar { padding-bottom: 0; }
+
+/* ── Sections ─────────────────────────────── */
+.site-section {
+  padding: calc(var(--sz-grid) * 24) 0;
+  border-top: 1px solid var(--sz-border-dim);
+}
+.site-section:first-of-type { border-top: none; }
+
+/* ── Hero ─────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px calc(var(--sz-grid) * 10) 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-eyebrow { margin-bottom: calc(var(--sz-grid) * 5); }
+.hero-title {
+  font-family: var(--sz-font-pixel);
+  font-size: clamp(16px, 3.5vw, 36px);
+  color: var(--sz-teal);
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  margin-bottom: calc(var(--sz-grid) * 6);
+}
+.hero-sub {
+  font-family: var(--sz-font-serif);
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: var(--sz-text-dim);
+  max-width: 52ch;
+  margin: 0 auto calc(var(--sz-grid) * 8);
+  line-height: 1.7;
+}
+.hero-subtitle-typed {
+  font-family: var(--sz-font-pixel);
+  font-size: clamp(10px, 1.5vw, 14px);
+  color: var(--sz-teal);
+  letter-spacing: 0.08em;
+  min-height: 20px;
+  margin-bottom: calc(var(--sz-grid) * 8);
+}
+.hero-cursor-blink {
+  display: inline-block; width: 10px; height: 1.1em;
+  background: var(--sz-teal); vertical-align: middle;
+  animation: sz-blink 0.7s steps(1) infinite;
+}
+.hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: calc(var(--sz-grid) * 10); }
+.hero-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.hero-scroll-hint {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  font-family: var(--sz-font-mono); font-size: 10px; color: var(--sz-text-dim);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  animation: float 2s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-6px)} }
+
+/* ── Canvas hero ───────────────────────────── */
+.canvas-wrap {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+}
+.hero-inner { position: relative; z-index: 1; }
+
+/* ── Stats bar ─────────────────────────────── */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  border-top: 1px solid var(--sz-border-dim);
+  border-bottom: 1px solid var(--sz-border-dim);
+}
+.stat-cell {
+  padding: calc(var(--sz-grid) * 6) calc(var(--sz-grid) * 8);
+  border-right: 1px solid var(--sz-border-dim);
+  transition: background var(--sz-snap);
+}
+.stat-cell:last-child { border-right: none; }
+.stat-cell:hover { background: var(--sz-surface-alt); }
+.stat-number {
+  font-family: var(--sz-font-pixel);
+  font-size: 20px; color: var(--sz-teal);
+  letter-spacing: 0.04em; margin-bottom: 8px;
+}
+.stat-desc {
+  font-family: var(--sz-font-mono);
+  font-size: 10px; color: var(--sz-text-dim);
+  text-transform: uppercase; letter-spacing: 1.2px;
+}
+
+/* ── Work grid ─────────────────────────────── */
+.work-filter {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: calc(var(--sz-grid) * 8);
+}
+.work-item { display: none; }
+.work-item.visible { display: block; }
+
+/* ── Skill bars ────────────────────────────── */
+.skill-row {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: calc(var(--sz-grid) * 5);
+}
+.skill-name {
+  font-family: var(--sz-font-mono); font-size: 11px;
+  color: var(--sz-text-dim); min-width: 120px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.skill-bar-wrap { flex: 1; }
+.skill-pct {
+  font-family: var(--sz-font-mono); font-size: 10px;
+  color: var(--sz-teal); min-width: 36px; text-align: right;
+}
+
+/* ── Timeline ──────────────────────────────── */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before {
+  content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+  width: 1px; background: var(--sz-border-dim);
+}
+.tl-item { position: relative; padding-bottom: calc(var(--sz-grid) * 10); }
+.tl-item::before {
+  content: '■'; position: absolute; left: -34px; top: 2px;
+  font-size: 8px; color: var(--sz-teal); font-family: var(--sz-font-pixel);
+}
+.tl-date {
+  font-family: var(--sz-font-mono); font-size: 10px;
+  color: var(--sz-teal); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;
+}
+.tl-title {
+  font-family: var(--sz-font-serif); font-size: 1.15rem;
+  font-weight: 400; margin-bottom: 6px;
+}
+.tl-body { font-size: 14px; color: var(--sz-text-dim); max-width: 54ch; }
+
+/* ── Contact form layout ───────────────────── */
+.contact-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--sz-grid) * 8);
+}
+@media(max-width:720px) { .contact-grid { grid-template-columns: 1fr; } }
+
+/* ── Theme/nav controls (always visible) ───── */
+.site-controls {
+  position: fixed; top: 16px; right: 16px; z-index: 500;
+  display: flex; align-items: center; gap: 8px;
+}
+.ctrl-btn {
+  font-family: var(--sz-font-mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 1px;
+  border: 1px solid var(--sz-border-dim);
+  background: var(--sz-surface); color: var(--sz-text-dim);
+  padding: 5px 10px; cursor: pointer; transition: var(--sz-snap);
+}
+.ctrl-btn:hover { border-color: var(--sz-teal); color: var(--sz-teal); }
+.ctrl-btn.on { background: var(--sz-teal); color: #0D0D0D; border-color: var(--sz-teal); }
+.ctrl-sep { width: 1px; height: 18px; background: var(--sz-border-dim); opacity: 0.5; }
+
+/* ── Glitch hero text ──────────────────────── */
+.glitch-title {
+  display: inline-block;
+  position: relative;
+  color: var(--sz-teal);
+  font-family: var(--sz-font-pixel);
+}
+.glitch-title::before, .glitch-title::after {
+  content: attr(data-text); position: absolute; top: 0; left: 0;
+  font-family: var(--sz-font-pixel);
+}
+.glitch-title::before { color: var(--sz-amber); animation: sz-glitch-before 3s steps(1) infinite; clip-path: polygon(0 0,100% 0,100% 45%,0 45%); }
+.glitch-title::after  { color: var(--sz-red);   animation: sz-glitch-after  3s steps(1) infinite; clip-path: polygon(0 55%,100% 55%,100% 100%,0 100%); }
+
+/* ── Testimonial cards ─────────────────────── */
+.testimonial-quote {
+  font-family: var(--sz-font-serif); font-size: 1rem;
+  color: var(--sz-text-dim); font-style: italic;
+  line-height: 1.75; margin-bottom: 16px;
+}
+.testimonial-author {
+  font-family: var(--sz-font-mono); font-size: 11px;
+  color: var(--sz-teal); text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* ── CRT effect on CLI section ─────────────── */
+.cli-section-bg {
+  background: var(--sz-bg-alt);
+  background-image: radial-gradient(var(--sz-dither-dot) 0.6px, transparent 0.6px);
+  background-size: 8px 8px;
+}
+
+/* ── Dashboard table section ───────────────── */
+.dashboard-panel {
+  display: grid; grid-template-columns: 200px 1fr; gap: 0;
+  border: 1px solid var(--sz-border); height: 420px; overflow: hidden;
+}
+.dashboard-sidebar {
+  border-right: 1px solid var(--sz-border);
+  background: var(--sz-surface);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.ds-logo {
+  padding: 16px; border-bottom: 1px solid var(--sz-border-dim);
+  font-family: var(--sz-font-pixel); font-size: 9px;
+  color: var(--sz-teal); letter-spacing: 0.06em;
+}
+.ds-nav-group {
+  font-family: var(--sz-font-mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--sz-text-dim); padding: 14px 14px 5px;
+}
+.ds-nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px; font-family: var(--sz-font-mono);
+  font-size: 11px; color: var(--sz-text-dim);
+  cursor: pointer; transition: var(--sz-snap);
+  border-left: 2px solid transparent;
+}
+.ds-nav-item:hover { background: var(--sz-surface-alt); color: var(--sz-text); }
+.ds-nav-item.on { color: var(--sz-teal); border-left-color: var(--sz-teal); background: var(--sz-surface-alt); }
+.dashboard-main { overflow: hidden; display: flex; flex-direction: column; }
+.ds-toolbar {
+  height: 40px; border-bottom: 1px solid var(--sz-border-dim);
+  background: var(--sz-surface); display: flex; align-items: center;
+  padding: 0 20px; gap: 12px; flex-shrink: 0;
+}
+.ds-toolbar-title { font-size: 13px; font-weight: 600; flex: 1; }
+.ds-content { flex: 1; overflow-y: auto; padding: 20px; }
+.ds-stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+.ds-stat {
+  background: var(--sz-surface); border: 1px solid var(--sz-border-dim);
+  padding: 14px;
+}
+.ds-stat-label {
+  font-family: var(--sz-font-mono); font-size: 9px;
+  color: var(--sz-text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 6px;
+}
+.ds-stat-val {
+  font-family: var(--sz-font-mono); font-size: 1.5rem;
+  color: var(--sz-teal);
+}
+
+@media(max-width: 720px) {
+  .dashboard-panel { grid-template-columns: 1fr; height: auto; }
+  .dashboard-sidebar { display: none; }
+  .hero-title { font-size: 16px; }
+  .stats-strip { grid-template-columns: 1fr 1fr; }
+  .stat-cell { border-right: none; border-bottom: 1px solid var(--sz-border-dim); }
+}
+</style>
+</head>
+
+<body class="sz-body sz-dither" id="top">
+
+<!-- ══ SITE CONTROLS (always visible) ══ -->
+<div class="site-controls">
+  <button class="ctrl-btn" id="btnParch" data-sz-theme-set="parchment">Parchment</button>
+  <button class="ctrl-btn on" id="btnObsid" data-sz-theme-set="obsidian">Obsidian</button>
+  <div class="ctrl-sep"></div>
+  <button class="ctrl-btn on" id="btnDockNav">Dock</button>
+  <button class="ctrl-btn" id="btnBarNav">Bar</button>
+</div>
+
+<!-- ══ TOP NAV ════════════════════════════════════ -->
+<nav class="sz-topnav" id="topNav" style="display:none;">
+  <a class="sz-topnav__logo" href="#top"><span>king</span>525dev</a>
+  <ul class="sz-topnav__links">
+    <li><a href="#top"        class="is-active">Home</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#timeline">Journey</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#cli-section">Terminal</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="sz-topnav__actions">
+    <button class="sz-btn sz-btn--solid sz-btn--sm" data-sz-modal-open="#hire-modal">[ Hire Me ]</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
+<section class="hero sz-reveal" id="top">
+  <!-- Star field canvas behind everything -->
+  <div class="canvas-wrap">
+    <canvas id="heroStars" style="width:100%;height:100%;image-rendering:pixelated;"></canvas>
+  </div>
+
+  <div class="hero-inner">
+    <!-- Eyebrow label -->
+    <span class="sz-label hero-eyebrow">king525dev · Terminal Craftsman · v2.0</span>
+
+    <!-- Glitch pixel hero title -->
+    <div class="hero-title">
+      <span class="glitch-title" data-text="SILICON ZEN">SILICON ZEN</span>
+    </div>
+
+    <!-- Typewriter subtitle -->
+    <div class="hero-subtitle-typed">
+      <span data-sz-typewriter
+            data-sz-tw-words="DEVELOPER.,DESIGNER.,PIXEL ARTIST.,OPEN SOURCE.,CRAFTSMAN."
+            data-sz-tw-speed="90"></span><span class="hero-cursor-blink"></span>
+    </div>
+
+    <!-- Lead paragraph -->
+    <p class="hero-sub sz-reveal sz-reveal--delay-1">
+      I build tools that feel like they were made by hand. Pixel-precise,
+      retro-inspired, and ruthlessly minimal. Currently shipping Silicon Zen —
+      a design language for the <em>calm internet.</em>
+    </p>
+
+    <!-- CTAs -->
+    <div class="hero-ctas sz-reveal sz-reveal--delay-2">
+      <a href="#work" class="sz-btn sz-btn--solid">[ View Work ]</a>
+      <a href="#contact" class="sz-btn">[ Get in Touch ]</a>
+      <button class="sz-btn sz-btn--pixel" data-sz-modal-open="#hire-modal">[ Hire Me ]</button>
+      <button class="sz-btn sz-btn--ghost" data-sz-flicker=".hero-inner">[ Flicker ]</button>
+    </div>
+
+    <!-- Badges strip -->
+    <div class="hero-badges sz-reveal sz-reveal--delay-3">
+      <span class="sz-badge sz-badge--teal">Available for work</span>
+      <span class="sz-badge sz-badge--outline">Remote</span>
+      <span class="sz-badge sz-badge--pixel">v2.0</span>
+      <span class="sz-badge sz-badge--amber">Open Source</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">scroll ↓</div>
+</section>
+
+<!-- ══ STATS STRIP ════════════════════════════════ -->
+<div class="stats-strip sz-reveal">
+  <div class="stat-cell">
+    <div class="stat-number">47</div>
+    <div class="stat-desc">Projects shipped</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">12k</div>
+    <div class="stat-desc">GitHub stars</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">6yr</div>
+    <div class="stat-desc">In the craft</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">99.8<span style="font-size:12px">%</span></div>
+    <div class="stat-desc">Uptime avg</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     WORK
+══════════════════════════════════════════════ -->
+<div class="sz-container">
+<section class="site-section" id="work">
+  <span class="sz-label">02 — Work</span>
+  <h2 class="sz-h1" style="margin-bottom:8px;">Projects that shipped.</h2>
+  <p class="sz-lead" style="margin-bottom:40px;">
+    A selection of tools, libraries, and experiments.
+    Each one built with the Silicon Zen philosophy — deliberate, constrained, calm.
+  </p>
+
+  <!-- Filter tabs -->
+  <div class="work-filter" data-sz-tabs-scope id="workTabScope">
+    <div class="sz-tabs" style="border-bottom:none;">
+      <button class="sz-tabs__item is-active" data-sz-tab="work-all">All</button>
+      <button class="sz-tabs__item" data-sz-tab="work-tools">Tools</button>
+      <button class="sz-tabs__item" data-sz-tab="work-libs">Libraries</button>
+      <button class="sz-tabs__item" data-sz-tab="work-exp">Experiments</button>
+    </div>
+  </div>
+
+  <!-- All projects (tab panels) -->
+  <div id="work-all" class="sz-tab-panel is-active">
+    <div class="sz-grid-3">
+
+      <div class="sz-card sz-card--hover sz-reveal">
+        <div class="sz-card__header">
+          <span class="sz-card__title">SZ.CSS</span>
+          <span class="sz-card__title">◈</span>
+        </div>
+        <div class="sz-card__body">
+          <div style="margin-bottom:12px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="sz-badge sz-badge--teal">Active</span>
+            <span class="sz-badge sz-badge--outline">Library</span>
+          </div>
+          <p style="font-size:14px;color:var(--sz-text-dim);margin-bottom:16px;">Retro-pixel + modern-minimalist CSS component library. Two themes, zero dependencies, press-start-2p.</p>
+          <div class="sz-stat-bar"><div class="sz-stat-bar__fill" style="width:94%"></div></div>
+          <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);">94% complete</div>
+        </div>
+        <div class="sz-card__footer">
+          <a href="#" class="sz-btn sz-btn--sm sz-btn--solid">View</a>
+          <span class="sz-badge sz-badge--pixel">v1.1</span>
+        </div>
+      </div>
+
+      <div class="sz-card sz-card--window sz-reveal sz-reveal--delay-1">
+        <div class="sz-card__header">
+          <div class="sz-card__dots">
+            <div class="sz-card__dot sz-card__dot--r"></div>
+            <div class="sz-card__dot sz-card__dot--g"></div>
+            <div class="sz-card__dot sz-card__dot--b"></div>
+          </div>
+          <span class="sz-card__title">PIXEL-RAIN</span>
+        </div>
+        <div class="sz-card__body">
+          <div style="margin-bottom:12px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="sz-badge sz-badge--green">Stable</span>
+            <span class="sz-badge sz-badge--outline">Experiment</span>
+          </div>
+          <p style="font-size:14px;color:var(--sz-text-dim);margin-bottom:16px;">Matrix-style teal column drop animation. Canvas-based, Press Start 2P characters. Fully themeable.</p>
+          <div class="sz-stat-bar"><div class="sz-stat-bar__fill" style="width:100%"></div></div>
+          <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);">100% shipped</div>
+        </div>
+        <div class="sz-card__footer">
+          <a href="#" class="sz-btn sz-btn--sm">Demo</a>
+          <a href="#" class="sz-btn sz-btn--sm sz-btn--ghost">Source</a>
+        </div>
+      </div>
+
+      <div class="sz-card sz-card--hover sz-reveal sz-reveal--delay-2">
+        <div class="sz-card__header" style="background:var(--sz-amber);">
+          <span class="sz-card__title">UXN-TOOLS</span>
+          <span class="sz-card__title">⚠</span>
+        </div>
+        <div class="sz-card__body">
+          <div style="margin-bottom:12px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="sz-badge sz-badge--amber">Beta</span>
+            <span class="sz-badge sz-badge--outline">Tool</span>
+          </div>
+          <p style="font-size:14px;color:var(--sz-text-dim);margin-bottom:16px;">UXN/Varvara assembler toolchain wrapper. Streamlines the build → ROM pipeline for Uxntal projects.</p>
+          <div class="sz-stat-bar"><div class="sz-stat-bar__fill sz-stat-bar__fill--amber" style="width:68%"></div></div>
+          <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);">68% complete</div>
+        </div>
+        <div class="sz-card__footer">
+          <a href="#" class="sz-btn sz-btn--sm sz-btn--amber">Preview</a>
+        </div>
+      </div>
+
+      <div class="sz-card sz-reveal">
+        <div class="sz-card__header">
+          <span class="sz-card__title">DITHER.JS</span>
+          <span class="sz-card__title">— ■</span>
+        </div>
+        <div class="sz-card__body">
+          <div style="margin-bottom:12px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="sz-badge sz-badge--green">Stable</span>
+            <span class="sz-badge sz-badge--outline">Library</span>
+          </div>
+          <p style="font-size:14px;color:var(--sz-text-dim);margin-bottom:16px;">Zero-dependency dithering library. Ordered, Floyd-Steinberg, and custom matrix modes. 3kb gzip.</p>
+          <div class="sz-stat-bar"><div class="sz-stat-bar__fill" style="width:100%"></div></div>
+          <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);">100% shipped</div>
+        </div>
+        <div class="sz-card__footer">
+          <a href="#" class="sz-btn sz-btn--sm sz-btn--solid">Docs</a>
+          <span class="sz-badge sz-badge--teal">2.3k ★</span>
+        </div>
+      </div>
+
+      <div class="sz-card sz-card--hover sz-reveal sz-reveal--delay-1">
+        <div class="sz-card__header">
+          <span class="sz-card__title">ISO-RENDER</span>
+          <span class="sz-card__title">◉</span>
+        </div>
+        <div class="sz-card__body">
+          <div style="margin-bottom:12px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="sz-badge sz-badge--teal">Active</span>
+            <span class="sz-badge sz-badge--outline">Experiment</span>
+          </div>
+          <p style="font-size:14px;color:var(--sz-text-dim);margin-bottom:16px;">Lightweight isometric pixel art renderer. 3-face cube system, colour tokens, sprite support. Canvas API.</p>
+          <div class="sz-stat-bar"><div class="sz-stat-bar__fill" style="width:82%"></div></div>
+          <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);">82% complete</div>
+        </div>
+        <div class="sz-card__footer">
+          <a href="#" class="sz-btn sz-btn--sm">Demo</a>
+          <a href="#" class="sz-btn sz-btn--sm sz-btn--ghost">GitHub ↗</a>
+        </div>
+      </div>
+
+      <div class="sz-card sz-reveal sz-reveal--delay-2">
+        <div class="sz-card__header">
+          <span class="sz-card__title">TERM-UI</span>
+          <span class="sz-card__title">▶</span>
+        </div>
+        <div class="sz-card__body">
+          <div style="margin-bottom:12px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="sz-badge sz-badge--outline">Archive</span>
+          </div>
+          <p style="font-size:14px;color:var(--sz-text-dim);margin-bottom:16px;">Terminal-style UI component system for the web. Predecessor to sz.css. Still used in 14 production sites.</p>
+          <div class="sz-stat-bar"><div class="sz-stat-bar__fill sz-stat-bar__fill--amber" style="width:100%"></div></div>
+          <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-amber);">Archived — superseded by sz.css</div>
+        </div>
+        <div class="sz-card__footer">
+          <a href="#" class="sz-btn sz-btn--sm sz-btn--ghost">Archive ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Other tab panels (filtered views - simplified) -->
+  <div id="work-tools" class="sz-tab-panel">
+    <div class="sz-callout">Showing <strong>Tools</strong> only. UXN-TOOLS and TERM-UI are tool-category projects.</div>
+    <div class="sz-grid-2" style="margin-top:24px;">
+      <div class="sz-card"><div class="sz-card__header"><span class="sz-card__title">UXN-TOOLS</span></div><div class="sz-card__body"><p style="font-size:14px;color:var(--sz-text-dim);">Assembler toolchain wrapper for Uxntal projects.</p></div></div>
+      <div class="sz-card"><div class="sz-card__header"><span class="sz-card__title">TERM-UI</span></div><div class="sz-card__body"><p style="font-size:14px;color:var(--sz-text-dim);">Terminal-style UI system. Archived predecessor.</p></div></div>
+    </div>
+  </div>
+  <div id="work-libs" class="sz-tab-panel">
+    <div class="sz-callout">Showing <strong>Libraries</strong> only — SZ.CSS and DITHER.JS.</div>
+    <div class="sz-grid-2" style="margin-top:24px;">
+      <div class="sz-card"><div class="sz-card__header"><span class="sz-card__title">SZ.CSS</span></div><div class="sz-card__body"><p style="font-size:14px;color:var(--sz-text-dim);">The Silicon Zen UI library. Two themes, full component set.</p></div></div>
+      <div class="sz-card"><div class="sz-card__header"><span class="sz-card__title">DITHER.JS</span></div><div class="sz-card__body"><p style="font-size:14px;color:var(--sz-text-dim);">Zero-dependency dithering library. 3kb gzip.</p></div></div>
+    </div>
+  </div>
+  <div id="work-exp" class="sz-tab-panel">
+    <div class="sz-callout sz-callout--warn">Showing <strong>Experiments</strong> — these may be unstable or incomplete.</div>
+    <div class="sz-grid-2" style="margin-top:24px;">
+      <div class="sz-card"><div class="sz-card__header"><span class="sz-card__title">PIXEL-RAIN</span></div><div class="sz-card__body"><p style="font-size:14px;color:var(--sz-text-dim);">Matrix-style teal column drop canvas animation.</p></div></div>
+      <div class="sz-card"><div class="sz-card__header"><span class="sz-card__title">ISO-RENDER</span></div><div class="sz-card__body"><p style="font-size:14px;color:var(--sz-text-dim);">Lightweight isometric pixel art renderer.</p></div></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SKILLS
+══════════════════════════════════════════════ -->
+<section class="site-section" id="skills">
+  <span class="sz-label">03 — Skills</span>
+  <h2 class="sz-h1" style="margin-bottom:8px;">The stack. Honestly rated.</h2>
+  <p class="sz-lead" style="margin-bottom:48px;">No inflated bars. These are real numbers — audited against shipped projects and peer review.</p>
+
+  <div class="sz-grid-2">
+    <!-- Skill bars column -->
+    <div class="sz-reveal">
+      <h3 class="sz-h3" style="margin-bottom:24px;">Core Skills</h3>
+
+      <div class="skill-row">
+        <span class="skill-name">CSS / Layout</span>
+        <div class="skill-bar-wrap">
+          <div class="sz-progress sz-progress--thin"><div class="sz-progress__fill" style="width:95%"></div></div>
+        </div>
+        <span class="skill-pct">95%</span>
+      </div>
+      <div class="skill-row">
+        <span class="skill-name">TypeScript</span>
+        <div class="skill-bar-wrap">
+          <div class="sz-progress sz-progress--thin"><div class="sz-progress__fill" style="width:88%"></div></div>
+        </div>
+        <span class="skill-pct">88%</span>
+      </div>
+      <div class="skill-row">
+        <span class="skill-name">Canvas / WebGL</span>
+        <div class="skill-bar-wrap">
+          <div class="sz-progress sz-progress--thin"><div class="sz-progress__fill" style="width:80%"></div></div>
+        </div>
+        <span class="skill-pct">80%</span>
+      </div>
+      <div class="skill-row">
+        <span class="skill-name">Pixel Art</span>
+        <div class="skill-bar-wrap">
+          <div class="sz-progress sz-progress--thin"><div class="sz-progress__fill sz-stat-bar__fill--amber" style="width:78%"></div></div>
+        </div>
+        <span class="skill-pct" style="color:var(--sz-amber)">78%</span>
+      </div>
+      <div class="skill-row">
+        <span class="skill-name">Uxntal / ASM</span>
+        <div class="skill-bar-wrap">
+          <div class="sz-progress sz-progress--thin sz-progress--amber"><div class="sz-progress__fill" style="width:62%"></div></div>
+        </div>
+        <span class="skill-pct" style="color:var(--sz-amber)">62%</span>
+      </div>
+      <div class="skill-row">
+        <span class="skill-name">Rust</span>
+        <div class="skill-bar-wrap">
+          <div class="sz-progress sz-progress--thin"><div class="sz-progress__fill" style="width:55%"></div></div>
+        </div>
+        <span class="skill-pct">55%</span>
+      </div>
+
+      <div style="margin-top: 32px;">
+        <h3 class="sz-h3" style="margin-bottom:16px;">Tech Badges</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="sz-badge sz-badge--teal">CSS</span>
+          <span class="sz-badge sz-badge--teal">TypeScript</span>
+          <span class="sz-badge sz-badge--teal">Canvas API</span>
+          <span class="sz-badge sz-badge--outline">Uxntal</span>
+          <span class="sz-badge sz-badge--outline">Rust</span>
+          <span class="sz-badge sz-badge--outline">Node.js</span>
+          <span class="sz-badge sz-badge--amber">Pixel Art</span>
+          <span class="sz-badge sz-badge--amber">Design Systems</span>
+          <span class="sz-badge sz-badge--pixel">Press Start 2P</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Currently loading / live stats -->
+    <div class="sz-reveal sz-reveal--delay-1">
+      <h3 class="sz-h3" style="margin-bottom:24px;">Live Build Status</h3>
+
+      <div class="sz-card" style="margin-bottom:16px;">
+        <div class="sz-card__header">
+          <span class="sz-card__title">SZ.CSS — MAIN PIPELINE</span>
+          <span class="sz-card__title" id="pipelineStatus">⚙ running</span>
+        </div>
+        <div class="sz-card__body">
+          <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);margin-bottom:8px;" id="pipelineStage">READY</div>
+          <div class="sz-progress sz-progress--striped">
+            <div class="sz-progress__fill" id="pipelineFill" style="width:0%"></div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:8px;">
+            <button class="sz-btn sz-btn--sm sz-btn--solid" id="runPipeline">[ Run Build ]</button>
+            <button class="sz-btn sz-btn--sm sz-btn--ghost" id="resetPipeline">[ Reset ]</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sz-card" style="margin-bottom:16px;">
+        <div class="sz-card__header">
+          <span class="sz-card__title">DITHER.JS — PIXEL MARCH</span>
+        </div>
+        <div class="sz-card__body">
+          <div class="sz-progress sz-progress--pixel">
+            <div class="sz-progress__fill" style="width:74%"></div>
+          </div>
+          <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-teal);margin-top:6px;">74% — compressing assets</div>
+        </div>
+      </div>
+
+      <div class="sz-callout sz-callout--warn" style="margin-top:16px;">
+        <strong>⚠ Warning:</strong> hero.png is 94kb. Consider running <code>sz optimize --aggressive</code> before deploy.
+      </div>
+
+      <div class="sz-callout" style="margin-top:12px;">
+        <strong>◈ Note:</strong> All progress bars use the Silicon Zen stripe pattern — teal + amber, 8px steps, no smooth fill.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TIMELINE
+══════════════════════════════════════════════ -->
+<section class="site-section" id="timeline">
+  <span class="sz-label">04 — Journey</span>
+  <h2 class="sz-h1" style="margin-bottom:48px;">Six years of shipping.</h2>
+
+  <div class="timeline">
+    <div class="tl-item sz-reveal">
+      <div class="tl-date">2024 — Present</div>
+      <h3 class="tl-title">Silicon Zen — Design System & Library</h3>
+      <p class="tl-body">Built a full design language from scratch. sz.css, sz.js, and this site. 23 components, two themes, zero dependencies.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="sz-badge sz-badge--teal">CSS</span>
+        <span class="sz-badge sz-badge--teal">Design Systems</span>
+        <span class="sz-badge sz-badge--outline">Open Source</span>
+      </div>
+    </div>
+
+    <div class="tl-item sz-reveal sz-reveal--delay-1">
+      <div class="tl-date">2023</div>
+      <h3 class="tl-title">Dither.js — First npm Package</h3>
+      <p class="tl-body">Zero-dependency dithering library reaching 2,300+ GitHub stars. Featured in CSS-Tricks and the Hacker News front page.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="sz-badge sz-badge--teal">TypeScript</span>
+        <span class="sz-badge sz-badge--outline">npm</span>
+        <span class="sz-badge sz-badge--amber">2.3k ★</span>
+      </div>
+    </div>
+
+    <div class="tl-item sz-reveal sz-reveal--delay-2">
+      <div class="tl-date">2022</div>
+      <h3 class="tl-title">Learned Uxntal & Low-Level Computing</h3>
+      <p class="tl-body">Deep-dived into the Uxn computing stack and the 100r ecosystem. Changed how I think about constraints as a design tool.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="sz-badge sz-badge--outline">Uxntal</span>
+        <span class="sz-badge sz-badge--outline">Assembly</span>
+      </div>
+    </div>
+
+    <div class="tl-item sz-reveal">
+      <div class="tl-date">2021</div>
+      <h3 class="tl-title">First Production UI System — Term-UI</h3>
+      <p class="tl-body">Built Term-UI for a client project. Ended up being used by 14 sites. The predecessor to sz.css and the origin of the Silicon Zen aesthetic.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="sz-badge sz-badge--outline">JavaScript</span>
+        <span class="sz-badge sz-badge--outline">CSS</span>
+        <span class="sz-badge sz-badge--outline">Archived</span>
+      </div>
+    </div>
+
+    <div class="tl-item sz-reveal sz-reveal--delay-1" style="padding-bottom:0;">
+      <div class="tl-date">2019 — 2020</div>
+      <h3 class="tl-title">Started. Broke things. Kept going.</h3>
+      <p class="tl-body">First line of CSS written in 2019. Two years of breaking everything, reading documentation at 2am, and shipping things nobody asked for.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     DASHBOARD
+══════════════════════════════════════════════ -->
+<section class="site-section" id="dashboard">
+  <span class="sz-label">05 — Dashboard</span>
+  <h2 class="sz-h1" style="margin-bottom:8px;">The numbers.</h2>
+  <p class="sz-lead" style="margin-bottom:40px;">A live-feeling dashboard panel using sz.css table, card, and layout components.</p>
+
+  <div class="dashboard-panel sz-reveal">
+    <!-- Sidebar -->
+    <div class="dashboard-sidebar">
+      <div class="ds-logo">CTRL PANEL</div>
+      <div class="ds-nav-group">Overview</div>
+      <div class="ds-nav-item on" onclick="setDsNav(this)">◈ &nbsp;Projects</div>
+      <div class="ds-nav-item" onclick="setDsNav(this)">▤ &nbsp;Build Log</div>
+      <div class="ds-nav-item" onclick="setDsNav(this)">◉ &nbsp;Analytics</div>
+      <div class="ds-nav-group">System</div>
+      <div class="ds-nav-item" onclick="setDsNav(this)">⌘ &nbsp;Settings</div>
+      <div class="ds-nav-item" onclick="setDsNav(this)">◌ &nbsp;Deploy</div>
+    </div>
+    <!-- Main -->
+    <div class="dashboard-main">
+      <div class="ds-toolbar">
+        <span class="ds-toolbar-title">Projects</span>
+        <button class="sz-btn sz-btn--sm" onclick="SZ.toast('Refreshed build data', 'ok')">Refresh</button>
+        <button class="sz-btn sz-btn--sm sz-btn--solid" data-sz-modal-open="#hire-modal">+ New</button>
+      </div>
+      <div class="ds-content">
+        <div class="ds-stat-row">
+          <div class="ds-stat">
+            <div class="ds-stat-label">Active</div>
+            <div class="ds-stat-val">4</div>
+          </div>
+          <div class="ds-stat">
+            <div class="ds-stat-label">Archived</div>
+            <div class="ds-stat-val" style="color:var(--sz-text-dim)">2</div>
+          </div>
+          <div class="ds-stat">
+            <div class="ds-stat-label">Stars</div>
+            <div class="ds-stat-val">12k</div>
+          </div>
+        </div>
+        <table class="sz-table">
+          <thead>
+            <tr>
+              <th>Project</th><th>Type</th><th>Status</th><th>Stars</th><th>Last push</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sz-teal">sz.css</td>
+              <td class="sz-muted">library</td>
+              <td><span class="sz-badge sz-badge--teal">active</span></td>
+              <td class="sz-muted">4.1k</td>
+              <td class="sz-muted">2h ago</td>
+            </tr>
+            <tr>
+              <td class="sz-teal">dither.js</td>
+              <td class="sz-muted">library</td>
+              <td><span class="sz-badge sz-badge--green">stable</span></td>
+              <td class="sz-muted">2.3k</td>
+              <td class="sz-muted">3d ago</td>
+            </tr>
+            <tr>
+              <td class="sz-teal">uxn-tools</td>
+              <td class="sz-muted">tool</td>
+              <td><span class="sz-badge sz-badge--amber">beta</span></td>
+              <td class="sz-muted">890</td>
+              <td class="sz-muted">1w ago</td>
+            </tr>
+            <tr>
+              <td class="sz-teal">iso-render</td>
+              <td class="sz-muted">experiment</td>
+              <td><span class="sz-badge sz-badge--teal">active</span></td>
+              <td class="sz-muted">412</td>
+              <td class="sz-muted">2d ago</td>
+            </tr>
+            <tr>
+              <td class="sz-muted">pixel-rain</td>
+              <td class="sz-muted">experiment</td>
+              <td><span class="sz-badge sz-badge--green">stable</span></td>
+              <td class="sz-muted">280</td>
+              <td class="sz-muted">2w ago</td>
+            </tr>
+            <tr>
+              <td class="sz-muted">term-ui</td>
+              <td class="sz-muted">library</td>
+              <td><span class="sz-badge sz-badge--outline">archived</span></td>
+              <td class="sz-muted">5.4k</td>
+              <td class="sz-muted">1yr ago</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     CLI / TERMINAL
+══════════════════════════════════════════════ -->
+</div><!-- /container -->
+
+<div class="cli-section-bg site-section" id="cli-section">
+<div class="sz-container">
+  <span class="sz-label">06 — Terminal</span>
+  <h2 class="sz-h1" style="margin-bottom:8px;">I live here.</h2>
+  <p class="sz-lead" style="margin-bottom:40px;">The terminal is home. Here's what a day in this stack looks like.</p>
+
+  <div class="sz-grid-2">
+    <!-- Main CLI -->
+    <div class="sz-crt sz-reveal" style="min-height:320px;">
+      <div class="sz-crt__inner" style="font-size:12px;line-height:2;">
+        <span style="color:#444;">» SZ_KERNEL v1.1.0 · king525dev</span><br>
+        <span style="color:var(--sz-teal);">■ </span><span style="color:var(--sz-teal);">~/dev/silicon-zen</span><span> [main ✓]</span><br>
+        <span style="color:var(--sz-text-dim);">&gt; </span><span id="cliTyped"></span><span id="cliCursor" style="display:inline-block;width:7px;height:13px;background:var(--sz-teal);vertical-align:text-bottom;animation:sz-blink 0.8s steps(1) infinite;"></span><br>
+        <div id="cliOutput"></div>
+      </div>
+    </div>
+
+    <!-- Tooltip + Accordion section -->
+    <div class="sz-reveal sz-reveal--delay-1">
+      <h3 class="sz-h3" style="margin-bottom:16px;">Common Commands</h3>
+
+      <div class="sz-accordion" data-sz-single>
+        <div class="sz-accordion__item is-open">
+          <button class="sz-accordion__trigger">sz build — compile all assets</button>
+          <div class="sz-accordion__body">
+            <code class="sz-code">sz build --out ./dist --watch</code>
+            <p style="margin-top:8px;font-size:13px;color:var(--sz-text-dim);">Parses all templates, compiles 8 modules, optimises images. Outputs to <code class="sz-code">./dist</code>. Use <code class="sz-code">--watch</code> for live reloading.</p>
+          </div>
+        </div>
+        <div class="sz-accordion__item">
+          <button class="sz-accordion__trigger">sz optimize — compress assets</button>
+          <div class="sz-accordion__body">
+            <code class="sz-code">sz optimize --aggressive --format webp</code>
+            <p style="margin-top:8px;font-size:13px;color:var(--sz-text-dim);">Runs dithering pass, converts images to WebP, strips unused CSS. Average reduction: 66%.</p>
+          </div>
+        </div>
+        <div class="sz-accordion__item">
+          <button class="sz-accordion__trigger">sz deploy — push to production</button>
+          <div class="sz-accordion__body">
+            <code class="sz-code">sz deploy --env prod --confirm</code>
+            <p style="margin-top:8px;font-size:13px;color:var(--sz-text-dim);">Runs build, optimise, then pushes to the configured host. Requires <code class="sz-code">--confirm</code> flag in production.</p>
+          </div>
+        </div>
+        <div class="sz-accordion__item">
+          <button class="sz-accordion__trigger">sz theme — switch active theme</button>
+          <div class="sz-accordion__body">
+            <code class="sz-code">sz theme obsidian</code>
+            <p style="margin-top:8px;font-size:13px;color:var(--sz-text-dim);">Switches the active design theme. Tokens compile to CSS custom properties. Both themes hot-reload without a page refresh.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h3 class="sz-h3" style="margin-bottom:12px;">Tooltip Demos</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+          <span class="sz-tooltip sz-badge sz-badge--teal" data-sz-tip="Terminal Teal — #5BA8A0">Terminal Teal</span>
+          <span class="sz-tooltip sz-badge sz-badge--amber" data-sz-tip="Ghost Amber — #FFB86C">Ghost Amber</span>
+          <span class="sz-tooltip sz-badge sz-badge--outline" data-sz-tip="Signal Red — #D94F3D. Errors only.">Signal Red</span>
+          <span class="sz-tooltip sz-btn sz-btn--sm" data-sz-tip="sz-btn sz-btn--sm — small button variant">Button</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="sz-container">
+
+<!-- ══════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════ -->
+<section class="site-section" id="testimonials">
+  <span class="sz-label">07 — What people say</span>
+  <h2 class="sz-h1" style="margin-bottom:48px;">Straight from the source.</h2>
+
+  <div class="sz-grid-3">
+    <div class="sz-card sz-reveal">
+      <div class="sz-card__body">
+        <p class="testimonial-quote">"Silicon Zen is the first CSS library that actually respects both the terminal and the browser. It feels like it was made by someone who uses both daily."</p>
+        <div class="testimonial-author">— @neoncat, GitHub</div>
+        <div style="margin-top:12px;">
+          <span class="sz-badge sz-badge--teal">★★★★★</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sz-card sz-card--window sz-reveal sz-reveal--delay-1">
+      <div class="sz-card__header">
+        <div class="sz-card__dots">
+          <div class="sz-card__dot sz-card__dot--r"></div>
+          <div class="sz-card__dot sz-card__dot--g"></div>
+          <div class="sz-card__dot sz-card__dot--b"></div>
+        </div>
+        <span class="sz-card__title">HN COMMENT</span>
+      </div>
+      <div class="sz-card__body">
+        <p class="testimonial-quote">"Spent 20 minutes on the docs site just switching between parchment and obsidian. The fact that the accents never change is a small but genius decision."</p>
+        <div class="testimonial-author">— throwaway99182, HN</div>
+      </div>
+    </div>
+
+    <div class="sz-card sz-reveal sz-reveal--delay-2">
+      <div class="sz-card__body">
+        <p class="testimonial-quote">"dither.js saved us 40% on our image pipeline. Two lines of code. I've been recommending it to every frontend team I know."</p>
+        <div class="testimonial-author">— @solarpunk_dev</div>
+        <div style="margin-top:12px;">
+          <span class="sz-badge sz-badge--amber">Dither.js user</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     CONTACT
+══════════════════════════════════════════════ -->
+<section class="site-section" id="contact">
+  <span class="sz-label">08 — Contact</span>
+  <h2 class="sz-h1" style="margin-bottom:8px;">Let's build something.</h2>
+  <p class="sz-lead" style="margin-bottom:48px;">
+    Open to freelance projects, collaborations, and interesting problems.
+    I respond to every message — usually within 24 hours.
+  </p>
+
+  <div class="contact-grid">
+    <!-- Form -->
+    <div class="sz-reveal">
+      <div class="sz-field">
+        <label class="sz-field__label">Your Name</label>
+        <input class="sz-input" id="contactName" type="text" placeholder="Firstname Lastname">
+      </div>
+      <div class="sz-field">
+        <label class="sz-field__label">Email Address</label>
+        <input class="sz-input" id="contactEmail" type="email" placeholder="you@domain.com">
+        <span class="sz-field__hint">Never shared. Used only to reply.</span>
+      </div>
+      <div class="sz-field">
+        <label class="sz-field__label">Project Type</label>
+        <select class="sz-input sz-select" id="contactType">
+          <option value="">Select a type...</option>
+          <option>Design System</option>
+          <option>Frontend Development</option>
+          <option>Pixel Art / Illustration</option>
+          <option>Open Source Collaboration</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="sz-field">
+        <label class="sz-field__label">Message</label>
+        <textarea class="sz-input sz-textarea" id="contactMsg" placeholder="Describe your project or idea..."></textarea>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label class="sz-checkbox is-checked" onclick="this.classList.toggle('is-checked')">
+          <div class="sz-checkbox__box">✓</div>
+          <span class="sz-checkbox__label">I'm happy for you to follow up by email</span>
+        </label>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="sz-btn sz-btn--solid" id="contactSubmit">[ Send Message ]</button>
+        <button class="sz-btn sz-btn--ghost" id="contactClear">[ Clear ]</button>
+      </div>
+    </div>
+
+    <!-- Info panel -->
+    <div class="sz-reveal sz-reveal--delay-1">
+      <div class="sz-card" style="margin-bottom:16px;">
+        <div class="sz-card__header">
+          <span class="sz-card__title">AVAILABILITY</span>
+          <span class="sz-badge sz-badge--teal" style="font-size:9px;">Open</span>
+        </div>
+        <div class="sz-card__body">
+          <div style="font-family:var(--sz-font-mono);font-size:12px;line-height:2.2;color:var(--sz-text-dim);">
+            <div>Timezone &nbsp;<span style="color:var(--sz-teal);">UTC+1</span></div>
+            <div>Hours &nbsp;&nbsp;&nbsp;<span style="color:var(--sz-teal);">09:00 – 18:00</span></div>
+            <div>Response <span style="color:var(--sz-teal);">&lt; 24h</span></div>
+            <div>Rate &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--sz-teal);">On request</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sz-card">
+        <div class="sz-card__header">
+          <span class="sz-card__title">ELSEWHERE</span>
+        </div>
+        <div class="sz-card__body">
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <a href="#" class="sz-btn sz-btn--ghost" style="justify-content:flex-start;padding:8px 0;font-size:11px;" onclick="return false;">GitHub ↗</a>
+            <a href="#" class="sz-btn sz-btn--ghost" style="justify-content:flex-start;padding:8px 0;font-size:11px;" onclick="return false;">Mastodon ↗</a>
+            <a href="#" class="sz-btn sz-btn--ghost" style="justify-content:flex-start;padding:8px 0;font-size:11px;" onclick="return false;">Are.na ↗</a>
+            <a href="#" class="sz-btn sz-btn--ghost" style="justify-content:flex-start;padding:8px 0;font-size:11px;" onclick="return false;">RSS Feed ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<!-- ══════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════ -->
+<footer style="border-top:1px solid var(--sz-border-dim);background:var(--sz-surface);padding:48px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;">
+  <div>
+    <div class="sz-pixel--heading" style="color:var(--sz-teal);margin-bottom:8px;">KING525DEV</div>
+    <p style="font-family:var(--sz-font-mono);font-size:11px;color:var(--sz-text-dim);max-width:32ch;line-height:1.8;">
+      Terminal craftsman. Pixel artist. Author of Silicon Zen.
+      Building the calm internet, one component at a time.
+    </p>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+      <span class="sz-badge sz-badge--teal">Available</span>
+      <span class="sz-badge sz-badge--outline">UTC+1</span>
+      <button class="sz-btn sz-btn--sm sz-btn--ghost" onclick="SZ.toast('Copied email to clipboard!', 'ok')">Copy Email</button>
+    </div>
+  </div>
+  <div style="display:flex;gap:48px;flex-wrap:wrap;">
+    <div>
+      <div style="font-family:var(--sz-font-mono);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--sz-text-dim);margin-bottom:12px;">Work</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a href="#work"      style="font-family:var(--sz-font-mono);font-size:12px;color:var(--sz-text-dim);text-decoration:none;" class="sz-tooltip" data-sz-tip="View all projects">Projects</a>
+        <a href="#skills"    style="font-family:var(--sz-font-mono);font-size:12px;color:var(--sz-text-dim);text-decoration:none;">Skills</a>
+        <a href="#timeline"  style="font-family:var(--sz-font-mono);font-size:12px;color:var(--sz-text-dim);text-decoration:none;">Timeline</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--sz-font-mono);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--sz-text-dim);margin-bottom:12px;">Library</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a href="sz-docs.html" style="font-family:var(--sz-font-mono);font-size:12px;color:var(--sz-teal);text-decoration:none;">sz.css Docs ↗</a>
+        <a href="#" style="font-family:var(--sz-font-mono);font-size:12px;color:var(--sz-text-dim);text-decoration:none;">GitHub ↗</a>
+        <a href="#" style="font-family:var(--sz-font-mono);font-size:12px;color:var(--sz-text-dim);text-decoration:none;">Changelog</a>
+      </div>
+    </div>
+  </div>
+  <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);text-align:right;align-self:flex-end;">
+    Built with sz.css v1.1.0<br>
+    <span style="color:var(--sz-teal);">Silicon Zen</span> · Parchment + Obsidian<br>
+    © 2024 king525dev
+  </div>
+</footer>
+
+<!-- ══ HIRE MODAL ════════════════════════════════════ -->
+<div id="hire-modal" class="sz-modal-overlay" aria-hidden="true">
+  <div class="sz-modal">
+    <div class="sz-modal__header">
+      <span class="sz-modal__title">START_PROJECT.SH</span>
+      <button class="sz-modal__close" data-sz-modal-close>×</button>
+    </div>
+    <div class="sz-modal__body">
+      <p style="margin-bottom:16px;">Ready to build something deliberate? Tell me a bit about what you need.</p>
+      <div class="sz-field">
+        <label class="sz-field__label">Project in one sentence</label>
+        <input class="sz-input" type="text" placeholder="e.g. A minimal dashboard for a dev tool...">
+      </div>
+      <div class="sz-field" style="margin-bottom:8px;">
+        <label class="sz-field__label">Budget range</label>
+        <select class="sz-input sz-select">
+          <option>Select range...</option>
+          <option>< $1k</option>
+          <option>$1k – $5k</option>
+          <option>$5k – $20k</option>
+          <option>$20k+</option>
+          <option>Open source / collaboration</option>
+        </select>
+      </div>
+    </div>
+    <div class="sz-modal__footer">
+      <button class="sz-btn sz-btn--ghost" data-sz-modal-close>[ Cancel ]</button>
+      <button class="sz-btn sz-btn--solid" onclick="submitHire()">[ Send Brief ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DOCK NAV ════════════════════════════════════ -->
+<nav class="sz-dock" id="mainDock">
+  <a href="#top"          class="sz-dock__item is-active">HME</a>
+  <a href="#work"         class="sz-dock__item">WRK</a>
+  <a href="#skills"       class="sz-dock__item">SKL</a>
+  <a href="#timeline"     class="sz-dock__item">TML</a>
+  <a href="#dashboard"    class="sz-dock__item">DSH</a>
+  <a href="#cli-section"  class="sz-dock__item">CLI</a>
+  <a href="#contact"      class="sz-dock__item">MSG</a>
+</nav>
+
+<!-- ══ TOAST CONTAINER (injected by SZ.toast) ═══ -->
+
+<script src="library/sz.js"></script>
+<script>
+/* ── Theme / Nav toggle controls ─────────────── */
+const btnP = document.getElementById('btnParch');
+const btnO = document.getElementById('btnObsid');
+const btnD = document.getElementById('btnDockNav');
+const btnB = document.getElementById('btnBarNav');
+const topNav = document.getElementById('topNav');
+const dock   = document.getElementById('mainDock');
+
+btnP.addEventListener('click', () => {
+  SZ.theme('parchment');
+  btnP.classList.add('on'); btnO.classList.remove('on');
+});
+btnO.addEventListener('click', () => {
+  SZ.theme('obsidian');
+  btnO.classList.add('on'); btnP.classList.remove('on');
+});
+btnD.addEventListener('click', () => {
+  topNav.style.display = 'none';
+  dock.style.opacity   = '1';
+  dock.style.pointerEvents = 'all';
+  dock.style.transform = 'translateX(-50%)';
+  document.body.classList.remove('nav-bar');
+  document.body.style.paddingBottom = '100px';
+  document.body.style.paddingTop    = '';
+  btnD.classList.add('on'); btnB.classList.remove('on');
+});
+btnB.addEventListener('click', () => {
+  topNav.style.display = 'flex';
+  dock.style.opacity   = '0';
+  dock.style.pointerEvents = 'none';
+  dock.style.transform = 'translateX(-50%) translateY(12px)';
+  document.body.classList.add('nav-bar');
+  document.body.style.paddingBottom = '0';
+  document.body.style.paddingTop    = '0';
+  btnB.classList.add('on'); btnD.classList.remove('on');
+});
+
+/* ── Pipeline progress demo ──────────────────── */
+const pFill   = document.getElementById('pipelineFill');
+const pStage  = document.getElementById('pipelineStage');
+const pStatus = document.getElementById('pipelineStatus');
+let pIv = null;
+document.getElementById('runPipeline').addEventListener('click', () => {
+  if (pIv) clearInterval(pIv);
+  let p = 0;
+  const stages = ['PARSING SRC','COMPILING CSS','BUNDLING JS','OPTIMISING ASSETS','DEPLOYING'];
+  pFill.style.width = '0%';
+  pStatus.textContent = '⚙ running';
+  pIv = setInterval(() => {
+    p += Math.random() * 14 + 3;
+    if (p >= 100) {
+      p = 100; clearInterval(pIv); pIv = null;
+      pFill.style.width = '100%';
+      pStage.textContent = '✓ BUILD COMPLETE';
+      pStatus.textContent = '✓ done';
+      SZ.toast('Build complete in 1.4s — sz.css v1.1.0', 'ok');
+    } else {
+      pFill.style.width = p + '%';
+      pStage.textContent = stages[Math.floor(p / 22)] || 'FINALISING';
+    }
+  }, 140);
+});
+document.getElementById('resetPipeline').addEventListener('click', () => {
+  if (pIv) clearInterval(pIv);
+  pFill.style.width = '0%';
+  pStage.textContent = 'READY';
+  pStatus.textContent = '⚙ idle';
+});
+
+/* ── Dashboard sidebar nav ───────────────────── */
+function setDsNav(el) {
+  document.querySelectorAll('.ds-nav-item').forEach(i => i.classList.remove('on'));
+  el.classList.add('on');
+}
+
+/* ── Contact form ────────────────────────────── */
+document.getElementById('contactSubmit').addEventListener('click', () => {
+  const name  = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const msg   = document.getElementById('contactMsg').value.trim();
+  if (!name || !email || !msg) {
+    SZ.toast('Please fill in all required fields', 'error');
+    return;
+  }
+  if (!email.includes('@')) {
+    SZ.toast('Please enter a valid email address', 'warn');
+    return;
+  }
+  SZ.modal.open('#hire-modal');
+  SZ.toast('Message sent! I\'ll reply within 24h.', 'ok', 4000);
+});
+document.getElementById('contactClear').addEventListener('click', () => {
+  ['contactName','contactEmail','contactMsg'].forEach(id => { document.getElementById(id).value = ''; });
+  SZ.toast('Form cleared', 'info');
+});
+
+/* ── Hire modal submit ───────────────────────── */
+function submitHire() {
+  SZ.modal.close('#hire-modal');
+  SZ.toast('Brief received! Check your email for confirmation.', 'ok', 5000);
+}
+
+/* ── Dock scroll-active + topnav-scroll ──────── */
+const sectionIds = ['top','work','skills','timeline','dashboard','cli-section','testimonials','contact'];
+const dockItems  = document.querySelectorAll('.sz-dock__item');
+const topLinks   = document.querySelectorAll('.sz-topnav__links a');
+
+function updateActiveNav() {
+  let current = sectionIds[0];
+  sectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 130) current = id;
+  });
+  dockItems.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + current));
+  topLinks.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + current));
+}
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+updateActiveNav();
+
+/* ── Star field (hero background) ───────────── */
+(function initHeroStars() {
+  const canvas = document.getElementById('heroStars');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = canvas.offsetWidth  || window.innerWidth;
+    canvas.height = canvas.offsetHeight || window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const stars = Array.from({ length: 140 }, () => ({
+    x: Math.random(), y: Math.random(),
+    s: Math.random() < 0.15 ? 2 : 1,
+    sp: Math.random() * 0.15 + 0.05,
+    br: Math.random()
+  }));
+  let t = 0;
+
+  function draw() {
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      const blink = Math.sin(t * 0.03 + s.br * 8) > 0.6 ? 0.3 : 1;
+      ctx.fillStyle = `rgba(91,168,160,${(0.2 + s.br * 0.5) * blink})`;
+      ctx.fillRect(Math.floor(s.x * W), Math.floor(s.y * H), s.s, s.s);
+      s.y += s.sp / H;
+      if (s.y > 1) { s.y = 0; s.x = Math.random(); }
+    });
+    // occasional amber flash
+    if (Math.floor(t) % 90 === 0) {
+      ctx.fillStyle = 'rgba(255,184,108,0.7)';
+      ctx.fillRect(Math.floor(Math.random() * W), Math.floor(Math.random() * H), 2, 2);
+    }
+    t++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── CLI animation ───────────────────────────── */
+(function initCLI() {
+  const typed  = document.getElementById('cliTyped');
+  const output = document.getElementById('cliOutput');
+  if (!typed || !output) return;
+
+  const sessions = [
+    {
+      cmd: 'sz build --watch',
+      delay: 1200,
+      lines: [
+        { t: 300,  text: '', cls: '' },
+        { t: 600,  text: '<span style="color:#444">── BUILD ─────────────────────────────</span>', cls: '' },
+        { t: 900,  text: '<span style="color:#4FA878">  ✓</span> parsed 14 files in 0.1s', cls: '' },
+        { t: 1200, text: '<span style="color:#4FA878">  ✓</span> compiled 8 templates', cls: '' },
+        { t: 1500, text: '<span style="color:#FFB86C">  ⚠</span> hero.png is large (94kb)', cls: '' },
+        { t: 1800, text: '<span style="color:#4FA878">  ✓</span> built to ./dist in 1.4s', cls: '' },
+        { t: 2100, text: '<span style="color:#888">  watching for changes...</span>', cls: '' },
+      ]
+    },
+    {
+      cmd: 'sz theme obsidian',
+      delay: 5000,
+      lines: [
+        { t: 400, text: '', cls: '' },
+        { t: 700, text: '<span style="color:#4FA878">  ✓</span> theme switched → obsidian', cls: '' },
+        { t: 900, text: '<span style="color:#888">  tokens recompiled. no reload needed.</span>', cls: '' },
+      ]
+    },
+    {
+      cmd: 'sz deploy --env prod',
+      delay: 4000,
+      lines: [
+        { t: 300,  text: '', cls: '' },
+        { t: 600,  text: '<span style="color:#444">── DEPLOY ────────────────────────────</span>', cls: '' },
+        { t: 1000, text: '<span style="color:#4FA878">  ✓</span> build passed all checks', cls: '' },
+        { t: 1400, text: '<span style="color:#4FA878">  ✓</span> assets optimised (1.1mb)', cls: '' },
+        { t: 1800, text: '<span style="color:#4FA878">  ✓</span> pushed to production', cls: '' },
+        { t: 2100, text: '<span style="color:#5BA8A0">  ◈</span> live at king525dev.xyz', cls: '' },
+      ]
+    }
+  ];
+
+  let si = 0;
+
+  function runSession() {
+    const session = sessions[si % sessions.length];
+    si++;
+    // Type the command
+    let ci = 0;
+    typed.textContent = '';
+    const typeIv = setInterval(() => {
+      typed.textContent = session.cmd.slice(0, ci + 1);
+      ci++;
+      if (ci >= session.cmd.length) clearInterval(typeIv);
+    }, 80);
+
+    // Show output lines
+    session.lines.forEach(line => {
+      setTimeout(() => {
+        const div = document.createElement('div');
+        div.innerHTML = line.text;
+        output.appendChild(div);
+        // Keep output trimmed
+        while (output.children.length > 14) output.removeChild(output.firstChild);
+      }, line.t);
+    });
+
+    // Next session
+    setTimeout(() => {
+      typed.textContent = '';
+      setTimeout(runSession, 600);
+    }, session.delay + session.lines[session.lines.length - 1].t + 800);
+  }
+
+  setTimeout(runSession, 1200);
+})();
+</script>
+</body>
+</html>

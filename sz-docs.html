@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en" data-sz-theme="parchment">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sz.css — Silicon Zen Library Docs</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+/* ── Inline sz.css tokens + docs-specific overrides ── */
+:root {
+  --sz-teal: #5BA8A0; --sz-teal-dim: #3D7A74;
+  --sz-amber: #FFB86C; --sz-amber-dim: #CC8B3D;
+  --sz-red: #D94F3D; --sz-green: #4FA878;
+  --sz-grid: 4px;
+  --sz-font-serif:  "Newsreader", Georgia, serif;
+  --sz-font-mono:   "JetBrains Mono", "Courier New", monospace;
+  --sz-font-pixel:  "Press Start 2P", monospace;
+  --sz-snap: 150ms cubic-bezier(0, 0, 0.2, 1);
+  --sz-spring: 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Parchment */
+  --sz-bg: #F4F4F1; --sz-bg-alt: #EAEAE7;
+  --sz-surface: #FFFFFF; --sz-surface-alt: #F0F0ED;
+  --sz-border: #333333; --sz-border-dim: #888888;
+  --sz-text: #0D0D0D; --sz-text-dim: #555555;
+  --sz-text-inv: #F4F4F1;
+  --sz-dither-dot: rgba(0,0,0,0.09);
+  --sz-card-bg: #FFFFFF;
+  --sz-cli-bg: #0D0D0D; --sz-cli-text: #F4F4F1;
+}
+[data-sz-theme="obsidian"] {
+  --sz-bg: #0D0D0D; --sz-bg-alt: #111111;
+  --sz-surface: #1A1A1A; --sz-surface-alt: #222222;
+  --sz-border: #3A3A3A; --sz-border-dim: #2A2A2A;
+  --sz-text: #F4F4F1; --sz-text-dim: #888888;
+  --sz-text-inv: #0D0D0D;
+  --sz-dither-dot: rgba(255,255,255,0.05);
+  --sz-card-bg: #1A1A1A;
+  --sz-cli-bg: #050505; --sz-cli-text: #F4F4F1;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--sz-bg); color: var(--sz-text);
+  font-family: var(--sz-font-serif);
+  line-height: 1.65;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+  transition: background 0.2s, color 0.2s;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--sz-teal); }
+::selection { background: var(--sz-teal); color: #0D0D0D; }
+
+/* ── layout ── */
+.page { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px; flex-shrink: 0;
+  border-right: 1px solid var(--sz-border-dim);
+  background: var(--sz-surface);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  padding: 24px 0;
+}
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--sz-border-dim); }
+.sb-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--sz-border-dim); margin-bottom: 16px; }
+.sb-brand { font-family: var(--sz-font-pixel); font-size: 11px; color: var(--sz-teal); letter-spacing: 0.06em; }
+.sb-version { font-family: var(--sz-font-mono); font-size: 10px; color: var(--sz-text-dim); margin-top: 4px; }
+.sb-section { font-family: var(--sz-font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--sz-text-dim); padding: 12px 20px 6px; }
+.sb-link {
+  display: block; padding: 6px 20px;
+  font-family: var(--sz-font-mono); font-size: 11px; letter-spacing: 0.5px;
+  color: var(--sz-text-dim); text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: var(--sz-snap);
+}
+.sb-link:hover { color: var(--sz-teal); background: var(--sz-surface-alt); }
+.sb-link.active { color: var(--sz-teal); border-left-color: var(--sz-teal); background: var(--sz-surface-alt); }
+.sb-controls { padding: 16px 20px 0; border-top: 1px solid var(--sz-border-dim); margin-top: 16px; }
+
+.main { flex: 1; min-width: 0; padding: 48px 64px; max-width: 900px; }
+
+@media(max-width:860px) {
+  .sidebar { display: none; }
+  .main { padding: 32px 24px; }
+}
+
+/* ── doc sections ── */
+.doc-section { margin-bottom: 80px; scroll-margin-top: 32px; }
+.doc-heading {
+  font-family: var(--sz-font-pixel); font-size: 12px; color: var(--sz-teal);
+  letter-spacing: 0.1em; margin-bottom: 8px; display: block;
+}
+.doc-title {
+  font-family: var(--sz-font-serif); font-size: 2rem; font-weight: 400;
+  letter-spacing: -0.02em; margin-bottom: 16px; color: var(--sz-text);
+}
+.doc-lead { font-size: 1.05rem; color: var(--sz-text-dim); max-width: 58ch; margin-bottom: 40px; line-height: 1.7; }
+.doc-subtitle { font-family: var(--sz-font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--sz-text-dim); margin: 40px 0 16px; }
+hr.doc-rule { border: none; border-top: 1px solid var(--sz-border-dim); opacity: 0.3; margin: 32px 0; }
+
+/* ── demo + code blocks ── */
+.demo-wrap {
+  border: 1px solid var(--sz-border-dim);
+  background: var(--sz-surface-alt);
+  padding: 32px;
+  margin-bottom: 0;
+}
+.demo-wrap--dark { background: #0D0D0D; }
+.code-block {
+  background: #0D0D0D;
+  color: #F4F4F1;
+  font-family: var(--sz-font-mono);
+  font-size: 12px; line-height: 1.8;
+  padding: 20px 24px;
+  overflow-x: auto;
+  position: relative;
+  border: 1px solid var(--sz-border-dim);
+  border-top: none;
+  white-space: pre;
+}
+.code-block .hl-tag   { color: #5BA8A0; }
+.code-block .hl-attr  { color: #FFB86C; }
+.code-block .hl-str   { color: #F4F4F1; opacity: 0.8; }
+.code-block .hl-com   { color: #555555; }
+.copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  font-family: var(--sz-font-mono); font-size: 9px; letter-spacing: 1px;
+  text-transform: uppercase;
+  background: transparent; border: 1px solid #3A3A3A; color: #888;
+  padding: 4px 10px; cursor: pointer; transition: var(--sz-snap);
+}
+.copy-btn:hover { border-color: var(--sz-teal); color: var(--sz-teal); }
+.copy-btn.copied { border-color: var(--sz-green); color: var(--sz-green); }
+
+/* ── inline components for docs ── */
+.sz-btn,.sz-badge,.sz-card,.sz-card__header,.sz-card__body,.sz-card__title,
+.sz-card__dots,.sz-card__dot,.sz-card__dot--r,.sz-card__dot--g,.sz-card__dot--b,
+.sz-field,.sz-field__label,.sz-field__error,.sz-input,.sz-select,.sz-textarea,
+.sz-checkbox,.sz-checkbox__box,.sz-checkbox__label,
+.sz-progress,.sz-progress__fill,.sz-stat-bar,.sz-stat-bar__fill,.sz-stat-bar__fill--amber,
+.sz-cli,.sz-cli__inner,.sz-cli__cursor,.sz-crt,.sz-crt__inner,
+.sz-table,.sz-callout,.sz-modal-overlay,.sz-modal,.sz-modal__header,.sz-modal__title,
+.sz-modal__close,.sz-modal__body,.sz-modal__footer,
+.sz-tabs,.sz-tabs__item,.sz-tab-panel,.sz-accordion,.sz-accordion__item,
+.sz-accordion__trigger,.sz-accordion__body,.sz-toast,.sz-toast-container,
+.sz-label,.sz-pixel,.sz-pixel--hero,.sz-pixel--heading,.sz-pixel--label,
+.sz-code,.sz-glitch,.sz-badge--pixel,.sz-swatch,.sz-swatch__color,
+.sz-swatch__meta,.sz-swatch__name,.sz-swatch__hex,
+.sz-pixel-chart,.sz-pixel-chart__bar,
+.sz-grid-2,.sz-grid-3,.sz-flex,.sz-divider { all: revert; }
+/* ── LLM SPEC SECTION ── */
+.spec-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  background: #0D0D0D;
+  border: 1px solid var(--sz-border-dim);
+  border-bottom: none;
+}
+.spec-toolbar-left { display: flex; gap: 8px; align-items: center; }
+.spec-view-btn {
+  font-family: var(--sz-font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  border: 1px solid #3A3A3A; background: transparent; color: #888; padding: 4px 12px; cursor: pointer; transition: 150ms;
+}
+.spec-view-btn.active { background: var(--sz-teal); border-color: var(--sz-teal); color: #0D0D0D; }
+.spec-view-btn:hover:not(.active) { border-color: var(--sz-teal); color: var(--sz-teal); }
+.spec-copy-btn {
+  font-family: var(--sz-font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  border: 1px solid #3A3A3A; background: transparent; color: #888; padding: 4px 14px; cursor: pointer; transition: 150ms;
+}
+.spec-copy-btn:hover { border-color: var(--sz-teal); color: var(--sz-teal); }
+.spec-copy-btn.copied { border-color: var(--sz-green); color: var(--sz-green); }
+.spec-rendered {
+  border: 1px solid var(--sz-border-dim); background: var(--sz-surface);
+  padding: 40px 48px; font-family: var(--sz-font-serif); line-height: 1.75;
+  color: var(--sz-text); max-height: 680px; overflow-y: auto;
+}
+.spec-rendered::-webkit-scrollbar { width: 4px; }
+.spec-rendered::-webkit-scrollbar-thumb { background: var(--sz-teal); }
+.spec-rendered h1 { font-family: var(--sz-font-pixel); font-size: 14px; color: var(--sz-teal); letter-spacing: 0.08em; margin: 0 0 8px; line-height: 2; }
+.spec-rendered h2 { font-family: var(--sz-font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--sz-teal); border-bottom: 1px solid var(--sz-border-dim); padding-bottom: 6px; margin: 40px 0 16px; }
+.spec-rendered h3 { font-family: var(--sz-font-mono); font-size: 13px; font-weight: 600; color: var(--sz-text); margin: 24px 0 10px; }
+.spec-rendered h4 { font-family: var(--sz-font-mono); font-size: 11px; color: var(--sz-text-dim); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 1px; }
+.spec-rendered p  { font-size: 15px; color: var(--sz-text-dim); margin-bottom: 14px; max-width: none; line-height: 1.75; }
+.spec-rendered strong { color: var(--sz-text); font-weight: 600; }
+.spec-rendered em { color: var(--sz-teal); font-style: italic; }
+.spec-rendered code { font-family: var(--sz-font-mono); font-size: 12px; background: var(--sz-surface-alt); border: 1px solid var(--sz-border-dim); padding: 1px 6px; color: var(--sz-teal); }
+.spec-rendered pre { background: #0D0D0D; color: #F4F4F1; font-family: var(--sz-font-mono); font-size: 12px; line-height: 1.75; padding: 20px 24px; overflow-x: auto; border: 1px solid var(--sz-border-dim); margin: 16px 0; white-space: pre; }
+.spec-rendered pre code { background: none; border: none; padding: 0; color: #F4F4F1; }
+.spec-rendered ul, .spec-rendered ol { padding-left: 20px; margin-bottom: 14px; color: var(--sz-text-dim); font-size: 15px; }
+.spec-rendered li { margin-bottom: 5px; }
+.spec-rendered li strong { color: var(--sz-teal); }
+.spec-rendered table { width: 100%; border-collapse: collapse; font-family: var(--sz-font-mono); font-size: 12px; margin: 16px 0; }
+.spec-rendered th { text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--sz-teal); color: var(--sz-text-dim); text-transform: uppercase; letter-spacing: 1px; font-size: 10px; }
+.spec-rendered td { padding: 8px 12px; border-bottom: 1px solid var(--sz-border-dim); color: var(--sz-text); }
+.spec-rendered tr:hover td { background: var(--sz-surface-alt); }
+.spec-rendered blockquote { border-left: 3px solid var(--sz-teal); padding: 12px 20px; background: rgba(91,168,160,0.06); margin: 16px 0; color: var(--sz-text-dim); }
+.spec-rendered hr { border: none; border-top: 1px solid var(--sz-border-dim); margin: 32px 0; opacity: 0.4; }
+.spec-raw {
+  display: none; border: 1px solid var(--sz-border-dim); background: #0D0D0D; color: #F4F4F1;
+  font-family: var(--sz-font-mono); font-size: 12px; line-height: 1.75; padding: 28px 32px;
+  max-height: 680px; overflow-y: auto; white-space: pre-wrap; word-break: break-word;
+}
+.spec-raw::-webkit-scrollbar { width: 4px; }
+.spec-raw::-webkit-scrollbar-thumb { background: var(--sz-teal); }
+
+</style>
+
+<!-- Full sz.css inlined for self-contained demo -->
+<link rel="stylesheet" href="sz.css">
+
+</head>
+<body>
+
+<div class="page">
+
+<!-- ═══ SIDEBAR ══════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-brand">SZ LIBRARY</div>
+    <div class="sb-version">v1.1.0 · by king525dev</div>
+  </div>
+
+  <div class="sb-section">Getting Started</div>
+  <a class="sb-link active" href="#install">Installation</a>
+  <a class="sb-link" href="#quickstart">Quick Start</a>
+  <a class="sb-link" href="#themes">Themes</a>
+
+  <div class="sb-section">Foundations</div>
+  <a class="sb-link" href="#tokens">Design Tokens</a>
+  <a class="sb-link" href="#layout">Layout</a>
+  <a class="sb-link" href="#typography">Typography</a>
+  <a class="sb-link" href="#colors">Colors</a>
+
+  <div class="sb-section">Components</div>
+  <a class="sb-link" href="#buttons">Buttons</a>
+  <a class="sb-link" href="#badges">Badges</a>
+  <a class="sb-link" href="#cards">Cards</a>
+  <a class="sb-link" href="#forms">Forms</a>
+  <a class="sb-link" href="#progress">Progress</a>
+  <a class="sb-link" href="#cli">CLI / Terminal</a>
+  <a class="sb-link" href="#table">Table</a>
+  <a class="sb-link" href="#callout">Callout</a>
+  <a class="sb-link" href="#modal">Modal</a>
+  <a class="sb-link" href="#tabs">Tabs</a>
+  <a class="sb-link" href="#accordion">Accordion</a>
+  <a class="sb-link" href="#toast">Toast</a>
+
+  <div class="sb-section">Navigation</div>
+  <a class="sb-link" href="#dock">Dock Nav</a>
+  <a class="sb-link" href="#topnav">Top Nav</a>
+
+  <div class="sb-section">Animations</div>
+  <a class="sb-link" href="#animations">Keyframe Classes</a>
+  <a class="sb-link" href="#reveal">Scroll Reveal</a>
+
+  <div class="sb-section">JS API</div>
+  <a class="sb-link" href="#js-init">SZ.init()</a>
+  <a class="sb-link" href="#js-theme">SZ.theme()</a>
+  <a class="sb-link" href="#js-modal">SZ.modal</a>
+  <a class="sb-link" href="#js-toast">SZ.toast()</a>
+  <a class="sb-link" href="#js-progress">SZ.progressRun()</a>
+  <a class="sb-link" href="#js-data">Data Attributes</a>
+
+  <div class="sb-section">Reference</div>
+  <a class="sb-link" href="#llm-spec" style="color:var(--sz-teal);">◈ LLM Design Spec</a>
+
+  <div class="sb-controls">
+    <button onclick="SZ.toggleTheme()" style="width:100%;font-family:var(--sz-font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--sz-border-dim);background:transparent;color:var(--sz-text-dim);padding:8px;cursor:pointer;transition:150ms;">
+      Toggle Theme
+    </button>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ══════════════════════════════════════════ -->
+<main class="main">
+
+<!-- HERO ─────────────────────────────────────────── -->
+<div style="margin-bottom:64px;padding-bottom:48px;border-bottom:1px solid var(--sz-border-dim);">
+  <div style="font-family:var(--sz-font-pixel);font-size:20px;color:var(--sz-teal);letter-spacing:0.06em;margin-bottom:16px;">SZ.CSS</div>
+  <h1 style="font-family:var(--sz-font-serif);font-size:2.8rem;font-weight:400;letter-spacing:-0.02em;margin-bottom:16px;">Silicon Zen UI Library</h1>
+  <p style="font-size:1.1rem;color:var(--sz-text-dim);max-width:54ch;margin-bottom:28px;">
+    A retro-pixel + modern-minimalist component library by <strong style="color:var(--sz-teal)">king525dev</strong>.
+    Drop in two files. Style anything with classes.
+  </p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <a href="#install" class="sz-btn sz-btn--solid">[ Get Started ]</a>
+    <a href="#tokens"  class="sz-btn">[ Tokens ]</a>
+    <a href="#js-init" class="sz-btn sz-btn--ghost">[ JS API ]</a>
+  </div>
+</div>
+
+<!-- ─── INSTALLATION ─────────────────────────────── -->
+<section class="doc-section" id="install">
+  <span class="doc-heading">01 — Getting Started</span>
+  <h2 class="doc-title">Installation</h2>
+  <p class="doc-lead">Two files. No build step. No dependencies. Works with any HTML page.</p>
+
+  <div class="doc-subtitle">CDN (coming soon) / Local files</div>
+  <div style="position:relative">
+    <div class="code-block" id="code-install"><span class="hl-com">&lt;!-- 1. Drop these in your &lt;head&gt; --&gt;</span>
+<span class="hl-tag">&lt;link</span> <span class="hl-attr">rel</span>=<span class="hl-str">"stylesheet"</span> <span class="hl-attr">href</span>=<span class="hl-str">"sz.css"</span><span class="hl-tag">&gt;</span>
+
+<span class="hl-com">&lt;!-- 2. Add font dependencies (required) --&gt;</span>
+<span class="hl-tag">&lt;link</span> <span class="hl-attr">href</span>=<span class="hl-str">"https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Press+Start+2P&amp;display=swap"</span> <span class="hl-attr">rel</span>=<span class="hl-str">"stylesheet"</span><span class="hl-tag">&gt;</span>
+
+<span class="hl-com">&lt;!-- 3. Add JS plugin before &lt;/body&gt; (optional, for interactive components) --&gt;</span>
+<span class="hl-tag">&lt;script</span> <span class="hl-attr">src</span>=<span class="hl-str">"sz.js"</span><span class="hl-tag">&gt;&lt;/script&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-install', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── QUICK START ───────────────────────────────── -->
+<section class="doc-section" id="quickstart">
+  <span class="doc-heading">02 — Getting Started</span>
+  <h2 class="doc-title">Quick Start</h2>
+  <p class="doc-lead">A minimal page using Silicon Zen. All classes are prefixed <code class="sz-code">sz-</code> so they never clash with your existing CSS.</p>
+
+  <div style="position:relative">
+    <div class="code-block" id="code-qs"><span class="hl-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="hl-tag">&lt;html</span> <span class="hl-attr">lang</span>=<span class="hl-str">"en"</span> <span class="hl-attr">data-sz-theme</span>=<span class="hl-str">"parchment"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;head&gt;</span>
+  <span class="hl-tag">&lt;link</span> <span class="hl-attr">rel</span>=<span class="hl-str">"stylesheet"</span> <span class="hl-attr">href</span>=<span class="hl-str">"sz.css"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-com">&lt;!-- Google Fonts --&gt;</span>
+<span class="hl-tag">&lt;/head&gt;</span>
+<span class="hl-tag">&lt;body</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-body sz-dither"</span><span class="hl-tag">&gt;</span>
+
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-container"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-label"</span><span class="hl-tag">&gt;</span>01 — Intro<span class="hl-tag">&lt;/span&gt;</span>
+    <span class="hl-tag">&lt;h1</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-display"</span><span class="hl-tag">&gt;</span>High-Fidelity Nostalgia.<span class="hl-tag">&lt;/h1&gt;</span>
+    <span class="hl-tag">&lt;p</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-lead"</span><span class="hl-tag">&gt;</span>Silicon Zen UI.<span class="hl-tag">&lt;/p&gt;</span>
+    <span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-str">"#"</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--solid"</span><span class="hl-tag">&gt;</span>[ Start ]<span class="hl-tag">&lt;/a&gt;</span>
+  <span class="hl-tag">&lt;/div&gt;</span>
+
+  <span class="hl-tag">&lt;script</span> <span class="hl-attr">src</span>=<span class="hl-str">"sz.js"</span><span class="hl-tag">&gt;&lt;/script&gt;</span>
+<span class="hl-tag">&lt;/body&gt;</span><span class="hl-tag">&lt;/html&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-qs', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── THEMES ────────────────────────────────────── -->
+<section class="doc-section" id="themes">
+  <span class="doc-heading">03 — Foundations</span>
+  <h2 class="doc-title">Themes</h2>
+  <p class="doc-lead">Two themes ship out of the box: <strong>Parchment</strong> (light, serif-calm) and <strong>Obsidian</strong> (dark, terminal-dense). Apply to any element.</p>
+
+  <div class="demo-wrap" style="display:flex;gap:12px;flex-wrap:wrap;">
+    <button class="sz-btn" data-sz-theme-set="parchment">[ Parchment ]</button>
+    <button class="sz-btn" data-sz-theme-set="obsidian">[ Obsidian ]</button>
+    <button class="sz-btn sz-btn--ghost" data-sz-theme-toggle>[ Toggle ]</button>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-theme"><span class="hl-com">&lt;!-- Apply on &lt;html&gt; for full-page theming --&gt;</span>
+<span class="hl-tag">&lt;html</span> <span class="hl-attr">data-sz-theme</span>=<span class="hl-str">"parchment"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;html</span> <span class="hl-attr">data-sz-theme</span>=<span class="hl-str">"obsidian"</span><span class="hl-tag">&gt;</span>
+
+<span class="hl-com">&lt;!-- Or scope to any element --&gt;</span>
+<span class="hl-tag">&lt;section</span> <span class="hl-attr">data-sz-theme</span>=<span class="hl-str">"obsidian"</span><span class="hl-tag">&gt;</span>...<span class="hl-tag">&lt;/section&gt;</span>
+
+<span class="hl-com">&lt;!-- Toggle button (wired automatically by sz.js) --&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">data-sz-theme-toggle</span><span class="hl-tag">&gt;</span>Toggle<span class="hl-tag">&lt;/button&gt;</span>
+
+<span class="hl-com">&lt;!-- Set specific theme on click --&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">data-sz-theme-set</span>=<span class="hl-str">"obsidian"</span><span class="hl-tag">&gt;</span>Go Dark<span class="hl-tag">&lt;/button&gt;</span>
+
+<span class="hl-com">/* JS API */</span>
+SZ.theme('obsidian');
+SZ.toggleTheme();</div>
+    <button class="copy-btn" onclick="copySrc('code-theme', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── TOKENS ────────────────────────────────────── -->
+<section class="doc-section" id="tokens">
+  <span class="doc-heading">04 — Foundations</span>
+  <h2 class="doc-title">Design Tokens</h2>
+  <p class="doc-lead">All values are CSS custom properties under <code class="sz-code">--sz-*</code>. Override in <code class="sz-code">:root</code> to reskin without touching any component.</p>
+
+  <div style="position:relative">
+    <div class="code-block" id="code-tokens"><span class="hl-com">/* Override any token in your own CSS */</span>
+:root {
+  <span class="hl-com">/* Accents — shared across both themes */</span>
+  --sz-teal:       <span class="hl-str">#5BA8A0</span>;
+  --sz-teal-dim:   <span class="hl-str">#3D7A74</span>;
+  --sz-amber:      <span class="hl-str">#FFB86C</span>;
+  --sz-amber-dim:  <span class="hl-str">#CC8B3D</span>;
+  --sz-red:        <span class="hl-str">#D94F3D</span>;
+  --sz-green:      <span class="hl-str">#4FA878</span>;
+
+  <span class="hl-com">/* Surface — Parchment defaults */</span>
+  --sz-bg:          <span class="hl-str">#F4F4F1</span>;
+  --sz-bg-alt:      <span class="hl-str">#EAEAE7</span>;
+  --sz-surface:     <span class="hl-str">#FFFFFF</span>;
+  --sz-surface-alt: <span class="hl-str">#F0F0ED</span>;
+  --sz-border:      <span class="hl-str">#333333</span>;
+  --sz-border-dim:  <span class="hl-str">#888888</span>;
+  --sz-text:        <span class="hl-str">#0D0D0D</span>;
+  --sz-text-dim:    <span class="hl-str">#555555</span>;
+
+  <span class="hl-com">/* Typography */</span>
+  --sz-font-serif:  "Newsreader", Georgia, serif;
+  --sz-font-mono:   "JetBrains Mono", monospace;
+  --sz-font-pixel:  "Press Start 2P", monospace;
+
+  <span class="hl-com">/* Grid */</span>
+  --sz-grid: <span class="hl-str">4px</span>; <span class="hl-com">/* all spacing = multiples of this */</span>
+
+  <span class="hl-com">/* Motion */</span>
+  --sz-snap:   150ms cubic-bezier(0, 0, 0.2, 1);
+  --sz-spring: 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}</div>
+    <button class="copy-btn" onclick="copySrc('code-tokens', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── TYPOGRAPHY ────────────────────────────────── -->
+<section class="doc-section" id="typography">
+  <span class="doc-heading">05 — Foundations</span>
+  <h2 class="doc-title">Typography</h2>
+  <p class="doc-lead">Three font layers. Serif for content. Mono for UI and data. Pixel (Press Start 2P) for brand moments only — never body text.</p>
+
+  <div class="demo-wrap">
+    <div class="sz-display" style="margin-bottom:12px">Display Heading</div>
+    <h1 class="sz-h1" style="margin-bottom:12px">Section Heading h1</h1>
+    <h2 class="sz-h2" style="margin-bottom:12px">Sub-section h2</h2>
+    <h3 class="sz-h3" style="margin-bottom:12px">UI Label / h3 — Mono Uppercase</h3>
+    <p class="sz-body-text" style="margin-bottom:12px">Body text in Newsreader. Calm, readable, editorial. Max 62ch for comfortable line length.</p>
+    <p class="sz-lead" style="margin-bottom:12px">Lead paragraph — slightly larger, dimmed.</p>
+    <span class="sz-label">sz-label — teal mono uppercase</span>
+    <div style="margin-top:16px;">
+      <div class="sz-pixel--hero" style="margin-bottom:8px">PIXEL HERO</div>
+      <div class="sz-pixel--heading" style="margin-bottom:8px">[ SYSTEM READY ]</div>
+      <div class="sz-pixel--label">v1.1.0 · micro label</div>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-type"><span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-display"</span><span class="hl-tag">&gt;</span>Display Heading<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;h1</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-h1"</span><span class="hl-tag">&gt;</span>Section Heading<span class="hl-tag">&lt;/h1&gt;</span>
+<span class="hl-tag">&lt;h2</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-h2"</span><span class="hl-tag">&gt;</span>Sub-section<span class="hl-tag">&lt;/h2&gt;</span>
+<span class="hl-tag">&lt;h3</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-h3"</span><span class="hl-tag">&gt;</span>Mono Label<span class="hl-tag">&lt;/h3&gt;</span>
+<span class="hl-tag">&lt;p</span>  <span class="hl-attr">class</span>=<span class="hl-str">"sz-body-text"</span><span class="hl-tag">&gt;</span>Serif body.<span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;p</span>  <span class="hl-attr">class</span>=<span class="hl-str">"sz-lead"</span><span class="hl-tag">&gt;</span>Larger lead paragraph.<span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-label"</span><span class="hl-tag">&gt;</span>Teal section label<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;code</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-code"</span><span class="hl-tag">&gt;</span>inline code<span class="hl-tag">&lt;/code&gt;</span>
+
+<span class="hl-com">&lt;!-- Pixel font (brand/display only) --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-pixel--hero"</span><span class="hl-tag">&gt;</span>HERO 18–32px<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-pixel--heading"</span><span class="hl-tag">&gt;</span>Heading 14px<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-pixel--label"</span><span class="hl-tag">&gt;</span>Micro 8px label<span class="hl-tag">&lt;/div&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-type', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── BUTTONS ───────────────────────────────────── -->
+<section class="doc-section" id="buttons">
+  <span class="doc-heading">06 — Components</span>
+  <h2 class="doc-title">Buttons</h2>
+  <p class="doc-lead">All buttons are built from a base <code class="sz-code">.sz-btn</code>. Add modifiers for variants. Works on <code class="sz-code">&lt;a&gt;</code>, <code class="sz-code">&lt;button&gt;</code>, and <code class="sz-code">&lt;input type="submit"&gt;</code>.</p>
+
+  <div class="demo-wrap">
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+      <button class="sz-btn">Default</button>
+      <button class="sz-btn sz-btn--solid">Solid</button>
+      <button class="sz-btn sz-btn--amber">Amber</button>
+      <button class="sz-btn sz-btn--ghost">Ghost</button>
+      <button class="sz-btn sz-btn--danger">Danger</button>
+      <button class="sz-btn sz-btn--sm">Small</button>
+      <button class="sz-btn sz-btn--lg">Large</button>
+      <button class="sz-btn sz-btn--pixel">[ PIXEL ]</button>
+      <button class="sz-btn sz-btn--pixel sz-btn--amber">[ AMBER ]</button>
+      <button class="sz-btn sz-btn--disabled">Disabled</button>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-btn"><span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn"</span><span class="hl-tag">&gt;</span>Default<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--solid"</span><span class="hl-tag">&gt;</span>Solid<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--amber"</span><span class="hl-tag">&gt;</span>Amber<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--ghost"</span><span class="hl-tag">&gt;</span>Ghost<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--danger"</span><span class="hl-tag">&gt;</span>Danger<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--sm"</span><span class="hl-tag">&gt;</span>Small<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--lg"</span><span class="hl-tag">&gt;</span>Large<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--full"</span><span class="hl-tag">&gt;</span>Full Width<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--pixel"</span><span class="hl-tag">&gt;</span>[ PIXEL ]<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--disabled"</span> <span class="hl-attr">disabled</span><span class="hl-tag">&gt;</span>Disabled<span class="hl-tag">&lt;/button&gt;</span>
+
+<span class="hl-com">&lt;!-- Works on &lt;a&gt; too --&gt;</span>
+<span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-str">"#"</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--solid"</span><span class="hl-tag">&gt;</span>[ Link Button ]<span class="hl-tag">&lt;/a&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-btn', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── BADGES ────────────────────────────────────── -->
+<section class="doc-section" id="badges">
+  <span class="doc-heading">07 — Components</span>
+  <h2 class="doc-title">Badges</h2>
+  <div class="demo-wrap">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <span class="sz-badge sz-badge--teal">Active</span>
+      <span class="sz-badge sz-badge--amber">Warning</span>
+      <span class="sz-badge sz-badge--red">Error</span>
+      <span class="sz-badge sz-badge--green">OK</span>
+      <span class="sz-badge sz-badge--outline">Draft</span>
+      <span class="sz-badge sz-badge--pixel">PIXEL</span>
+      <span class="sz-badge sz-badge--pixel sz-badge--amber">BETA</span>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-badge"><span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-badge sz-badge--teal"</span><span class="hl-tag">&gt;</span>Active<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-badge sz-badge--amber"</span><span class="hl-tag">&gt;</span>Warning<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-badge sz-badge--red"</span><span class="hl-tag">&gt;</span>Error<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-badge sz-badge--green"</span><span class="hl-tag">&gt;</span>OK<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-badge sz-badge--outline"</span><span class="hl-tag">&gt;</span>Draft<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-badge sz-badge--pixel"</span><span class="hl-tag">&gt;</span>PIXEL<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-badge sz-badge--pixel sz-badge--amber"</span><span class="hl-tag">&gt;</span>BETA<span class="hl-tag">&lt;/span&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-badge', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── CARDS ─────────────────────────────────────── -->
+<section class="doc-section" id="cards">
+  <span class="doc-heading">08 — Components</span>
+  <h2 class="doc-title">Cards</h2>
+  <div class="demo-wrap">
+    <div class="sz-grid-2" style="align-items:start;">
+      <!-- Standard card -->
+      <div class="sz-card">
+        <div class="sz-card__header">
+          <span class="sz-card__title">PROJECT_A.EXE</span>
+          <span class="sz-card__title">_ □ ×</span>
+        </div>
+        <div class="sz-card__body">
+          <p style="font-size:14px;color:var(--sz-text-dim);margin-bottom:16px;">Standard card with teal header.</p>
+          <span class="sz-badge sz-badge--teal">Active</span>
+        </div>
+        <div class="sz-card__footer">
+          <button class="sz-btn sz-btn--sm">Open</button>
+          <span class="sz-badge sz-badge--outline">v2.1</span>
+        </div>
+      </div>
+      <!-- Window-chrome card -->
+      <div class="sz-card sz-card--window">
+        <div class="sz-card__header">
+          <div class="sz-card__dots">
+            <div class="sz-card__dot sz-card__dot--r"></div>
+            <div class="sz-card__dot sz-card__dot--g"></div>
+            <div class="sz-card__dot sz-card__dot--b"></div>
+          </div>
+          <span class="sz-card__title">WINDOW.APP</span>
+        </div>
+        <div class="sz-card__body">
+          <p style="font-size:14px;color:var(--sz-text-dim);">Window-chrome variant with traffic-light dots.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-card"><span class="hl-com">&lt;!-- Standard card --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__header"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__title"</span><span class="hl-tag">&gt;</span>TITLE<span class="hl-tag">&lt;/span&gt;</span>
+    <span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__title"</span><span class="hl-tag">&gt;</span>_ □ ×<span class="hl-tag">&lt;/span&gt;</span>
+  <span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__body"</span><span class="hl-tag">&gt;</span>Content<span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__footer"</span><span class="hl-tag">&gt;</span>Footer<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Window-chrome variant --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card sz-card--window"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__header"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__dots"</span><span class="hl-tag">&gt;</span>
+      <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__dot sz-card__dot--r"</span><span class="hl-tag">&gt;&lt;/div&gt;</span>
+      <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__dot sz-card__dot--g"</span><span class="hl-tag">&gt;&lt;/div&gt;</span>
+      <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__dot sz-card__dot--b"</span><span class="hl-tag">&gt;&lt;/div&gt;</span>
+    <span class="hl-tag">&lt;/div&gt;</span>
+    <span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__title"</span><span class="hl-tag">&gt;</span>WINDOW.APP<span class="hl-tag">&lt;/span&gt;</span>
+  <span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card__body"</span><span class="hl-tag">&gt;</span>Content<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Amber header --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card sz-card--amber"</span><span class="hl-tag">&gt;</span>...<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Hover lift --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-card sz-card--hover"</span><span class="hl-tag">&gt;</span>...<span class="hl-tag">&lt;/div&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-card', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── FORMS ─────────────────────────────────────── -->
+<section class="doc-section" id="forms">
+  <span class="doc-heading">09 — Components</span>
+  <h2 class="doc-title">Forms</h2>
+  <div class="demo-wrap">
+    <div class="sz-grid-2">
+      <div>
+        <div class="sz-field">
+          <label class="sz-field__label">File Path</label>
+          <input class="sz-input" type="text" value="~/projects/site" placeholder="~/path">
+          <span class="sz-field__hint">Absolute or relative path</span>
+        </div>
+        <div class="sz-field">
+          <label class="sz-field__label">Error State</label>
+          <input class="sz-input sz-input--error" type="text" value="bad_value">
+          <span class="sz-field__error">✗ Invalid entry</span>
+        </div>
+        <div class="sz-field">
+          <label class="sz-field__label">Select</label>
+          <select class="sz-input sz-select">
+            <option>parchment_mode</option>
+            <option>obsidian_mode</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">Checkboxes</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <label class="sz-checkbox is-checked" onclick="this.classList.toggle('is-checked')">
+            <div class="sz-checkbox__box">✓</div>
+            <span class="sz-checkbox__label">Enable dither patterns</span>
+          </label>
+          <label class="sz-checkbox" onclick="this.classList.toggle('is-checked')">
+            <div class="sz-checkbox__box">✓</div>
+            <span class="sz-checkbox__label">Hard edges only</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-form"><span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-field"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;label</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-field__label"</span><span class="hl-tag">&gt;</span>Label<span class="hl-tag">&lt;/label&gt;</span>
+  <span class="hl-tag">&lt;input</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-input"</span> <span class="hl-attr">type</span>=<span class="hl-str">"text"</span> <span class="hl-attr">placeholder</span>=<span class="hl-str">"..."</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-field__hint"</span><span class="hl-tag">&gt;</span>Helper text<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Error state --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-field"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;input</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-input sz-input--error"</span> <span class="hl-attr">type</span>=<span class="hl-str">"text"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-field__error"</span><span class="hl-tag">&gt;</span>✗ Error message<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Checkbox (CSS-only, no JS needed if using onclick) --&gt;</span>
+<span class="hl-tag">&lt;label</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-checkbox"</span> <span class="hl-attr">onclick</span>=<span class="hl-str">"this.classList.toggle('is-checked')"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-checkbox__box"</span><span class="hl-tag">&gt;</span>✓<span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-checkbox__label"</span><span class="hl-tag">&gt;</span>My option<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;/label&gt;</span>
+
+<span class="hl-com">&lt;!-- Or wire a real &lt;input&gt; — sz.js handles sync automatically --&gt;</span>
+<span class="hl-tag">&lt;label</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-checkbox"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;input</span> <span class="hl-attr">type</span>=<span class="hl-str">"checkbox"</span> <span class="hl-attr">hidden</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-checkbox__box"</span><span class="hl-tag">&gt;</span>✓<span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-checkbox__label"</span><span class="hl-tag">&gt;</span>Real checkbox<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;/label&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-form', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── PROGRESS ──────────────────────────────────── -->
+<section class="doc-section" id="progress">
+  <span class="doc-heading">10 — Components</span>
+  <h2 class="doc-title">Progress Bars</h2>
+  <div class="demo-wrap">
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div>
+        <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);margin-bottom:6px;">Default — teal fill</div>
+        <div class="sz-progress"><div class="sz-progress__fill" style="width:62%"></div></div>
+      </div>
+      <div>
+        <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);margin-bottom:6px;">Striped — teal/amber march</div>
+        <div class="sz-progress sz-progress--striped"><div class="sz-progress__fill" style="width:78%"></div></div>
+      </div>
+      <div>
+        <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);margin-bottom:6px;">Pixel — dashed fill + march animation</div>
+        <div class="sz-progress sz-progress--pixel"><div class="sz-progress__fill" style="width:45%"></div></div>
+      </div>
+      <div>
+        <div style="font-family:var(--sz-font-mono);font-size:10px;color:var(--sz-text-dim);margin-bottom:6px;">Thin + amber — stat bar style</div>
+        <div class="sz-progress sz-progress--thin sz-progress--amber"><div class="sz-progress__fill" style="width:90%"></div></div>
+      </div>
+      <div>
+        <div id="demo-progress-bar" class="sz-progress sz-progress--striped"><div class="sz-progress__fill" style="width:0%"></div></div>
+        <div id="demo-progress-label" class="sz-field__hint" style="margin-top:6px;">READY</div>
+        <button class="sz-btn sz-btn--sm" style="margin-top:12px;" data-sz-progress-run="#demo-progress-bar" data-sz-progress-label="#demo-progress-label">[ Run ]</button>
+      </div>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-prog"><span class="hl-com">&lt;!-- Default --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-progress"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-progress__fill"</span> <span class="hl-attr">style</span>=<span class="hl-str">"width: 62%"</span><span class="hl-tag">&gt;&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Striped teal/amber march --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-progress sz-progress--striped"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-progress__fill"</span> <span class="hl-attr">style</span>=<span class="hl-str">"width: 78%"</span><span class="hl-tag">&gt;&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Pixel dashed --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-progress sz-progress--pixel"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-progress__fill"</span> <span class="hl-attr">style</span>=<span class="hl-str">"width: 45%"</span><span class="hl-tag">&gt;&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Auto-run via data attribute --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">id</span>=<span class="hl-str">"my-bar"</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-progress sz-progress--striped"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-progress__fill"</span><span class="hl-tag">&gt;&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;span</span> <span class="hl-attr">id</span>=<span class="hl-str">"my-label"</span><span class="hl-tag">&gt;</span>READY<span class="hl-tag">&lt;/span&gt;</span>
+<span class="hl-tag">&lt;button</span>
+  <span class="hl-attr">data-sz-progress-run</span>=<span class="hl-str">"#my-bar"</span>
+  <span class="hl-attr">data-sz-progress-label</span>=<span class="hl-str">"#my-label"</span>
+  <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--sm"</span>
+<span class="hl-tag">&gt;</span>Run<span class="hl-tag">&lt;/button&gt;</span>
+
+<span class="hl-com">/* JS API */</span>
+SZ.progress('#my-bar', 75);
+SZ.progressRun('#my-bar', { labelEl: '#my-label' });</div>
+    <button class="copy-btn" onclick="copySrc('code-prog', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── MODAL ─────────────────────────────────────── -->
+<section class="doc-section" id="modal">
+  <span class="doc-heading">11 — Components</span>
+  <h2 class="doc-title">Modal</h2>
+  <div class="demo-wrap">
+    <button class="sz-btn" data-sz-modal-open="#demo-modal">[ Open Modal ]</button>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-modal"><span class="hl-com">&lt;!-- Trigger --&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn"</span> <span class="hl-attr">data-sz-modal-open</span>=<span class="hl-str">"#my-modal"</span><span class="hl-tag">&gt;</span>Open<span class="hl-tag">&lt;/button&gt;</span>
+
+<span class="hl-com">&lt;!-- Modal (place before &lt;/body&gt;) --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">id</span>=<span class="hl-str">"my-modal"</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-modal-overlay"</span> <span class="hl-attr">aria-hidden</span>=<span class="hl-str">"true"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-modal"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-modal__header"</span><span class="hl-tag">&gt;</span>
+      <span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-modal__title"</span><span class="hl-tag">&gt;</span>MODAL_TITLE<span class="hl-tag">&lt;/span&gt;</span>
+      <span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-modal__close"</span> <span class="hl-attr">data-sz-modal-close</span><span class="hl-tag">&gt;</span>×<span class="hl-tag">&lt;/button&gt;</span>
+    <span class="hl-tag">&lt;/div&gt;</span>
+    <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-modal__body"</span><span class="hl-tag">&gt;</span>
+      Your content here.
+    <span class="hl-tag">&lt;/div&gt;</span>
+    <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-modal__footer"</span><span class="hl-tag">&gt;</span>
+      <span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--ghost"</span> <span class="hl-attr">data-sz-modal-close</span><span class="hl-tag">&gt;</span>Cancel<span class="hl-tag">&lt;/button&gt;</span>
+      <span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-btn sz-btn--solid"</span><span class="hl-tag">&gt;</span>Confirm<span class="hl-tag">&lt;/button&gt;</span>
+    <span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">/* JS API */</span>
+SZ.modal.open('#my-modal');
+SZ.modal.close('#my-modal');
+SZ.modal.toggle('#my-modal');</div>
+    <button class="copy-btn" onclick="copySrc('code-modal', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── TOAST ─────────────────────────────────────── -->
+<section class="doc-section" id="toast">
+  <span class="doc-heading">12 — Components</span>
+  <h2 class="doc-title">Toast Notifications</h2>
+  <div class="demo-wrap">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="sz-btn sz-btn--sm" onclick="SZ.toast('Build complete in 1.4s', 'ok')">✓ OK toast</button>
+      <button class="sz-btn sz-btn--sm" onclick="SZ.toast('asset/hero.png is large (94kb)', 'warn')">⚠ Warn toast</button>
+      <button class="sz-btn sz-btn--sm" onclick="SZ.toast('Module not found: ./utils', 'error')">✗ Error toast</button>
+      <button class="sz-btn sz-btn--sm" onclick="SZ.toast('Kernel initialised', 'info')">◈ Info toast</button>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-toast"><span class="hl-com">/* SZ.toast(message, type?, duration?) */</span>
+<span class="hl-com">/* type: 'ok' | 'warn' | 'error' | 'info' (default) */</span>
+
+SZ.toast('Build complete in 1.4s', 'ok');
+SZ.toast('Large asset detected', 'warn');
+SZ.toast('Module not found', 'error');
+SZ.toast('Kernel initialised', 'info');
+SZ.toast('Custom duration', 'ok', 5000);</div>
+    <button class="copy-btn" onclick="copySrc('code-toast', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── TABS ──────────────────────────────────────── -->
+<section class="doc-section" id="tabs">
+  <span class="doc-heading">13 — Components</span>
+  <h2 class="doc-title">Tabs</h2>
+  <div class="demo-wrap" data-sz-tabs-scope>
+    <div class="sz-tabs">
+      <button class="sz-tabs__item is-active" data-sz-tab="tab-overview">Overview</button>
+      <button class="sz-tabs__item" data-sz-tab="tab-system">System</button>
+      <button class="sz-tabs__item" data-sz-tab="tab-cli">CLI</button>
+    </div>
+    <div id="tab-overview" class="sz-tab-panel is-active">
+      <p style="color:var(--sz-text-dim);">Overview panel content. Active by default.</p>
+    </div>
+    <div id="tab-system" class="sz-tab-panel">
+      <p style="color:var(--sz-text-dim);">System panel content.</p>
+    </div>
+    <div id="tab-cli" class="sz-tab-panel">
+      <div class="sz-cli" style="min-height:80px;"><div class="sz-cli__inner"><span style="color:var(--sz-teal)">■</span> kernel ready<span class="sz-cli__cursor"></span></div></div>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-tabs"><span class="hl-tag">&lt;div</span> <span class="hl-attr">data-sz-tabs-scope</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-tabs"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-tabs__item is-active"</span> <span class="hl-attr">data-sz-tab</span>=<span class="hl-str">"panel-a"</span><span class="hl-tag">&gt;</span>Tab A<span class="hl-tag">&lt;/button&gt;</span>
+    <span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-tabs__item"</span> <span class="hl-attr">data-sz-tab</span>=<span class="hl-str">"panel-b"</span><span class="hl-tag">&gt;</span>Tab B<span class="hl-tag">&lt;/button&gt;</span>
+  <span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">id</span>=<span class="hl-str">"panel-a"</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-tab-panel is-active"</span><span class="hl-tag">&gt;</span>Content A<span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">id</span>=<span class="hl-str">"panel-b"</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-tab-panel"</span><span class="hl-tag">&gt;</span>Content B<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-tabs', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── ACCORDION ────────────────────────────────── -->
+<section class="doc-section" id="accordion">
+  <span class="doc-heading">14 — Components</span>
+  <h2 class="doc-title">Accordion</h2>
+  <div class="demo-wrap">
+    <div class="sz-accordion" data-sz-single>
+      <div class="sz-accordion__item is-open">
+        <button class="sz-accordion__trigger">What is Silicon Zen?</button>
+        <div class="sz-accordion__body">A retro-pixel + modern-minimalist design language and component library by king525dev. It treats the pixel as a deliberate unit of construction for the calm internet.</div>
+      </div>
+      <div class="sz-accordion__item">
+        <button class="sz-accordion__trigger">Which fonts does it use?</button>
+        <div class="sz-accordion__body">Three layers: Newsreader (serif, content), JetBrains Mono (monospace, UI/data), and Press Start 2P (pixel, brand moments only).</div>
+      </div>
+      <div class="sz-accordion__item">
+        <button class="sz-accordion__trigger">Does it need JavaScript?</button>
+        <div class="sz-accordion__body">sz.css is pure CSS — no JS required. sz.js adds interactivity for modals, tabs, accordions, toast, and theme toggling. It's optional.</div>
+      </div>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-acc"><span class="hl-com">&lt;!-- data-sz-single: only one item open at a time --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-accordion"</span> <span class="hl-attr">data-sz-single</span><span class="hl-tag">&gt;</span>
+
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-accordion__item is-open"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-accordion__trigger"</span><span class="hl-tag">&gt;</span>Question?<span class="hl-tag">&lt;/button&gt;</span>
+    <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-accordion__body"</span><span class="hl-tag">&gt;</span>Answer text.<span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;/div&gt;</span>
+
+  <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-accordion__item"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;button</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-accordion__trigger"</span><span class="hl-tag">&gt;</span>Another?<span class="hl-tag">&lt;/button&gt;</span>
+    <span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-accordion__body"</span><span class="hl-tag">&gt;</span>Answer.<span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-tag">&lt;/div&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-acc', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── ANIMATIONS ────────────────────────────────── -->
+<section class="doc-section" id="animations">
+  <span class="doc-heading">15 — Animations</span>
+  <h2 class="doc-title">Keyframe Classes</h2>
+  <div class="demo-wrap">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <button class="sz-btn sz-btn--sm" data-sz-flicker=".flicker-target">[ Flicker ]</button>
+      <div class="flicker-target sz-card" style="padding:16px;font-family:var(--sz-font-mono);font-size:12px;">Flicker target</div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <div style="width:40px;height:40px;background:var(--sz-teal);animation:sz-pulse 2s ease-in-out infinite"></div>
+      <div style="width:40px;height:40px;background:var(--sz-amber);animation:sz-px-blink 0.6s steps(1) infinite"></div>
+      <div style="width:40px;height:40px;background:var(--sz-teal);" class="sz-glitch" data-text="SZ" style="font-family:var(--sz-font-pixel);font-size:16px;display:flex;align-items:center;justify-content:center;color:#0D0D0D">SZ</div>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-anim"><span class="hl-com">&lt;!-- Flicker-in on any element --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-flicker"</span><span class="hl-tag">&gt;</span>Flickers in on load<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Triggered by button click --&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">data-sz-flicker</span>=<span class="hl-str">".my-element"</span><span class="hl-tag">&gt;</span>Replay<span class="hl-tag">&lt;/button&gt;</span>
+
+<span class="hl-com">&lt;!-- Scroll reveal (sz.js adds .is-visible) --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-reveal"</span><span class="hl-tag">&gt;</span>Fades up on scroll<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-reveal sz-reveal--delay-2"</span><span class="hl-tag">&gt;</span>Delayed<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Scanline wipe --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-scanline-in"</span><span class="hl-tag">&gt;</span>Wipes in top-down<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Pulse ring --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-pulse"</span><span class="hl-tag">&gt;</span>Pulses<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Pixel blink --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-pixel-blink"</span><span class="hl-tag">&gt;</span>Blinks steps(1)<span class="hl-tag">&lt;/div&gt;</span>
+
+<span class="hl-com">&lt;!-- Glitch text --&gt;</span>
+<span class="hl-tag">&lt;span</span> <span class="hl-attr">class</span>=<span class="hl-str">"sz-glitch"</span> <span class="hl-attr">data-text</span>=<span class="hl-str">"SILICON"</span><span class="hl-tag">&gt;</span>SILICON<span class="hl-tag">&lt;/span&gt;</span></div>
+    <button class="copy-btn" onclick="copySrc('code-anim', this)">Copy</button>
+  </div>
+</section>
+
+<!-- ─── JS DATA ATTRIBUTES ──────────────────────── -->
+<section class="doc-section" id="js-data">
+  <span class="doc-heading">16 — JS API</span>
+  <h2 class="doc-title">Data Attributes Reference</h2>
+  <p class="doc-lead">sz.js auto-wires these on <code class="sz-code">SZ.init()</code>. No manual JS needed for common patterns.</p>
+
+  <div class="sz-card">
+    <div class="sz-card__header"><span class="sz-card__title">DATA ATTRIBUTE REFERENCE</span></div>
+    <div class="sz-card__body" style="padding:0;">
+      <table class="sz-table">
+        <thead><tr><th>Attribute</th><th>On element</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td class="sz-teal">data-sz-theme="parchment|obsidian"</td><td>any</td><td>Sets theme scope</td></tr>
+          <tr><td class="sz-teal">data-sz-theme-toggle</td><td>button</td><td>Toggles theme on click</td></tr>
+          <tr><td class="sz-teal">data-sz-theme-set="obsidian"</td><td>button</td><td>Sets specific theme on click</td></tr>
+          <tr><td class="sz-teal">data-sz-modal-open="#id"</td><td>button/a</td><td>Opens modal on click</td></tr>
+          <tr><td class="sz-teal">data-sz-modal-close</td><td>button</td><td>Closes nearest modal</td></tr>
+          <tr><td class="sz-teal">data-sz-tab="panel-id"</td><td>.sz-tabs__item</td><td>Switches to tab panel</td></tr>
+          <tr><td class="sz-teal">data-sz-tabs-scope</td><td>wrapper</td><td>Scopes tab group</td></tr>
+          <tr><td class="sz-teal">data-sz-single</td><td>.sz-accordion</td><td>Single-open accordion</td></tr>
+          <tr><td class="sz-teal">data-sz-progress-run="#id"</td><td>button</td><td>Runs progress animation</td></tr>
+          <tr><td class="sz-teal">data-sz-progress-label="#id"</td><td>button</td><td>Updates a status label</td></tr>
+          <tr><td class="sz-teal">data-sz-flicker=".sel"</td><td>button</td><td>Triggers flicker on targets</td></tr>
+          <tr><td class="sz-teal">data-sz-tip="text"</td><td>.sz-tooltip</td><td>Tooltip on hover</td></tr>
+          <tr><td class="sz-teal">data-sz-typewriter</td><td>span/div</td><td>Typewriter animation</td></tr>
+          <tr><td class="sz-teal">data-sz-tw-words="a,b,c"</td><td>same</td><td>Cycling word list</td></tr>
+          <tr><td class="sz-teal">data-sz-tw-speed="130"</td><td>same</td><td>ms per character</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TYPEWRITER DEMO ───────────────────────────── -->
+<section class="doc-section" id="js-init">
+  <span class="doc-heading">17 — JS API</span>
+  <h2 class="doc-title">Typewriter & SZ.init()</h2>
+  <div class="demo-wrap">
+    <div style="font-family:var(--sz-font-pixel);font-size:14px;color:var(--sz-teal);">
+      <span data-sz-typewriter data-sz-tw-words="SILICON ZEN,HIGH FIDELITY,NOSTALGIA,KING525DEV" data-sz-tw-speed="100"></span><span style="display:inline-block;width:12px;height:16px;background:var(--sz-teal);vertical-align:text-bottom;animation:sz-blink 0.7s steps(1) infinite;"></span>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="code-block" id="code-init"><span class="hl-com">&lt;!-- Pixel typewriter --&gt;</span>
+<span class="hl-tag">&lt;span</span>
+  <span class="hl-attr">data-sz-typewriter</span>
+  <span class="hl-attr">data-sz-tw-words</span>=<span class="hl-str">"SILICON ZEN,HIGH FIDELITY,NOSTALGIA"</span>
+  <span class="hl-attr">data-sz-tw-speed</span>=<span class="hl-str">"100"</span>
+<span class="hl-tag">&gt;&lt;/span&gt;</span>
+
+<span class="hl-com">/* Manual init (called automatically on DOMContentLoaded) */</span>
+SZ.init();
+
+<span class="hl-com">/* Re-init after dynamic content added */</span>
+document.body.insertAdjacentHTML('beforeend', '...');
+SZ.init(); <span class="hl-com">// safe to call multiple times</span></div>
+    <button class="copy-btn" onclick="copySrc('code-init', this)">Copy</button>
+  </div>
+</section>
+
+
+<!-- ─── LLM DESIGN SPEC ──────────────────────────── -->
+<section class="doc-section" id="llm-spec">
+  <span class="doc-heading">18 — Reference</span>
+  <h2 class="doc-title">LLM Design Specification</h2>
+  <p class="doc-lead">A complete, machine-readable description of Silicon Zen. Detailed enough for any developer or AI model to recreate this design from scratch. Toggle between rendered view and raw Markdown. Copy the raw Markdown with one click.</p>
+
+  <div class="spec-toolbar">
+    <div class="spec-toolbar-left">
+      <button class="spec-view-btn active" id="btnRendered" onclick="showRendered()">Rendered</button>
+      <button class="spec-view-btn" id="btnRaw" onclick="showRaw()">Raw Markdown</button>
+    </div>
+    <button class="spec-copy-btn" id="specCopyBtn" onclick="copySpec(this)">
+      <span>⧉</span> Copy Markdown
+    </button>
+  </div>
+
+  <div class="spec-rendered" id="specRendered"></div>
+  <div class="spec-raw" id="specRaw"></div>
+</section>
+
+</main><!-- /main -->
+</div><!-- /page -->
+
+<!-- ── Demo Modal ── -->
+<div id="demo-modal" class="sz-modal-overlay" aria-hidden="true">
+  <div class="sz-modal">
+    <div class="sz-modal__header">
+      <span class="sz-modal__title">SILICON_ZEN_MODAL</span>
+      <button class="sz-modal__close" data-sz-modal-close>×</button>
+    </div>
+    <div class="sz-modal__body">
+      Spring-scale entry animation. 70% black overlay. Sharp corners, 1px border on <code class="sz-code">--sz-surface</code>. Press <kbd style="font-family:var(--sz-font-mono);font-size:11px;border:1px solid var(--sz-border-dim);padding:2px 6px;">Esc</kbd> or click outside to dismiss.
+    </div>
+    <div class="sz-modal__footer">
+      <button class="sz-btn sz-btn--ghost" data-sz-modal-close>[ Cancel ]</button>
+      <button class="sz-btn sz-btn--solid" data-sz-modal-close>[ Confirm ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast container (injected by SZ.toast) ── -->
+
+<script src="sz.js"></script>
+<script>
+/* Copy button logic */
+function copySrc(id, btn) {
+  const el = document.getElementById(id);
+  // Strip HTML tags to get plain text
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+/* Sidebar active link on scroll */
+const sections = document.querySelectorAll('.doc-section');
+const sbLinks  = document.querySelectorAll('.sb-link');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sbLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => io.observe(s));
+
+/* ── LLM SPEC SECTION ── */
+const SPEC_RAW = `# Silicon Zen — Complete Design System Specification
+**by king525dev | v1.1.0**
+
+> This document is a machine-readable and human-readable specification of the Silicon Zen design system. Any developer, designer, or LLM should be able to recreate this design faithfully from this document alone. Every value is explicit. Every rule is intentional.
+
+---
+
+## 1. IDENTITY & PHILOSOPHY
+
+**Silicon Zen** is a "High-Fidelity Nostalgia" design language. It bridges the tactile, constrained world of 8-bit computing with the airy minimalism of modern browsers.
+
+- **Core metaphor:** A calm, focused terminal inside a high-end architectural studio.
+- **Emotional tone:** Quietly Technical. Focused. Deliberate. Occasionally surprising.
+- **Design principle:** Pixel art aesthetics are used as *punctuation*, not decoration. Every retro element must earn its place. Every modern element must have character.
+- **Two registers:** The system operates in two simultaneous registers — a *Serif/Modern* register for content and humanity, and a *Mono/Pixel* register for UI, data, and machine-facing text. Knowing when to switch is the craft.
+- **Rule of constraint:** No border-radius above 0px on technical components. No gradient fills anywhere. No blur shadows on retro-register elements. Flat always.
+- **Authored by:** king525dev
+
+---
+
+## 2. THEMES
+
+The system ships two themes. The accent palette is **identical across both themes** — only the surfaces invert.
+
+### Theme A — Parchment (Light, Default)
+
+Apply via: \`data-sz-theme="parchment"\` on any ancestor element.
+
+| Token | Value | Usage |
+|---|---|---|
+| \`--sz-bg\` | \`#F4F4F1\` | Page canvas background |
+| \`--sz-bg-alt\` | \`#EAEAE7\` | Alternate section background |
+| \`--sz-surface\` | \`#FFFFFF\` | Card and modal surfaces |
+| \`--sz-surface-alt\` | \`#F0F0ED\` | Input fields, code backgrounds |
+| \`--sz-border\` | \`#333333\` | Primary 1px borders |
+| \`--sz-border-dim\` | \`#888888\` | Dimmed / secondary borders |
+| \`--sz-text\` | \`#0D0D0D\` | Primary readable text |
+| \`--sz-text-dim\` | \`#555555\` | Secondary / muted text |
+| \`--sz-text-inv\` | \`#F4F4F1\` | Text on dark surfaces |
+| \`--sz-card-bg\` | \`#FFFFFF\` | Card background |
+| \`--sz-cli-bg\` | \`#0D0D0D\` | Terminal background |
+| \`--sz-cli-text\` | \`#F4F4F1\` | Terminal foreground |
+| \`--sz-dither-dot\` | \`rgba(0,0,0,0.09)\` | Dot-grid texture colour |
+
+### Theme B — Obsidian (Dark)
+
+Apply via: \`data-sz-theme="obsidian"\` on any ancestor element.
+
+| Token | Value | Usage |
+|---|---|---|
+| \`--sz-bg\` | \`#0D0D0D\` | Page canvas background |
+| \`--sz-bg-alt\` | \`#111111\` | Alternate section background |
+| \`--sz-surface\` | \`#1A1A1A\` | Card and modal surfaces |
+| \`--sz-surface-alt\` | \`#222222\` | Input fields, hover states |
+| \`--sz-border\` | \`#3A3A3A\` | Primary 1px borders |
+| \`--sz-border-dim\` | \`#2A2A2A\` | Dimmed / secondary borders |
+| \`--sz-text\` | \`#F4F4F1\` | Primary readable text |
+| \`--sz-text-dim\` | \`#888888\` | Secondary / muted text |
+| \`--sz-text-inv\` | \`#0D0D0D\` | Text on light surfaces |
+| \`--sz-card-bg\` | \`#1A1A1A\` | Card background |
+| \`--sz-cli-bg\` | \`#050505\` | Terminal background |
+| \`--sz-cli-text\` | \`#F4F4F1\` | Terminal foreground |
+| \`--sz-dither-dot\` | \`rgba(255,255,255,0.05)\` | Dot-grid texture colour |
+
+---
+
+## 3. SHARED ACCENT PALETTE
+
+These six colours are fixed and never change between themes. They are the connective tissue.
+
+| Token | Hex | Name | Usage rule |
+|---|---|---|---|
+| \`--sz-teal\` | \`#5BA8A0\` | Terminal Teal | Primary interactive accent. Links, buttons, active states, focus rings, CLI prompts. |
+| \`--sz-teal-dim\` | \`#3D7A74\` | Teal Dim | Hover state of teal, shadows, borders on teal elements. |
+| \`--sz-amber\` | \`#FFB86C\` | Ghost Amber | Secondary accent. Warnings, highlights, alt buttons, pixel badge variant. |
+| \`--sz-amber-dim\` | \`#CC8B3D\` | Amber Dim | Hover and shadow of amber elements. |
+| \`--sz-red\` | \`#D94F3D\` | Signal Red | Errors, destructive actions, danger buttons. Semantic only — never decorative. |
+| \`--sz-green\` | \`#4FA878\` | Signal Green | Success states, OK badges, passed builds. Semantic only. |
+
+**Critical colour rules:**
+- Never use \`#000000\` (pure black) or \`#FFFFFF\` (pure white). Use near-values instead.
+- Teal and amber must never appear on the same interactive element simultaneously.
+- Red and green are strictly semantic — never used for decoration.
+- Maximum one warm accent (teal or amber) as focal element per viewport.
+
+---
+
+## 4. TYPOGRAPHY
+
+### Font Stack
+
+Three font layers. Each has a strict domain. Mixing them is the craft.
+
+#### Layer 1 — Serif: Newsreader
+- **Token:** \`--sz-font-serif\`
+- **Stack:** \`"Newsreader", "Source Serif 4", Georgia, serif\`
+- **Google Fonts URL:** \`https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&display=swap\`
+- **Usage:** All headings (\`h1\`–\`h3\`), body copy, lead paragraphs, long-form reading. Anything the user *reads*.
+- **Never use for:** Button labels, navigation links, badges, code, CLI output, any UI control.
+
+#### Layer 2 — Monospace: JetBrains Mono
+- **Token:** \`--sz-font-mono\`
+- **Stack:** \`"JetBrains Mono", "Courier New", Courier, monospace\`
+- **Google Fonts URL:** \`https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap\`
+- **Usage:** All UI controls (buttons, labels, badges, table headers), all data display (stats, file sizes, hashes, paths), CLI/terminal output, code blocks, section labels, any machine-facing text.
+- **Never use for:** Long-form body prose or headings.
+
+#### Layer 3 — Pixel: Press Start 2P
+- **Token:** \`--sz-font-pixel\`
+- **Stack:** \`"Press Start 2P", monospace\`
+- **Google Fonts URL:** \`https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap\`
+- **Usage:** Brand identity moments only. Logo/wordmark, hero display text, pixel-style buttons, pixel badges. Must always use \`letter-spacing: 0.06em\` minimum.
+- **Never use for:** Body text, navigation, descriptions, anything below 8px rendered size, any block of text longer than ~30 characters.
+- **Size rule:** Minimum 8px rendered. Preferred sizes: 8px (micro label), 10px (UI label), 14px (heading), 18px (display), 28–32px (hero).
+
+### Type Scale
+
+| Class | Font | Size | Weight | Usage |
+|---|---|---|---|---|
+| \`.sz-display\` | Newsreader | clamp(2.4rem, 5vw, 4rem) | 400 | Page hero |
+| \`.sz-h1\` | Newsreader | clamp(1.8rem, 3vw, 2.4rem) | 400 | Section title |
+| \`.sz-h2\` | Newsreader | clamp(1.3rem, 2.2vw, 1.75rem) | 400 | Sub-section |
+| \`.sz-h3\` | JetBrains Mono | 0.8rem | 500 | UI label heading |
+| \`.sz-body-text\` | Newsreader | 1rem | 400 | Body copy, max 62ch |
+| \`.sz-lead\` | Newsreader | 1.2rem | 400 | Lead paragraph, dimmed |
+| \`.sz-label\` | JetBrains Mono | 11px | 400 | Section eyebrow, teal, uppercase |
+| \`.sz-mono\` | JetBrains Mono | 0.85em | 400 | Inline mono spans |
+| \`.sz-pixel--hero\` | Press Start 2P | clamp(18px, 3vw, 32px) | 400 | Brand hero text |
+| \`.sz-pixel--heading\` | Press Start 2P | 14px | 400 | Pixel heading |
+| \`.sz-pixel--label\` | Press Start 2P | 8px | 400 | Micro pixel label |
+
+### Typography Rules
+- Line height body: \`1.65\`. Headings: \`1.1–1.25\`. Terminal/mono: \`1.8\`.
+- Letter spacing: Press Start 2P always \`0.06em+\`. Mono labels \`1.5px\`. JetBrains body \`0\`.
+- Never set Press Start 2P below 8px rendered. It becomes illegible and breaks the retro aesthetic.
+- Serif headings use \`letter-spacing: -0.02em\` for optical tightening.
+
+---
+
+## 5. SPACING SYSTEM
+
+**Base unit: 4px.** Every margin, padding, and gap must be a multiple of 4px. No exceptions.
+
+| Token | Value | Usage |
+|---|---|---|
+| \`--sz-grid\` | \`4px\` | Base unit |
+| \`calc(var(--sz-grid) * 1)\` | \`4px\` | Fine detail, icon gaps |
+| \`calc(var(--sz-grid) * 2)\` | \`8px\` | Tight component padding |
+| \`calc(var(--sz-grid) * 3)\` | \`12px\` | Internal component spacing |
+| \`calc(var(--sz-grid) * 4)\` | \`16px\` | Standard padding |
+| \`calc(var(--sz-grid) * 5)\` | \`20px\` | Card body padding (min) |
+| \`calc(var(--sz-grid) * 6)\` | \`24px\` | Card body padding (standard) |
+| \`calc(var(--sz-grid) * 8)\` | \`32px\` | Section sub-gap |
+| \`calc(var(--sz-grid) * 10)\` | \`40px\` | Container padding |
+| \`calc(var(--sz-grid) * 12)\` | \`48px\` | Section separator |
+| \`calc(var(--sz-grid) * 20)\` | \`80px\` | Major section margin |
+
+**Philosophy:** When in doubt, add more space. Silicon Zen prioritises "over-spacing" — crowded layouts break the calm. If something feels tight, double the padding.
+
+---
+
+## 6. LAYOUT
+
+- **Max content width:** \`1040px\` (standard), \`720px\` (reading), \`1280px\` (wide)
+- **Container class:** \`.sz-container\` — auto left/right margins, 40px side padding
+- **Grid systems:** \`.sz-grid-2\` (2 col, auto-fit, min 280px), \`.sz-grid-3\` (min 220px), \`.sz-grid-4\` (min 180px)
+- **Gap:** \`calc(var(--sz-grid) * 6)\` = 24px between grid cells
+- **Flex row:** \`.sz-flex\` — wrapping row, 16px gap
+- **Divider:** \`.sz-divider\` — 1px \`--sz-border-dim\` line, 35% opacity, 48px vertical margin
+- **Dither background:** \`.sz-dither\` — \`radial-gradient\` dot pattern, 8px×8px tile, applied to \`body\` or section wrappers
+
+---
+
+## 7. BORDERS & SHADOWS
+
+- **Border width:** Always 1px. Never thicker in standard UI.
+- **Border radius:** \`0px\` on all technical and retro-register components. \`0px\` on desktop cards. Only use radius in explicit mobile/consumer contexts.
+- **Hard shadow (pixel style):** \`box-shadow: 4px 4px 0 var(--sz-teal-dim)\` — offset, no blur, no spread. This is the Silicon Zen shadow. Used on pixel buttons and pixel badges.
+- **No blur shadows:** Never \`box-shadow: 0 4px 12px rgba(0,0,0,0.3)\`. These are forbidden in the retro register.
+- **Dashed border:** \`border: 1px dashed var(--sz-border-dim)\` — used for chart areas and placeholder zones only.
+
+---
+
+## 8. COMPONENTS
+
+### Buttons
+
+Base class: \`.sz-btn\`. All buttons use JetBrains Mono, 12px, \`letter-spacing: 1px\`, uppercase-optional, \`border-radius: 0\`.
+
+**Hover behaviour:** \`transform: translate(-2px, -2px)\` + \`box-shadow: 4px 4px 0 var(--sz-border)\`. This simulates physical movement.
+**Active behaviour:** \`transform: translate(0, 0)\` + \`box-shadow: none\`. Snaps back instantly.
+**Transition:** \`150ms cubic-bezier(0, 0, 0.2, 1)\`.
+
+| Modifier | Appearance | When to use |
+|---|---|---|
+| (none) | Transparent bg, \`--sz-border\` border | Default actions |
+| \`.sz-btn--solid\` | Teal fill, teal-dim border | Primary CTA |
+| \`.sz-btn--amber\` | Transparent, amber border+text | Secondary alternative |
+| \`.sz-btn--ghost\` | No border, no shadow | Subtle / tertiary actions |
+| \`.sz-btn--danger\` | Red border+text, red fill on hover | Destructive actions |
+| \`.sz-btn--sm\` | Smaller padding, 10px font | Compact UI |
+| \`.sz-btn--lg\` | Larger padding, 14px font | Hero CTAs |
+| \`.sz-btn--full\` | \`width: 100%\`, centered | Full-width contexts |
+| \`.sz-btn--pixel\` | Press Start 2P, 8px, teal fill, hard shadow | Brand/identity moments |
+| \`.sz-btn--disabled\` | \`opacity: 0.35\`, \`pointer-events: none\` | Unavailable states |
+
+### Badges
+
+Base class: \`.sz-badge\`. JetBrains Mono, 10px, \`letter-spacing: 1px\`, \`border-radius: 0\`.
+
+| Modifier | Colour | Use |
+|---|---|---|
+| \`.sz-badge--teal\` | Teal fill, dark text | Active, running, current |
+| \`.sz-badge--amber\` | Amber fill, dark text | Warning, beta, highlight |
+| \`.sz-badge--red\` | Red fill, light text | Error, failed, critical |
+| \`.sz-badge--green\` | Green fill, dark text | Success, passing, OK |
+| \`.sz-badge--outline\` | Transparent, dim border | Draft, inactive, neutral |
+| \`.sz-badge--pixel\` | Press Start 2P, 8px, 2px border, hard shadow | Brand moments only |
+
+### Cards
+
+Base class: \`.sz-card\`. 1px \`--sz-border\`, \`background: --sz-card-bg\`, \`border-radius: 0\`.
+
+**Structure:**
+- \`.sz-card__header\` — teal (\`--sz-teal\`) background, 1px bottom border. Title in JetBrains Mono 12px, \`color: #0D0D0D\`.
+- \`.sz-card__title\` — the text element inside the header.
+- \`.sz-card__body\` — \`padding: calc(var(--sz-grid) * 6)\` = 24px.
+- \`.sz-card__footer\` — 1px top border, flex row, 16px gap.
+
+**Variants:**
+- \`.sz-card--window\` — Surface-coloured header (not teal), teal title text, traffic-light dots via \`.sz-card__dots\` > \`.sz-card__dot--r/g/b\`.
+- \`.sz-card--amber\` — Amber header background.
+- \`.sz-card--hover\` — \`translate(-2px,-2px)\` + \`box-shadow: 4px 4px 0 --sz-border-dim\` on hover.
+
+**Traffic-light dot colours:** Red \`#D94F3D\`, Green \`#4FA878\`, Blue \`#5BA8A0\`. Size: 9×9px, 1px border.
+
+### Forms
+
+- \`.sz-field\` — wrapper, flex-col, gap 8px.
+- \`.sz-field__label\` — JetBrains Mono, 10px, uppercase, \`letter-spacing: 1.5px\`, \`color: --sz-text-dim\`.
+- \`.sz-input\` — bg \`--sz-surface-alt\`, \`border: 1px solid --sz-border-dim\`, \`border-bottom: 2px solid --sz-border\`, JetBrains Mono 13px, \`border-radius: 0\`. On focus: \`border-bottom-color: --sz-teal\`, bg shifts to \`--sz-surface\`.
+- \`.sz-input--error\` — \`border-bottom-color: --sz-red\`.
+- \`.sz-select\` — same as input, custom teal chevron SVG via \`background-image\`.
+- \`.sz-checkbox\` — Custom styled. Box is 14×14px, 1px border. Checked state: teal fill, teal-dim border, \`✓\` character in \`#0D0D0D\`. Toggle \`.is-checked\` on the \`.sz-checkbox\` wrapper.
+
+### Progress Bars
+
+Base: \`.sz-progress\` — 8px height, \`background: --sz-border-dim\`, 1px border, overflow hidden.
+Fill: \`.sz-progress__fill\` — \`height: 100%\`, \`width: 0%\`, set width via inline style or JS. \`transition: width 0.3s ease-out\`.
+
+| Modifier | Fill style | Usage |
+|---|---|---|
+| (none) | Solid teal | Default progress |
+| \`.sz-progress--striped\` | Repeating 8px teal/amber diagonal stripes | Loading, build progress |
+| \`.sz-progress--pixel\` | Dashed teal blocks, marching animation | Retro boot sequences |
+| \`.sz-progress--thin\` | 4px height | Inline stat bars |
+| \`.sz-progress--amber\` | Solid amber fill | Warning-level progress |
+| \`.sz-progress--green\` | Solid green fill | Completed/success state |
+
+### CLI Terminal
+
+\`.sz-cli\` — \`background: --sz-cli-bg\` (#0D0D0D), \`color: --sz-cli-text\`, JetBrains Mono 13px, line-height 1.8, 1px border. Has a CSS \`::before\` scanline overlay (repeating horizontal lines at 30% opacity).
+
+**Text colour helpers inside \`.sz-cli\`:**
+- \`.sz-prompt\` — \`color: --sz-teal\` (prompt symbol and path)
+- \`.sz-ok\` — \`color: #4FA878\` (success lines)
+- \`.sz-warn\` — \`color: --sz-amber\` (warnings)
+- \`.sz-err\` — \`color: --sz-red\` (errors)
+- \`.sz-muted\` — \`color: #444\` (section dividers, comments)
+
+**Cursor:** \`.sz-cli__cursor\` — 8×14px inline block, \`background: --sz-teal\`, \`animation: sz-blink 1s steps(2) infinite\`.
+
+**CRT wrapper:** \`.sz-crt\` — 3px teal border, \`box-shadow: 0 0 0 1px --sz-teal-dim, 4px 4px 0 --sz-teal-dim\`, dark bg, \`::before\` phosphor scanline, \`::after\` vignette radial gradient.
+
+### Modal
+
+\`.sz-modal-overlay\` — \`position: fixed; inset: 0\`, 72% black overlay. \`opacity: 0; pointer-events: none\` by default. \`.is-open\` sets \`opacity: 1; pointer-events: all\`.
+
+\`.sz-modal\` — \`background: --sz-surface\`, 1px \`--sz-border\`, \`border-radius: 0\`, max-width 520px. Entry: \`transform: scale(0.96) → scale(1)\` with \`200ms cubic-bezier(0.34, 1.56, 0.64, 1)\` (spring).
+
+Dismiss: click outside overlay, click \`[data-sz-modal-close]\` button, or press \`Escape\`.
+
+### Tabs
+
+\`.sz-tabs\` — flex row, \`border-bottom: 1px solid --sz-border-dim\`. Items: \`.sz-tabs__item\` — JetBrains Mono 11px, uppercase, \`letter-spacing: 1px\`, \`border-bottom: 2px solid transparent\`, \`margin-bottom: -1px\`. Active: \`color: --sz-teal\`, \`border-bottom-color: --sz-teal\`. Panels: \`.sz-tab-panel\` — \`display: none\` by default, \`.is-active\` sets \`display: block\`.
+
+Scope multiple tab groups on one page with \`data-sz-tabs-scope\` on the wrapper.
+
+### Accordion
+
+\`.sz-accordion\` — 1px \`--sz-border-dim\` border. Items: \`.sz-accordion__item\` with 1px bottom border. Trigger: \`.sz-accordion__trigger\` — full-width button, JetBrains Mono 12px, \`::after\` content \`'+'\` (teal). Open state: \`::after\` content \`'−'\`. Body: \`.sz-accordion__body\` — \`max-height: 0; overflow: hidden\`, transitions to \`max-height: 400px\` on \`.is-open\`.
+
+Add \`data-sz-single\` to \`.sz-accordion\` to enforce single-open behaviour.
+
+### Toast Notifications
+
+\`.sz-toast\` — fixed position (bottom-right), \`background: --sz-surface\`, 1px border, \`border-left: 3px solid --sz-teal\`, JetBrains Mono 12px. Slides in from right via \`@keyframes sz-toast-in\`. Auto-dismisses after \`duration\` ms.
+
+Variants: \`.sz-toast--warn\` (amber left border), \`.sz-toast--error\` (red left border), \`.sz-toast--ok\` (green left border).
+
+### Callout / Alert
+
+\`.sz-callout\` — \`border-left: 3px solid --sz-teal\`, teal-tinted background (\`rgba(91,168,160,0.07)\`), 14px serif text.
+- \`.sz-callout--warn\` — amber border + amber bg tint
+- \`.sz-callout--error\` — red border + red bg tint
+
+---
+
+## 9. NAVIGATION
+
+### Floating Dock (Default)
+
+\`.sz-dock\` — \`position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%)\`. Dark background \`rgba(13,13,13,0.92)\`, 1px \`#3A3A3A\` border, \`backdrop-filter: blur(8px)\`.
+
+Items: \`.sz-dock__item\` — 40×40px, 1px \`#444\` border, JetBrains Mono 10px, \`color: #888\`. Hover: teal border and teal text. Active (\`.is-active\`): teal fill, dark text.
+
+### Top Bar
+
+\`.sz-topnav\` — \`position: sticky; top: 0; height: 56px\`, \`background: --sz-bg\`, \`border-bottom: 2px solid --sz-teal\`, \`backdrop-filter: blur(8px)\`.
+
+Logo: \`.sz-topnav__logo\` — JetBrains Mono 13px, uppercase, \`letter-spacing: 2px\`. \`<span>\` inside coloured teal.
+
+Links: \`.sz-topnav__links\` — JetBrains Mono 11px, uppercase, \`letter-spacing: 1.5px\`, \`border-bottom: 1px solid transparent\`. Active: teal text + teal border-bottom.
+
+---
+
+## 10. ANIMATION SYSTEM
+
+### Timing
+
+| Token | Value | Usage |
+|---|---|---|
+| \`--sz-snap\` | \`150ms cubic-bezier(0, 0, 0.2, 1)\` | All UI state transitions |
+| \`--sz-spring\` | \`200ms cubic-bezier(0.34, 1.56, 0.64, 1)\` | Modal entry, playful elements |
+| Pixel timing | \`steps(N, end)\` | All retro/pixel animations — no interpolation |
+
+### Keyframe Classes
+
+| Class | Effect | Timing |
+|---|---|---|
+| \`.sz-flicker\` | 3-frame opacity flicker (0 → 0.6 → 0.15 → 1) | \`0.3s steps(3)\` |
+| \`.sz-reveal\` | Fade up from 16px below. Needs \`.is-visible\` added by JS. | \`0.5s ease-out\` |
+| \`.sz-reveal--delay-1/2/3\` | Staggered reveal delays (0.1s, 0.2s, 0.3s) | Added to \`.sz-reveal\` |
+| \`.sz-scanline-in\` | Clip-path wipe from top to bottom | \`0.8s steps(16, end)\` |
+| \`.sz-pulse\` | Expanding teal ring, looping | \`2s ease-in-out infinite\` |
+| \`.sz-pixel-blink\` | Steps-based visibility blink | \`0.6s steps(1) infinite\` |
+
+### Glitch Text
+
+\`.sz-glitch\` with \`data-text="YOUR TEXT"\` — CSS \`::before\` (amber) and \`::after\` (red) pseudo-elements with \`clip-path\` offsets, fire every ~2.5s via \`@keyframes\` with \`steps(1)\` timing.
+
+### Pixel Animations (Canvas-based)
+
+The following animations are implemented in JavaScript using the \`<canvas>\` API:
+
+1. **Isometric Pixel Art** — Multi-layer cube renderer. 3 face colours per cube (top, right, left), teal and amber accents, monochrome floor grid. Block sizes: 5–7px per unit.
+2. **Sprite Walker** — 3-frame 16×16px character animation at 8fps using \`steps()\`. Amber head, teal body.
+3. **Star Field** — Parallax scrolling dots, teal colour, amber accent stars, 3 speed layers.
+4. **Pixel Rain** — Matrix-style column drops. Characters from \`01アイウエオSILICONZEN\`. Press Start 2P font rendered to canvas at 8px.
+5. **Oscilloscope Wave** — Stepped sine wave rendered as filled rectangles (4px wide each). Dual teal (primary) and amber (secondary) channels.
+6. **Pixel Progress March** — Dashed horizontal march fill using \`repeating-linear-gradient\` + \`@keyframes\` with \`background-position\` step animation.
+
+---
+
+## 11. JAVASCRIPT API
+
+Load \`sz.js\` before \`</body>\`. It auto-calls \`SZ.init()\` on \`DOMContentLoaded\`.
+
+\`\`\`javascript
+// Theme control
+SZ.theme('obsidian');        // Set theme on <html>
+SZ.theme('parchment', el);   // Set theme on specific element
+SZ.toggleTheme();            // Toggle between parchment/obsidian
+
+// Modal control
+SZ.modal.open('#modal-id');
+SZ.modal.close('#modal-id');
+SZ.modal.toggle('#modal-id');
+
+// Progress
+SZ.progress('#bar', 75);     // Set to 75% immediately
+SZ.progressRun('#bar', {     // Animated run to 100%
+  labelEl: '#label',
+  stages: ['LOADING...','COMPILING...','DONE'],
+  interval: 110,
+  onComplete: () => console.log('done')
+});
+
+// Toast notifications
+SZ.toast('Message', 'ok');       // type: ok | warn | error | info
+SZ.toast('Message', 'warn', 5000); // custom duration ms
+\`\`\`
+
+### Data Attributes (no JS code required)
+
+| Attribute | On | Effect |
+|---|---|---|
+| \`data-sz-theme="parchment\\|obsidian"\` | any element | Scopes a theme |
+| \`data-sz-theme-toggle\` | button | Toggles theme on click |
+| \`data-sz-theme-set="obsidian"\` | button | Sets specific theme on click |
+| \`data-sz-modal-open="#id"\` | button/a | Opens modal on click |
+| \`data-sz-modal-close\` | button | Closes nearest \`.sz-modal-overlay\` |
+| \`data-sz-tab="panel-id"\` | \`.sz-tabs__item\` | Switches to tab panel |
+| \`data-sz-tabs-scope\` | wrapper | Scopes a tab group |
+| \`data-sz-single\` | \`.sz-accordion\` | Enforce one-open-at-a-time |
+| \`data-sz-progress-run="#id"\` | button | Triggers animated progress |
+| \`data-sz-progress-label="#id"\` | button | Wires a status label element |
+| \`data-sz-flicker=".sel"\` | button | Triggers \`.sz-flicker\` on targets |
+| \`data-sz-tip="text"\` | \`.sz-tooltip\` | Shows tooltip on hover |
+| \`data-sz-typewriter\` | span/div | Starts typewriter animation |
+| \`data-sz-tw-words="a,b,c"\` | same element | Comma-separated cycling words |
+| \`data-sz-tw-speed="130"\` | same element | Milliseconds per character |
+
+---
+
+## 12. DO & DON'T RULES
+
+### Always DO
+- Use \`border-radius: 0\` on all technical, tool, and terminal-facing components.
+- Use JetBrains Mono for all numbers, file paths, code, hashes, and UI controls.
+- Apply a dot-grid dither texture (\`radial-gradient\`) to large neutral surface areas.
+- Use \`steps()\` timing for all pixel and retro-style animations — never \`ease-in-out\` on pixel elements.
+- Set \`image-rendering: pixelated\` on all pixel art canvas elements and scaled sprites.
+- Use 1px borders everywhere. Never thicker, unless it's the 3px teal border on \`.sz-crt\`.
+- Use hard offset shadows (\`4px 4px 0 var(--sz-teal-dim)\`) not blurred shadows on retro components.
+- Ensure minimum 4.5:1 contrast ratio for all text.
+- Respect \`prefers-color-scheme\` by defaulting to the matching theme.
+
+### Never DON'T
+- Use gradient fills on backgrounds, buttons, or UI elements. Flat only.
+- Apply \`border-radius\` above 0px on window chrome, cards, or technical panels.
+- Use Press Start 2P below 8px rendered size.
+- Use Press Start 2P for body text or any text block longer than ~30 characters.
+- Mix pixel icons with smooth SVG icons in the same component.
+- Apply teal and amber to the same interactive element.
+- Use pure \`#000000\` or \`#FFFFFF\` anywhere — always use the near-values.
+- Add blur box-shadows to retro-register elements.
+- Use smooth \`ease-in-out\` for animations that should feel pixel-discrete.
+
+---
+
+## 13. FILE STRUCTURE
+
+\`\`\`
+sz.css      — Full component library. No dependencies. ~18kb.
+sz.js       — Interactive behaviour plugin. No dependencies. ~5kb minified.
+sz-docs.html — This documentation site. Self-contained.
+\`\`\`
+
+**CSS class prefix:** All classes use \`sz-\` prefix to prevent collisions with existing stylesheets.
+
+**Theme attribute:** \`data-sz-theme="parchment|obsidian"\` on any ancestor. Scopes all token values within that subtree.
+
+**Fonts required (Google Fonts):**
+\`\`\`
+https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400
+  &family=JetBrains+Mono:wght@400;500
+  &family=Press+Start+2P
+  &display=swap
+\`\`\`
+
+---
+
+*Silicon Zen Design System — End of Specification*
+*Apply consistently. Break rules deliberately. Never break them lazily.*
+*— king525dev, v1.1.0*`;
+
+function showRendered() {
+  document.getElementById('specRendered').style.display = 'block';
+  document.getElementById('specRaw').style.display = 'none';
+  document.getElementById('btnRendered').classList.add('active');
+  document.getElementById('btnRaw').classList.remove('active');
+}
+function showRaw() {
+  document.getElementById('specRaw').style.display = 'block';
+  document.getElementById('specRendered').style.display = 'none';
+  document.getElementById('btnRaw').classList.add('active');
+  document.getElementById('btnRendered').classList.remove('active');
+}
+function copySpec(btn) {
+  navigator.clipboard.writeText(SPEC_RAW).then(() => {
+    btn.innerHTML = '<span>✓</span> Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = '<span>⧉</span> Copy Markdown'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+/* Simple markdown → HTML renderer */
+function renderMarkdown(md) {
+  let html = md
+    // Escape HTML entities first
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    // Fenced code blocks (must come before inline code)
+    .replace(/```([\s\S]*?)```/g, (_, code) => '<pre><code>' + code.trim() + '</code></pre>')
+    // Headings
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
+    // Horizontal rule
+    .replace(/^---$/gm, '<hr>')
+    // Blockquote
+    .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
+    // Bold + italic
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // Inline code (after fenced blocks)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Tables — detect pipe rows
+    .replace(/((?:^\|.+\|\n?)+)/gm, (match) => {
+      const rows = match.trim().split('\n').filter(r => r.trim());
+      if (rows.length < 2) return match;
+      // Check second row is separator
+      if (!/^\|[-|: ]+\|/.test(rows[1])) return match;
+      const headerCells = rows[0].split('|').filter((c,i,a)=>i>0&&i<a.length-1).map(c=>'<th>'+c.trim()+'</th>').join('');
+      const bodyRows = rows.slice(2).map(r => {
+        const cells = r.split('|').filter((c,i,a)=>i>0&&i<a.length-1).map(c=>'<td>'+c.trim()+'</td>').join('');
+        return '<tr>' + cells + '</tr>';
+      }).join('');
+      return '<table><thead><tr>' + headerCells + '</tr></thead><tbody>' + bodyRows + '</tbody></table>';
+    })
+    // Unordered lists
+    .replace(/((?:^- .+\n?)+)/gm, (match) => {
+      const items = match.trim().split('\n').map(l => '<li>' + l.replace(/^- /, '') + '</li>').join('');
+      return '<ul>' + items + '</ul>';
+    })
+    // Paragraphs — wrap non-tag lines
+    .replace(/^(?!<[a-zA-Z])(.+)$/gm, (line) => {
+      if (!line.trim()) return '';
+      return '<p>' + line + '</p>';
+    })
+    // Clean up multiple blank lines
+    .replace(/\n{3,}/g, '\n\n');
+  return html;
+}
+
+/* Init spec section */
+(function initSpec() {
+  const rawEl      = document.getElementById('specRaw');
+  const renderedEl = document.getElementById('specRendered');
+  if (!rawEl || !renderedEl) return;
+  rawEl.textContent    = SPEC_RAW;
+  renderedEl.innerHTML = renderMarkdown(SPEC_RAW);
+})();
+
+</script>
+
+</body>
+</html>

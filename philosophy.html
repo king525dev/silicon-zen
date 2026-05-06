@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="parchment" data-nav="dock">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silicon Zen — by king525dev</title>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+/* ═══════════════════════════════════════════════════════════
+   SILICON ZEN — DESIGN SYSTEM
+   by king525dev
+   
+   Two styles, one language:
+   · Parchment  — light mode, serif warmth, Zen Browser calm
+   · Obsidian   — dark mode, terminal density, 100r aesthetic
+═══════════════════════════════════════════════════════════ */
+
+/* ─── TOKENS: SHARED ─────────────────────────────────── */
+:root {
+    /* Accent colours — identical across both styles */
+    --teal:       #5BA8A0;
+    --teal-dim:   #3D7A74;
+    --amber:      #FFB86C;
+    --amber-dim:  #CC8B3D;
+    --red:        #D94F3D;
+    --green:      #4FA878;
+
+    /* Grid */
+    --grid: 4px;
+
+    /* Typography */
+    --font-serif:  "Newsreader", "Source Serif 4", Georgia, serif;
+    --font-mono:   "JetBrains Mono", "Courier New", Courier, monospace;
+    --font-pixel:  "Press Start 2P", monospace;
+
+    /* Motion */
+    --snap:    150ms cubic-bezier(0, 0, 0.2, 1);
+    --flicker: steps(3, end);
+}
+
+/* ─── STYLE A: PARCHMENT (default) ──────────────────── */
+[data-theme="parchment"] {
+    --bg:          #F4F4F1;
+    --bg-alt:      #EAEAE7;
+    --surface:     #FFFFFF;
+    --surface-alt: #F0F0ED;
+    --border:      #333333;
+    --border-dim:  #888888;
+    --text:        #0D0D0D;
+    --text-dim:    #555555;
+    --text-inv:    #F4F4F1;
+    --dither-dot:  rgba(0,0,0,0.12);
+    --card-bg:     #FFFFFF;
+    --cli-bg:      #0D0D0D;
+    --cli-text:    #F4F4F1;
+}
+
+/* ─── STYLE B: OBSIDIAN (dark terminal) ─────────────── */
+[data-theme="obsidian"] {
+    --bg:          #0D0D0D;
+    --bg-alt:      #111111;
+    --surface:     #1A1A1A;
+    --surface-alt: #222222;
+    --border:      #3A3A3A;
+    --border-dim:  #2A2A2A;
+    --text:        #F4F4F1;
+    --text-dim:    #888888;
+    --text-inv:    #0D0D0D;
+    --dither-dot:  rgba(255,255,255,0.05);
+    --card-bg:     #1A1A1A;
+    --cli-bg:      #050505;
+    --cli-text:    #F4F4F1;
+}
+
+/* ─── RESET ──────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect width="8" height="8" fill="%23000"/><rect x="1" y="1" width="6" height="6" fill="%23fff"/></svg>'), auto;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-serif);
+    line-height: 1.65;
+    overflow-x: hidden;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* dock padding — overridden when top-nav is active */
+[data-nav="dock"]  body,
+body               { padding-bottom: 100px; }
+[data-nav="bar"]   body { padding-bottom: 0; }
+
+::selection { background: var(--teal); color: var(--text-inv); }
+
+/* ─── DITHER TEXTURE ─────────────────────────────────── */
+.dither-bg {
+    background-image: radial-gradient(var(--dither-dot) 0.6px, transparent 0.6px);
+    background-size: 8px 8px;
+    position: fixed; inset: 0;
+    z-index: -1; pointer-events: none;
+}
+
+/* custom scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--teal); }
+
+/* ─── TYPOGRAPHY ─────────────────────────────────────── */
+h1 {
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: calc(var(--grid) * 4);
+}
+h2 {
+    font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin-bottom: calc(var(--grid) * 4);
+}
+h3 {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-bottom: calc(var(--grid) * 3);
+}
+p { max-width: 62ch; }
+
+.label {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--teal);
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: calc(var(--grid) * 2);
+}
+em { font-style: italic; color: var(--teal); }
+code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--surface-alt);
+    border: 1px solid var(--border-dim);
+    padding: 1px 6px;
+    color: var(--teal);
+}
+
+/* ─── LAYOUT ─────────────────────────────────────────── */
+.container {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: calc(var(--grid) * 10);
+}
+section { margin-bottom: calc(var(--grid) * 20); }
+.divider {
+    border: none;
+    border-top: 1px solid var(--border-dim);
+    margin: calc(var(--grid) * 12) 0;
+    opacity: 0.4;
+}
+
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: calc(var(--grid) * 6); }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: calc(var(--grid) * 6); }
+.flex    { display: flex; gap: calc(var(--grid) * 4); flex-wrap: wrap; }
+.flex-1  { flex: 1; min-width: 200px; }
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION A — TOP BAR
+   Shown when data-nav="bar"
+═══════════════════════════════════════════════════════ */
+.top-nav {
+    display: none;
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg);
+    border-bottom: 2px solid var(--teal);
+    padding: 0 calc(var(--grid) * 10);
+    height: 56px;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(var(--grid) * 4);
+    backdrop-filter: blur(8px);
+}
+[data-nav="bar"] .top-nav { display: flex; }
+
+.top-nav-logo {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    white-space: nowrap;
+}
+.top-nav-logo strong { color: var(--teal); }
+
+.top-nav-links {
+    display: flex; gap: calc(var(--grid) * 8);
+    list-style: none; align-items: center;
+}
+.top-nav-links a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-dim);
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: color var(--snap), border-color var(--snap);
+}
+.top-nav-links a:hover,
+.top-nav-links a.is-active { color: var(--teal); border-bottom-color: var(--teal); }
+
+.top-nav-actions { display: flex; gap: calc(var(--grid) * 2); align-items: center; }
+.nav-icon-btn {
+    width: 32px; height: 32px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--snap);
+}
+.nav-icon-btn:hover    { border-color: var(--teal); color: var(--teal); }
+.nav-icon-btn.is-on    { background: var(--teal); color: var(--text-inv); border-color: var(--teal); }
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION B — FLOATING DOCK
+   Shown when data-nav="dock"
+═══════════════════════════════════════════════════════ */
+.dock {
+    position: fixed;
+    bottom: calc(var(--grid) * 6);
+    left: 50%; transform: translateX(-50%);
+    background: rgba(13,13,13,0.92);
+    border: 1px solid #3A3A3A;
+    padding: calc(var(--grid) * 2);
+    display: flex; gap: calc(var(--grid) * 3);
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    transition: opacity 0.2s, transform 0.2s;
+}
+[data-nav="bar"] .dock { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(12px); }
+
+.dock-item {
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px;
+    border: 1px solid #444;
+    color: #888;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: var(--snap);
+}
+.dock-item:hover      { border-color: var(--teal); color: var(--teal); }
+.dock-item.is-active  { background: var(--teal); color: #0D0D0D; border-color: var(--teal); }
+
+/* ═══════════════════════════════════════════════════════
+   SYSTEM CONTROLS  (top-right, always visible)
+═══════════════════════════════════════════════════════ */
+.sys-controls {
+    position: fixed;
+    top: calc(var(--grid) * 4);
+    right: calc(var(--grid) * 4);
+    z-index: 200;
+    display: flex; align-items: center; gap: calc(var(--grid) * 2);
+}
+.sys-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.sys-btn {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid var(--border-dim);
+    background: var(--surface);
+    color: var(--text-dim);
+    padding: calc(var(--grid) * 1.5) calc(var(--grid) * 3);
+    transition: var(--snap);
+}
+.sys-btn:hover         { border-color: var(--teal); color: var(--teal); }
+.sys-btn.is-on         { background: var(--teal); color: var(--text-inv); border-color: var(--teal); }
+.sys-sep {
+    width: 1px; height: 20px;
+    background: var(--border-dim);
+    opacity: 0.4;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CARD / PANEL COMPONENT
+═══════════════════════════════════════════════════════ */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    transition: var(--snap);
+}
+.card-header {
+    background: var(--teal);
+    border-bottom: 1px solid var(--border);
+    padding: calc(var(--grid) * 2) calc(var(--grid) * 4);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.card-title { font-family: var(--font-mono); font-size: 12px; color: #0D0D0D; letter-spacing: 0.5px; }
+.card-body  { padding: calc(var(--grid) * 6); }
+
+/* window-chrome variant */
+.window-card .card-header     { background: var(--surface-alt); border-bottom: 1px solid var(--border-dim); }
+.window-card .card-title       { color: var(--teal); }
+.window-card .card-header-dots { display: flex; gap: 5px; align-items: center; }
+.window-card .dot              { width: 9px; height: 9px; border: 1px solid var(--border-dim); }
+.window-card .dot-r            { background: #D94F3D; border-color: #B03020; }
+.window-card .dot-g            { background: #4FA878; border-color: #2F8050; }
+.window-card .dot-b            { background: #5BA8A0; border-color: #3D7A74; }
+
+/* ═══════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════ */
+.btn {
+    display: inline-block;
+    border: 1px solid var(--border);
+    padding: calc(var(--grid) * 3) calc(var(--grid) * 6);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    color: var(--text);
+    background: transparent;
+    transition: var(--snap);
+    white-space: nowrap;
+}
+.btn:hover  { background: var(--teal); color: #0D0D0D; transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--border); border-color: var(--border); }
+.btn:active { transform: translate(0,0); box-shadow: none; }
+
+.btn-solid   { background: var(--teal); color: #0D0D0D; border-color: var(--teal-dim); }
+.btn-solid:hover { background: var(--teal-dim); color: #F4F4F1; }
+
+.btn-amber   { background: transparent; border-color: var(--amber-dim); color: var(--amber); }
+.btn-amber:hover { background: var(--amber); color: #0D0D0D; }
+
+.btn-ghost   { border-color: transparent; }
+.btn-ghost:hover { background: var(--surface-alt); border-color: var(--border-dim); box-shadow: none; transform: none; }
+
+.btn-danger  { border-color: var(--red); color: var(--red); }
+.btn-danger:hover { background: var(--red); color: #F4F4F1; box-shadow: 4px 4px 0 var(--border); }
+
+.btn-sm { padding: calc(var(--grid) * 2) calc(var(--grid) * 4); font-size: 10px; }
+.btn-disabled { opacity: 0.35; pointer-events: none; }
+
+/* ═══════════════════════════════════════════════════════
+   BADGES
+═══════════════════════════════════════════════════════ */
+.badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border: 1px solid;
+}
+.badge-teal   { background: var(--teal);  color: #0D0D0D; border-color: var(--teal-dim); }
+.badge-amber  { background: var(--amber); color: #0D0D0D; border-color: var(--amber-dim); }
+.badge-outline { background: transparent; color: var(--text-dim); border-color: var(--border-dim); }
+.badge-red    { background: var(--red);   color: #F4F4F1; border-color: #A03020; }
+.badge-green  { background: var(--green); color: #0D0D0D; border-color: #2F7050; }
+
+/* ═══════════════════════════════════════════════════════
+   INPUTS & FORMS
+═══════════════════════════════════════════════════════ */
+.field { display: flex; flex-direction: column; gap: calc(var(--grid) * 2); margin-bottom: calc(var(--grid) * 5); }
+.field-label {
+    font-family: var(--font-mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-dim);
+}
+.input {
+    background: var(--surface-alt);
+    border: 1px solid var(--border-dim);
+    border-bottom: 2px solid var(--border);
+    padding: calc(var(--grid) * 3) calc(var(--grid) * 3);
+    font-family: var(--font-mono); font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: var(--snap);
+}
+.input::placeholder { color: var(--text-dim); opacity: 0.6; }
+.input:focus { border-bottom-color: var(--teal); background: var(--surface); }
+.input.input-error { border-bottom-color: var(--red); }
+
+.select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235BA8A0'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+/* custom checkbox */
+.checkbox { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.checkbox-box {
+    width: 14px; height: 14px; flex-shrink: 0;
+    border: 1px solid var(--border);
+    background: var(--surface-alt);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 10px;
+    transition: var(--snap);
+}
+.checkbox.is-checked .checkbox-box { background: var(--teal); border-color: var(--teal-dim); color: #0D0D0D; }
+.checkbox-label { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); user-select: none; }
+
+/* ═══════════════════════════════════════════════════════
+   LOADING BAR — from deep.html, Silicon Zen colours
+═══════════════════════════════════════════════════════ */
+.load-bar {
+    height: 8px;
+    background: var(--border-dim);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin: calc(var(--grid) * 3) 0;
+}
+.load-fill {
+    width: 0%; height: 100%;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--teal)  0, var(--teal)  8px,
+        var(--amber) 8px, var(--amber) 16px
+    );
+    transition: width 0.28s ease-out;
+}
+.load-thin { height: 4px; }
+.load-solid .load-fill { background: var(--teal); }
+.load-status {
+    font-family: var(--font-mono);
+    font-size: 11px; color: var(--teal);
+    letter-spacing: 0.5px; min-height: 18px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CLI TERMINAL
+═══════════════════════════════════════════════════════ */
+.cli {
+    background: var(--cli-bg);
+    color: var(--cli-text);
+    font-family: var(--font-mono);
+    font-size: 13px; line-height: 1.8;
+    padding: calc(var(--grid) * 5);
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+}
+/* scanline overlay */
+.cli::before {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+    z-index: 1;
+}
+.cli-inner { position: relative; z-index: 2; }
+.cli .prompt   { color: var(--teal); }
+.cli .ok       { color: #4FA878; }
+.cli .warn     { color: var(--amber); }
+.cli .err      { color: var(--red); }
+.cli .muted    { color: #444; }
+.cli .hi       { background: rgba(91,168,160,0.15); }
+.cli-cursor {
+    display: inline-block; width: 8px; height: 14px;
+    background: var(--teal); vertical-align: text-bottom;
+    animation: blink 1s steps(2) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ═══════════════════════════════════════════════════════
+   COLOR SWATCHES
+═══════════════════════════════════════════════════════ */
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: calc(var(--grid) * 3); }
+.swatch { border: 1px solid var(--border); overflow: hidden; }
+.swatch-color { height: 56px; }
+.swatch-meta { padding: calc(var(--grid) * 2) calc(var(--grid) * 3); background: var(--surface); }
+.swatch-name { font-family: var(--font-mono); font-size: 11px; color: var(--text); font-weight: 500; }
+.swatch-hex  { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
+
+/* ═══════════════════════════════════════════════════════
+   DATA TABLE
+═══════════════════════════════════════════════════════ */
+.data-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; }
+.data-table th {
+    text-align: left; padding: calc(var(--grid) * 2) calc(var(--grid) * 3);
+    border-bottom: 2px solid var(--teal);
+    color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 500;
+}
+.data-table td { padding: calc(var(--grid) * 3); border-bottom: 1px solid var(--border-dim); color: var(--text); }
+.data-table tr:hover td { background: var(--surface-alt); }
+.data-table td.teal   { color: var(--teal); }
+.data-table td.amber  { color: var(--amber); }
+.data-table td.muted  { color: var(--text-dim); }
+
+/* ═══════════════════════════════════════════════════════
+   PROGRESS / STAT BARS (simple inline)
+═══════════════════════════════════════════════════════ */
+.stat-bar { height: 4px; background: var(--border-dim); margin: calc(var(--grid) * 2) 0 calc(var(--grid) * 4); }
+.stat-bar-fill { height: 100%; background: var(--teal); }
+.stat-bar-fill.amber { background: var(--amber); }
+
+/* ═══════════════════════════════════════════════════════
+   MINI CHART (dashed, pixel steps)
+═══════════════════════════════════════════════════════ */
+.pixel-chart {
+    height: 80px; display: flex; align-items: flex-end;
+    border: 1px dashed var(--border-dim);
+    padding: 8px; gap: 3px;
+    background: var(--surface-alt);
+}
+.pixel-bar { flex: 1; background: var(--teal); transition: height 0.3s steps(8, end); }
+.pixel-bar.amber { background: var(--amber); }
+
+/* ═══════════════════════════════════════════════════════
+   MOTION DEMO BOXES
+═══════════════════════════════════════════════════════ */
+.motion-card {
+    border: 1px solid var(--border-dim);
+    padding: calc(var(--grid) * 5);
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    background: var(--surface-alt);
+}
+.motion-box {
+    width: 40px; height: 40px; background: var(--teal);
+    transition: all 0.2s cubic-bezier(0, 0, 0.2, 1);
+}
+.motion-card:hover .m-up      { transform: translateY(-6px); }
+.motion-card:hover .m-rotate  { transform: rotate(45deg); }
+.motion-card:hover .m-scale   { transform: scale(1.3); }
+.motion-card:hover .m-amber   { background: var(--amber); }
+.motion-box.m-pulse { animation: pulse 2s ease-in-out infinite; }
+.motion-box.m-blink { animation: px-blink 0.6s steps(1) infinite; }
+@keyframes pulse   { 0%,100%{box-shadow:0 0 0 0 rgba(91,168,160,.5)} 50%{box-shadow:0 0 0 8px rgba(91,168,160,0)} }
+@keyframes px-blink{ 0%,100%{background:var(--teal)} 50%{background:var(--surface-alt)} }
+.motion-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-align: center; letter-spacing: 0.5px; }
+
+/* ═══════════════════════════════════════════════════════
+   CALLOUT / NOTICE
+═══════════════════════════════════════════════════════ */
+.callout {
+    border-left: 3px solid var(--teal);
+    padding: calc(var(--grid) * 4) calc(var(--grid) * 5);
+    background: rgba(91,168,160,0.07);
+    font-size: 14px; color: var(--text-dim);
+    margin: calc(var(--grid) * 4) 0;
+}
+.callout.warn  { border-left-color: var(--amber); background: rgba(255,184,108,0.07); }
+.callout.error { border-left-color: var(--red);   background: rgba(217,79,61,0.07); }
+
+/* ═══════════════════════════════════════════════════════
+   FLICKER ANIMATION
+═══════════════════════════════════════════════════════ */
+.flicker { animation: flicker-in 0.3s steps(3); }
+@keyframes flicker-in {
+    0%   { opacity: 0; }
+    33%  { opacity: 0.6; }
+    66%  { opacity: 0.15; }
+    100% { opacity: 1; }
+}
+
+/* scroll reveal */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s; }
+.reveal.in { opacity: 1; transform: none; }
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+footer {
+    border-top: 1px solid var(--border-dim);
+    padding: calc(var(--grid) * 10);
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+    margin-top: calc(var(--grid) * 10);
+}
+footer strong { color: var(--teal); }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media (max-width: 720px) {
+    .container { padding: calc(var(--grid) * 6) calc(var(--grid) * 5); }
+    .top-nav   { padding: 0 calc(var(--grid) * 5); }
+    .top-nav-links { display: none; }
+    .sys-controls  { top: auto; bottom: 110px; right: calc(var(--grid) * 4); flex-direction: column; align-items: flex-end; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   PIXEL FONT — PRESS START 2P
+   Used ONLY for brand moments, display labels, retro UI.
+   Never body text. Never below 10px rendered.
+═══════════════════════════════════════════════════════ */
+.px-font          { font-family: var(--font-pixel); }
+.px-hero          { font-family: var(--font-pixel); font-size: clamp(18px, 3vw, 32px); color: var(--teal); letter-spacing: 0.04em; line-height: 1.6; }
+.px-label         { font-family: var(--font-pixel); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
+.px-heading       { font-family: var(--font-pixel); font-size: 14px; letter-spacing: 0.06em; color: var(--text); line-height: 1.8; }
+.px-badge         { font-family: var(--font-pixel); font-size: 8px; letter-spacing: 0.08em; padding: 4px 10px; border: 2px solid var(--teal); color: var(--teal); display: inline-block; box-shadow: 3px 3px 0 var(--teal-dim); }
+.px-badge.amber   { border-color: var(--amber); color: var(--amber); box-shadow: 3px 3px 0 var(--amber-dim); }
+.px-btn {
+    font-family: var(--font-pixel); font-size: 8px; letter-spacing: 0.1em;
+    padding: 12px 16px; background: var(--teal); color: #0D0D0D;
+    border: none; box-shadow: 4px 4px 0 var(--teal-dim);
+    text-decoration: none; display: inline-block; cursor: pointer;
+    transition: all 0ms;
+    image-rendering: pixelated;
+}
+.px-btn:hover     { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--teal-dim); }
+.px-btn:active    { transform: translate(4px,4px); box-shadow: 0 0 0 var(--teal-dim); }
+.px-btn.amber     { background: var(--amber); box-shadow: 4px 4px 0 var(--amber-dim); }
+.px-btn.amber:hover { box-shadow: 6px 6px 0 var(--amber-dim); }
+
+/* Pixel Shadow (offset hard shadow, no blur) */
+.px-shadow        { box-shadow: 4px 4px 0 var(--border); }
+.px-shadow-teal   { box-shadow: 4px 4px 0 var(--teal-dim); }
+
+/* ═══════════════════════════════════════════════════════
+   HERO PIXEL CANVAS AREA
+═══════════════════════════════════════════════════════ */
+.hero-pixel-wrap {
+    margin-top: 48px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+}
+#isoCanvas, #spriteCanvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PIXEL LAB SECTION — new animations showcase
+═══════════════════════════════════════════════════════ */
+.pixel-lab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: calc(var(--grid) * 6);
+}
+.pixel-demo-box {
+    border: 1px solid var(--border-dim);
+    background: var(--surface-alt);
+    overflow: hidden;
+    position: relative;
+}
+.pixel-demo-label {
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    padding: calc(var(--grid) * 3) calc(var(--grid) * 4);
+    border-top: 1px solid var(--border-dim);
+    background: var(--surface);
+    text-transform: uppercase;
+}
+.pixel-demo-canvas-wrap {
+    height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--cli-bg);
+    position: relative; overflow: hidden;
+}
+/* scanline overlay on all demo canvases */
+.pixel-demo-canvas-wrap::after {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    z-index: 2;
+}
+
+/* ── GLITCH TEXT ── */
+.glitch-wrap {
+    font-family: var(--font-pixel);
+    font-size: 18px;
+    color: var(--teal);
+    letter-spacing: 0.06em;
+    position: relative;
+    display: inline-block;
+}
+.glitch-wrap::before,
+.glitch-wrap::after {
+    content: attr(data-text);
+    position: absolute; top: 0; left: 0;
+    font-family: var(--font-pixel);
+    font-size: 18px;
+}
+.glitch-wrap::before {
+    color: var(--amber);
+    animation: glitch-before 2.5s steps(1) infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+}
+.glitch-wrap::after {
+    color: var(--red);
+    animation: glitch-after 2.5s steps(1) infinite;
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+}
+@keyframes glitch-before {
+    0%,90%,100% { transform: translate(0); opacity: 0; }
+    91%          { transform: translate(-3px, 1px); opacity: 1; }
+    93%          { transform: translate(3px,-1px); }
+    95%          { transform: translate(-2px, 0); }
+    97%          { transform: translate(0); opacity: 0; }
+}
+@keyframes glitch-after {
+    0%,90%,100% { transform: translate(0); opacity: 0; }
+    92%          { transform: translate(4px, -2px); opacity: 1; }
+    94%          { transform: translate(-4px, 2px); }
+    96%          { transform: translate(2px, 1px); }
+    98%          { transform: translate(0); opacity: 0; }
+}
+
+/* ── ARCADE COUNTER ── */
+.arcade-score {
+    font-family: var(--font-pixel);
+    font-size: 22px;
+    color: var(--teal);
+    letter-spacing: 0.08em;
+    text-align: center;
+}
+.arcade-label {
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-align: center;
+    margin-top: 8px;
+}
+.arcade-lives { color: var(--amber); font-family: var(--font-pixel); font-size: 12px; letter-spacing: 0.1em; text-align: center; margin-top: 10px; }
+
+/* ── PIXEL TYPEWRITER ── */
+.px-typewriter {
+    font-family: var(--font-pixel);
+    font-size: 14px;
+    color: var(--teal);
+    letter-spacing: 0.06em;
+    display: inline;
+}
+.px-typewriter-cursor {
+    display: inline-block;
+    width: 12px; height: 16px;
+    background: var(--teal);
+    vertical-align: middle;
+    animation: px-cursor-blink 0.7s steps(1) infinite;
+}
+@keyframes px-cursor-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── SPRITE WALK DEMO STRIP ── */
+.sprite-strip {
+    position: relative; height: 64px;
+    overflow: hidden;
+    background: transparent;
+}
+#spriteWalker {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    image-rendering: pixelated;
+    width: 64px; height: 64px;
+}
+
+/* ── PIXEL PROGRESS (extra) ── */
+.px-progress-wrap {
+    background: transparent;
+    height: 12px;
+    border: 2px solid var(--teal);
+    position: relative;
+    overflow: hidden;
+    image-rendering: pixelated;
+}
+.px-progress-fill {
+    height: 100%;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--teal) 0, var(--teal) 6px,
+        transparent 6px, transparent 8px
+    );
+    animation: px-march 0.4s steps(1) infinite;
+    width: 0%;
+    transition: width 0.3s steps(10);
+}
+@keyframes px-march { 0%{background-position:0 0} 100%{background-position:8px 0} }
+
+/* ── CRT SCREEN WRAPPER ── */
+.crt-box {
+    position: relative;
+    border: 3px solid var(--teal);
+    box-shadow: 0 0 0 1px var(--teal-dim), 4px 4px 0 var(--teal-dim);
+    background: #050e0d;
+    overflow: hidden;
+    padding: 20px;
+}
+.crt-box::before {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none; z-index: 10;
+    background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(0,180,150,0.04) 3px, rgba(0,180,150,0.04) 4px);
+}
+.crt-box::after {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none; z-index: 11;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.55) 100%);
+}
+.crt-text {
+    font-family: var(--font-pixel);
+    font-size: 10px;
+    color: var(--teal);
+    line-height: 2.2;
+    letter-spacing: 0.06em;
+    position: relative; z-index: 12;
+}
+.crt-text .crt-hi    { color: #0D0D0D; background: var(--teal); padding: 0 2px; }
+.crt-text .crt-amber { color: var(--amber); }
+
+/* ── PIXEL RAIN canvas ── */
+#pixelRainCanvas { display: block; image-rendering: pixelated; }
+
+/* ── STAR FIELD canvas ── */
+#starCanvas { display: block; image-rendering: pixelated; }
+
+/* ── ISO canvas (hero) ── */
+#isoCanvas { display: block; }
+
+/* ── SECTION PIXEL HEADERS (number labels) ── */
+.px-section-num {
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    color: var(--teal);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: calc(var(--grid) * 2);
+}
+
+/* WAVE OSCILLOSCOPE canvas */
+#waveCanvas { display: block; image-rendering: pixelated; }
+
+/* typing animation on hero */
+@keyframes scanline-reveal {
+    from { clip-path: inset(0 0 100% 0); }
+    to   { clip-path: inset(0 0 0% 0); }
+}
+.scanline-in { animation: scanline-reveal 0.8s steps(16, end) forwards; }
+    </style>
+</head>
+<body>
+
+<!-- ═══════ DITHER TEXTURE ═══════════════════════════ -->
+<div class="dither-bg"></div>
+
+<!-- ═══════ SYSTEM CONTROLS ══════════════════════════ -->
+<div class="sys-controls">
+    <span class="sys-label">Style:</span>
+    <button class="sys-btn is-on" id="btnParchment">Parchment</button>
+    <button class="sys-btn"       id="btnObsidian">Obsidian</button>
+    <div class="sys-sep"></div>
+    <span class="sys-label">Nav:</span>
+    <button class="sys-btn is-on" id="btnDock">Dock</button>
+    <button class="sys-btn"       id="btnBar">Bar</button>
+</div>
+
+<!-- ═══════ TOP BAR NAV ═══════════════════════════════ -->
+<nav class="top-nav">
+    <a class="top-nav-logo" href="#hero"><strong>Silicon</strong>&nbsp;Zen</a>
+    <ul class="top-nav-links">
+        <li><a href="#hero"       class="is-active">Home</a></li>
+        <li><a href="#colors">Colors</a></li>
+        <li><a href="#type">Type</a></li>
+        <li><a href="#components">Components</a></li>
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#cli">CLI</a></li>
+        <li><a href="#motion">Motion</a></li>
+        <li><a href="#pixellab" style="color:var(--teal);">Pixel Lab</a></li>
+    </ul>
+    <div class="top-nav-actions">
+        <button class="nav-icon-btn">HME</button>
+        <button class="nav-icon-btn is-on">SYS</button>
+        <button class="nav-icon-btn">USR</button>
+        <button class="nav-icon-btn">CFG</button>
+    </div>
+</nav>
+
+<!-- ═══════ MAIN ═══════════════════════════════════════ -->
+<main class="container flicker" id="hero">
+
+    <!-- ── HERO ────────────────────────────────────── -->
+    <header style="padding-top: 48px; margin-bottom: calc(var(--grid) * 20);">
+        <span class="label">king525dev · Silicon Zen · v1.1.0 — Build_01</span>
+
+        <!-- Press Start 2P pixel brand stamp -->
+        <div class="px-hero" style="margin-bottom: 16px;">SILICON ZEN</div>
+
+        <h1>High-Fidelity<br><em>Nostalgia.</em></h1>
+        <p style="font-size: 1.2rem; color: var(--text-dim); margin-bottom: 32px; max-width: 56ch;">
+            Silicon Zen is a design language for the modern craftsman.
+            It treats the pixel as a deliberate unit of construction for the calm internet.
+            Two styles. One voice.
+        </p>
+        <div class="flex" style="gap: 12px; margin-bottom: 32px;">
+            <a href="#components" class="btn" id="heroBtn">[ Explore System ]</a>
+            <a href="#colors"     class="btn btn-ghost">Colors ↓</a>
+            <a href="#cli"        class="btn btn-ghost">CLI ↓</a>
+        </div>
+        <div class="flex" style="gap: 12px;">
+            <a href="#pixellab" class="px-btn">[ PIXEL LAB ]</a>
+            <a href="#pixellab" class="px-btn amber">[ RETRO ]</a>
+            <span class="px-badge">v1.1.0</span>
+            <span class="px-badge amber">BETA</span>
+        </div>
+
+        <!-- Isometric pixel art canvas -->
+        <div class="hero-pixel-wrap">
+            <canvas id="isoCanvas" width="440" height="240" style="max-width:100%;"></canvas>
+        </div>
+    </header>
+
+    <!-- ── COLORS ─────────────────────────────────── -->
+    <section id="colors" class="reveal">
+        <span class="label">01 — Color System</span>
+        <h2>Ink, phosphor, and parchment.</h2>
+        <p style="color: var(--text-dim); margin-bottom: 32px;">
+            The two accents — teal and amber — are <strong style="color:var(--teal)">unchanged across both styles</strong>.
+            Only the surfaces invert. That is the connective tissue.
+        </p>
+
+        <h3>Shared accents</h3>
+        <div class="swatch-grid" style="margin-bottom: 32px;">
+            <div class="swatch">
+                <div class="swatch-color" style="background:#5BA8A0"></div>
+                <div class="swatch-meta"><div class="swatch-name">Terminal Teal</div><div class="swatch-hex">#5BA8A0</div></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#3D7A74"></div>
+                <div class="swatch-meta"><div class="swatch-name">Teal Dim</div><div class="swatch-hex">#3D7A74</div></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#FFB86C"></div>
+                <div class="swatch-meta"><div class="swatch-name">Ghost Amber</div><div class="swatch-hex">#FFB86C</div></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#D94F3D"></div>
+                <div class="swatch-meta"><div class="swatch-name">Signal Red</div><div class="swatch-hex">#D94F3D</div></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#4FA878"></div>
+                <div class="swatch-meta"><div class="swatch-name">Signal Green</div><div class="swatch-hex">#4FA878</div></div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div>
+                <h3>Parchment — Style A</h3>
+                <div class="swatch-grid">
+                    <div class="swatch">
+                        <div class="swatch-color" style="background:#F4F4F1;border-bottom:1px solid #ccc"></div>
+                        <div class="swatch-meta"><div class="swatch-name">Parchment</div><div class="swatch-hex">#F4F4F1</div></div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background:#FFFFFF;border-bottom:1px solid #ccc"></div>
+                        <div class="swatch-meta"><div class="swatch-name">Surface</div><div class="swatch-hex">#FFFFFF</div></div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background:#0D0D0D"></div>
+                        <div class="swatch-meta"><div class="swatch-name">Obsidian</div><div class="swatch-hex">#0D0D0D</div></div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background:#333333"></div>
+                        <div class="swatch-meta"><div class="swatch-name">Wireframe</div><div class="swatch-hex">#333333</div></div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3>Obsidian — Style B</h3>
+                <div class="swatch-grid">
+                    <div class="swatch">
+                        <div class="swatch-color" style="background:#0D0D0D"></div>
+                        <div class="swatch-meta"><div class="swatch-name">Obsidian</div><div class="swatch-hex">#0D0D0D</div></div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background:#1A1A1A"></div>
+                        <div class="swatch-meta"><div class="swatch-name">Carbon</div><div class="swatch-hex">#1A1A1A</div></div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background:#F4F4F1"></div>
+                        <div class="swatch-meta"><div class="swatch-name">Parchment</div><div class="swatch-hex">#F4F4F1</div></div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background:#3A3A3A"></div>
+                        <div class="swatch-meta"><div class="swatch-name">Border</div><div class="swatch-hex">#3A3A3A</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ── TYPOGRAPHY ─────────────────────────────── -->
+    <section id="type" class="reveal">
+        <span class="label">02 — Typography</span>
+        <h2>Two registers.<br>Serif warmth meets mono precision.</h2>
+
+        <div style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:baseline;gap:24px;padding:20px 0;border-bottom:1px solid var(--border-dim);">
+                <div style="min-width:160px;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">Newsreader<br>Display / 4rem</div>
+                <div style="font-family:var(--font-serif);font-size:3.5rem;font-weight:400;letter-spacing:-0.02em;line-height:1;">High-Fidelity</div>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:24px;padding:20px 0;border-bottom:1px solid var(--border-dim);">
+                <div style="min-width:160px;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">Newsreader<br>H2 / 1.9rem</div>
+                <div style="font-family:var(--font-serif);font-size:1.9rem;font-weight:400;">Calm. Precise. Quiet.</div>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:24px;padding:20px 0;border-bottom:1px solid var(--border-dim);">
+                <div style="min-width:160px;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">Newsreader<br>Body / 1rem</div>
+                <div style="font-family:var(--font-serif);font-size:1rem;max-width:50ch;color:var(--text-dim);">Unlike traditional retro systems, Silicon Zen prioritises negative space and clear hierarchy. Every component follows a strict 4px grid. Prose is always set in Newsreader.</div>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:24px;padding:20px 0;border-bottom:1px solid var(--border-dim);">
+                <div style="min-width:160px;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">Press Start 2P<br>Pixel / 8–32px<br><span style="color:var(--teal)">Brand moments only</span></div>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div class="px-hero" style="font-size:28px;">SILICON ZEN</div>
+                    <div class="px-heading">[ SYSTEM READY ]</div>
+                    <div class="px-label">v1.1.0 · build_01 · parchment</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:24px;padding:20px 0;">
+                <div style="min-width:160px;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">JetBrains Mono<br>Code / 13px</div>
+                <div style="font-family:var(--font-mono);font-size:13px;color:var(--text-dim);">CPU: 42% &nbsp;·&nbsp; MEM: 128KB &nbsp;·&nbsp; DSK: 77% &nbsp;<span style="color:var(--amber)">⚠ high</span></div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ── COMPONENTS ─────────────────────────────── -->
+    <section id="components" class="reveal">
+        <span class="label">03 — Components</span>
+        <h2>Every state. Every variant.</h2>
+
+        <!-- Buttons -->
+        <h3 style="margin-top:8px;">Buttons</h3>
+        <div class="flex" style="margin-bottom:32px;flex-wrap:wrap;">
+            <a href="#" class="btn" onclick="return false;">[ Default ]</a>
+            <a href="#" class="btn btn-solid" onclick="return false;">[ Solid ]</a>
+            <a href="#" class="btn btn-amber" onclick="return false;">[ Amber ]</a>
+            <a href="#" class="btn btn-ghost" onclick="return false;">[ Ghost ]</a>
+            <a href="#" class="btn btn-danger" onclick="return false;">[ Danger ]</a>
+            <a href="#" class="btn btn-sm" onclick="return false;">[ Small ]</a>
+            <a href="#" class="btn btn-disabled" onclick="return false;">[ Disabled ]</a>
+        </div>
+
+        <!-- Badges -->
+        <h3>Badges</h3>
+        <div class="flex" style="margin-bottom:32px;align-items:center;">
+            <span class="badge badge-teal">Active</span>
+            <span class="badge badge-amber">Warning</span>
+            <span class="badge badge-red">Error</span>
+            <span class="badge badge-green">OK</span>
+            <span class="badge badge-outline">Draft</span>
+        </div>
+
+        <!-- Cards -->
+        <h3>Cards</h3>
+        <div class="grid-3" style="margin-bottom:32px;">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">PROJECT_A.EXE</span>
+                    <span class="card-title">_ □ ×</span>
+                </div>
+                <div class="card-body">
+                    <p style="font-size:14px;color:var(--text-dim);margin-bottom:16px;">Standard card. Teal title bar, 1px wireframe border, no border-radius.</p>
+                    <span class="badge badge-teal">Active</span>
+                </div>
+            </div>
+            <div class="card window-card">
+                <div class="card-header">
+                    <div class="card-header-dots">
+                        <div class="dot dot-r"></div>
+                        <div class="dot dot-g"></div>
+                        <div class="dot dot-b"></div>
+                    </div>
+                    <span class="card-title">WINDOW_OS.APP</span>
+                </div>
+                <div class="card-body">
+                    <p style="font-size:14px;color:var(--text-dim);">Window-chrome variant. Surface-coloured bar, traffic-light dots, monochrome title.</p>
+                </div>
+            </div>
+            <div class="card" style="border-color:var(--teal);">
+                <div class="card-header" style="background:var(--amber);">
+                    <span class="card-title">ALERT.SYS</span>
+                    <span class="card-title">⚠</span>
+                </div>
+                <div class="card-body">
+                    <p style="font-size:14px;color:var(--text-dim);">Amber header variant for warnings, alerts, or featured content.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inputs -->
+        <h3>Inputs & Forms</h3>
+        <div class="grid-2">
+            <div>
+                <div class="field">
+                    <label class="field-label">File Path</label>
+                    <input class="input" type="text" value="~/projects/silicon-zen" placeholder="~/path/to/file">
+                </div>
+                <div class="field">
+                    <label class="field-label">Focus State</label>
+                    <input class="input" type="text" placeholder="click to focus..." style="border-bottom-color:var(--teal);">
+                </div>
+                <div class="field">
+                    <label class="field-label">Error State</label>
+                    <input class="input input-error" type="text" value="invalid_entry">
+                    <span style="font-family:var(--font-mono);font-size:10px;color:var(--red);">✗ field cannot be empty</span>
+                </div>
+                <div class="field">
+                    <label class="field-label">Select</label>
+                    <select class="input select">
+                        <option>parchment_mode</option>
+                        <option>obsidian_mode</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">Checkboxes</div>
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                    <label class="checkbox is-checked" onclick="this.classList.toggle('is-checked')">
+                        <div class="checkbox-box">✓</div>
+                        <span class="checkbox-label">Enable dither patterns</span>
+                    </label>
+                    <label class="checkbox" onclick="this.classList.toggle('is-checked')">
+                        <div class="checkbox-box">✓</div>
+                        <span class="checkbox-label">Hard edges only (0px radius)</span>
+                    </label>
+                    <label class="checkbox is-checked" onclick="this.classList.toggle('is-checked')">
+                        <div class="checkbox-box">✓</div>
+                        <span class="checkbox-label">Pixel cursor enabled</span>
+                    </label>
+                    <label class="checkbox" onclick="this.classList.toggle('is-checked')">
+                        <div class="checkbox-box">✓</div>
+                        <span class="checkbox-label">ASCII art on startup</span>
+                    </label>
+                </div>
+
+                <div style="margin-top:28px;">
+                    <div class="callout">
+                        <strong style="color:var(--teal);">Note:</strong> All inputs use 0px border-radius. Bottom border highlights on focus — never a box-shadow glow.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ── DASHBOARD ──────────────────────────────── -->
+    <section id="dashboard" class="reveal">
+        <span class="label">04 — Dashboard UI</span>
+        <h2>Data-dense. Intentionally still.</h2>
+
+        <!-- Stats row -->
+        <div class="grid-3" style="margin-bottom:32px;">
+            <div class="card">
+                <div class="card-body" style="padding: calc(var(--grid)*5);">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Build Time</div>
+                    <div style="font-family:var(--font-mono);font-size:2rem;color:var(--teal);">1.4s</div>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width:70%"></div></div>
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">↓ 0.3s from last</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body" style="padding: calc(var(--grid)*5);">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Output Size</div>
+                    <div style="font-family:var(--font-mono);font-size:2rem;color:var(--text);">1.1mb</div>
+                    <div class="stat-bar"><div class="stat-bar-fill amber" style="width:42%"></div></div>
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--amber);">↓ 66% compressed</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body" style="padding: calc(var(--grid)*5);">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Uptime</div>
+                    <div style="font-family:var(--font-mono);font-size:2rem;color:var(--text);">99.8%</div>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width:99.8%"></div></div>
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--green);">↑ all systems nominal</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pixel chart + file table -->
+        <div class="flex" style="align-items:flex-start;">
+            <div class="card flex-1">
+                <div class="card-header">
+                    <span class="card-title">SYSTEM_STATS</span>
+                    <span class="card-title">◈</span>
+                </div>
+                <div class="card-body">
+                    <div style="font-family:var(--font-mono);font-size:13px;line-height:1;">
+                        <div style="margin-bottom:4px;">CPU: 42%</div>
+                        <div class="stat-bar"><div class="stat-bar-fill" style="width:42%"></div></div>
+                        <div style="margin-bottom:4px;">MEM: 68%</div>
+                        <div class="stat-bar"><div class="stat-bar-fill" style="width:68%"></div></div>
+                        <div style="margin-bottom:4px;">DSK: 77%</div>
+                        <div class="stat-bar"><div class="stat-bar-fill amber" style="width:77%"></div></div>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Render throughput</div>
+                        <div class="pixel-chart">
+                            <div class="pixel-bar" style="height:40%"></div>
+                            <div class="pixel-bar" style="height:65%"></div>
+                            <div class="pixel-bar amber" style="height:90%"></div>
+                            <div class="pixel-bar" style="height:55%"></div>
+                            <div class="pixel-bar" style="height:70%"></div>
+                            <div class="pixel-bar amber" style="height:85%"></div>
+                            <div class="pixel-bar" style="height:45%"></div>
+                            <div class="pixel-bar" style="height:60%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card flex-1" style="margin-bottom:0;">
+                <div class="card-header">
+                    <span class="card-title">OUTPUT_FILES</span>
+                </div>
+                <div class="card-body" style="padding:0;">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Name</th><th>Size</th><th>Hash</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="teal">index.html</td>
+                                <td class="muted">4.2 kb</td>
+                                <td class="muted">a4f2c1</td>
+                                <td><span class="badge badge-green">✓ ok</span></td>
+                            </tr>
+                            <tr>
+                                <td class="teal">style.css</td>
+                                <td class="muted">18.1 kb</td>
+                                <td class="muted">b3d9a2</td>
+                                <td><span class="badge badge-green">✓ ok</span></td>
+                            </tr>
+                            <tr>
+                                <td class="teal">main.js</td>
+                                <td class="muted">82.4 kb</td>
+                                <td class="muted">f1e8c7</td>
+                                <td><span class="badge badge-green">✓ ok</span></td>
+                            </tr>
+                            <tr>
+                                <td class="teal">hero.png</td>
+                                <td class="amber">94.0 kb</td>
+                                <td class="muted">2a9b3d</td>
+                                <td><span class="badge badge-amber">⚠ large</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ── CLI ────────────────────────────────────── -->
+    <section id="cli" class="reveal">
+        <span class="label">05 — CLI Interface</span>
+        <h2>The terminal has personality.</h2>
+        <p style="color:var(--text-dim);margin-bottom:28px;">Teal prompt. Amber warnings. Red errors. ASCII only on startup. Monospace throughout.</p>
+
+        <div class="cli">
+            <div class="cli-inner">
+<pre style="color:#444;font-size:12px;margin-bottom:8px;"> _____ _ _ _                 ____
+/ ____(_) (_)               |_  /
+| (__ _ | |_  ___ ___  _ __  / /  ___ _ __
+\___ \| | | |/ __/ _ \| '_ \/ /| | _ \ '_ \
+____) | | | | (_| (_) | | |/\___|  __/ | | |
+|_____/|_|_|_|\___\___/|_| |_|  \___|_| |_|
+</pre>
+<pre style="color:#555;font-size:12px;margin-bottom:16px;"> v1.1.0 — by king525dev · dual-style system</pre>
+                <div id="cli-output">
+<span class="prompt">■ </span><span style="color:var(--teal)">~/projects/silicon-zen</span><span> [main]</span>
+<span class="prompt">&gt; </span><span>voxel build --out ./dist</span>
+
+<span class="muted">── BUILD ────────────────────────────────────</span>
+<span class="ok">  ✓</span> parsed 14 files in 0.1s
+<span class="ok">  ✓</span> compiled 8 templates
+<span class="warn">  ⚠</span> deprecated: use --out instead of --output
+<span class="ok">  ✓</span> optimized assets (3.2mb → 1.1mb)
+
+<span class="muted">── OUTPUT ───────────────────────────────────</span>
+<span class="muted">  NAME               SIZE     HASH</span>
+<span class="muted">  ─────────────────  ──────   ──────</span>
+  index.html         <span class="muted">4.2 kb</span>   <span style="color:var(--teal)">a4f2c1</span>
+  style.css          <span class="muted">18.1 kb</span>  <span style="color:var(--teal)">b3d9a2</span>
+  assets/hero.png    <span class="amber">94.0 kb</span>  <span style="color:var(--teal)">2a9b3d</span>
+
+<span class="ok">  ✓ built to ./dist in 1.4s</span>
+
+<span class="prompt">■ </span><span style="color:var(--teal)">~/projects/silicon-zen</span><span> &gt; </span></div>
+                <span class="cli-cursor"></span>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ── LOADING BAR ────────────────────────────── -->
+    <section id="loading" class="reveal">
+        <span class="label">06 — Loading · Pixel March</span>
+        <h2>Progress that looks like progress.</h2>
+        <p style="color:var(--text-dim);margin-bottom:28px;">Teal/amber stripe — discrete steps, not a smooth ramp. Borrowed from deep.html, recoloured to the Silicon Zen palette.</p>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">PIXEL_MARCH_LOADER</span>
+                    <span class="card-title">▶</span>
+                </div>
+                <div class="card-body">
+                    <div class="load-bar" id="mainLoadBar">
+                        <div class="load-fill" id="mainLoadFill"></div>
+                    </div>
+                    <div class="load-status" id="mainLoadStatus">READY</div>
+                    <div style="margin-top:16px;">
+                        <a href="#" class="btn btn-sm" id="startLoadBtn">[ Run Loader ]</a>
+                        <a href="#" class="btn btn-sm btn-ghost" id="resetLoadBtn" style="margin-left:8px;">[ Reset ]</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">STATIC_SAMPLES</span>
+                </div>
+                <div class="card-body">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">28% — parsing</div>
+                    <div class="load-bar load-thin"><div class="load-fill" style="width:28%"></div></div>
+
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-top:12px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">74% — compiling</div>
+                    <div class="load-bar load-thin"><div class="load-fill" style="width:74%"></div></div>
+
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-top:12px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">100% — deployed <span style="color:var(--green)">✓</span></div>
+                    <div class="load-bar load-thin load-solid"><div class="load-fill" style="width:100%;background:var(--green)"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ── MOTION ─────────────────────────────────── -->
+    <section id="motion" class="reveal">
+        <span class="label">07 — Motion & Micro-interactions</span>
+        <h2>Instant or deliberate. Nothing between.</h2>
+        <p style="color:var(--text-dim);margin-bottom:28px;">Hover the cards. Smooth easing for modern elements; <code>steps()</code> for pixel-native ones.</p>
+
+        <div class="grid-3">
+            <div class="motion-card">
+                <div class="motion-box m-up"></div>
+                <div class="motion-label">hover: translateY(−6px)<br>ease-out 200ms</div>
+            </div>
+            <div class="motion-card">
+                <div class="motion-box m-rotate"></div>
+                <div class="motion-label">hover: rotate(45deg)<br>ease-out 200ms</div>
+            </div>
+            <div class="motion-card">
+                <div class="motion-box m-scale"></div>
+                <div class="motion-label">hover: scale(1.3)<br>ease-out 200ms</div>
+            </div>
+            <div class="motion-card">
+                <div class="motion-box m-amber"></div>
+                <div class="motion-label">hover: teal → amber<br>transition 150ms</div>
+            </div>
+            <div class="motion-card">
+                <div class="motion-box m-pulse"></div>
+                <div class="motion-label">auto: ring pulse<br>2s ease-in-out ∞</div>
+            </div>
+            <div class="motion-card">
+                <div class="motion-box m-blink"></div>
+                <div class="motion-label">pixel: steps(1,end)<br>blink 0.6s ∞</div>
+            </div>
+        </div>
+
+        <div class="callout" style="margin-top:28px;">
+            <strong style="color:var(--teal)">Rule:</strong> Button hover = −2px offset + 4px hard shadow.
+            Button active = snap back to origin in 0ms. Flicker-in on page load: <code>steps(3, end)</code>.
+        </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ── PIXEL LAB ──────────────────────────────── -->
+    <section id="pixellab" class="reveal">
+        <span class="px-section-num">09</span>
+        <div class="px-heading" style="margin-bottom:8px;">PIXEL LAB</div>
+        <h2>Retro animations. Every frame is intentional.</h2>
+        <p style="color:var(--text-dim);margin-bottom:40px;">
+            All pixel animations use <code>steps()</code> — no interpolation, discrete frame jumps.
+            Press Start 2P for identity. Canvas for art. CSS keyframes for everything else.
+        </p>
+
+        <div class="pixel-lab-grid">
+
+            <!-- 1. Isometric sprite scene -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap">
+                    <canvas id="isoMiniCanvas" width="240" height="150" style="image-rendering:pixelated;max-width:100%;"></canvas>
+                </div>
+                <div class="pixel-demo-label">Isometric Pixel Art · Monochrome scene · Canvas</div>
+            </div>
+
+            <!-- 2. Walking sprite -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap" style="flex-direction:column;gap:16px;">
+                    <div class="sprite-strip" style="width:90%;position:relative;height:72px;">
+                        <canvas id="spriteWalker" width="16" height="16"></canvas>
+                    </div>
+                    <div class="px-label" style="color:var(--teal);position:relative;z-index:3;">WALKING · 8fps · steps()</div>
+                </div>
+                <div class="pixel-demo-label">Pixel Sprite Walker · 16×16 · Canvas animation</div>
+            </div>
+
+            <!-- 3. Glitch text -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap">
+                    <div style="position:relative;z-index:3;text-align:center;">
+                        <div class="glitch-wrap" data-text="SILICON">SILICON</div>
+                        <div style="margin-top:12px;" class="glitch-wrap" data-text="ZEN" style="font-size:28px;">ZEN</div>
+                    </div>
+                </div>
+                <div class="pixel-demo-label">CSS Glitch · Offset clipping · steps(1) infinite</div>
+            </div>
+
+            <!-- 4. Star field -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap">
+                    <canvas id="starCanvas" width="240" height="150" style="image-rendering:pixelated;max-width:100%;"></canvas>
+                </div>
+                <div class="pixel-demo-label">Star Field · Parallax layers · Canvas RAF</div>
+            </div>
+
+            <!-- 5. Pixel rain -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap">
+                    <canvas id="pixelRainCanvas" width="240" height="150" style="image-rendering:pixelated;max-width:100%;"></canvas>
+                </div>
+                <div class="pixel-demo-label">Pixel Rain · Matrix-style · Teal columns</div>
+            </div>
+
+            <!-- 6. Oscilloscope wave -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap">
+                    <canvas id="waveCanvas" width="240" height="150" style="image-rendering:pixelated;max-width:100%;"></canvas>
+                </div>
+                <div class="pixel-demo-label">Oscilloscope Wave · Stepped sine · Canvas</div>
+            </div>
+
+            <!-- 7. Arcade score counter -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap" style="flex-direction:column;gap:8px;">
+                    <div class="arcade-score" style="position:relative;z-index:3;" id="arcadeScore">000000</div>
+                    <div class="arcade-label" style="position:relative;z-index:3;">SCORE</div>
+                    <div class="arcade-lives" style="position:relative;z-index:3;">♥ ♥ ♥</div>
+                    <div style="margin-top:8px;position:relative;z-index:3;">
+                        <a href="#" class="px-btn" id="arcadeStartBtn" style="font-size:7px;padding:8px 12px;">[ INSERT COIN ]</a>
+                    </div>
+                </div>
+                <div class="pixel-demo-label">Arcade Counter · Press Start 2P · Tick animation</div>
+            </div>
+
+            <!-- 8. Pixel typewriter -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap" style="flex-direction:column;gap:0;padding:20px;align-items:flex-start;justify-content:center;">
+                    <div style="position:relative;z-index:3;font-family:var(--font-pixel);font-size:8px;color:var(--text-dim);letter-spacing:0.1em;margin-bottom:12px;">SZ_KERNEL v1.1.0</div>
+                    <div style="position:relative;z-index:3;">
+                        <span class="px-typewriter" id="pxTypeTarget"></span><span class="px-typewriter-cursor"></span>
+                    </div>
+                </div>
+                <div class="pixel-demo-label">Pixel Typewriter · Press Start 2P · Character by character</div>
+            </div>
+
+            <!-- 9. CRT terminal -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap" style="padding:0;">
+                    <div class="crt-box" style="width:100%;height:100%;border:none;box-shadow:none;">
+                        <div class="crt-text">
+                            <span class="crt-amber">■</span> SZ_KERNEL&nbsp;v1.1.0<br>
+                            <span class="crt-hi">BOOT</span>&nbsp;OK<br>
+                            &gt; loading&nbsp;modules<br>
+                            &gt; <span class="crt-amber">pixel.sys</span>&nbsp;ready<br>
+                            &gt; <span class="crt-amber">dither.sys</span>&nbsp;ready<br>
+                            &gt; system&nbsp;ready&nbsp;■
+                        </div>
+                    </div>
+                </div>
+                <div class="pixel-demo-label">CRT Terminal · Phosphor glow · Scanline overlay</div>
+            </div>
+
+            <!-- 10. Pixel progress march -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap" style="flex-direction:column;gap:16px;padding:24px;align-items:flex-start;justify-content:center;">
+                    <div style="position:relative;z-index:3;width:100%;">
+                        <div style="font-family:var(--font-pixel);font-size:7px;color:var(--text-dim);letter-spacing:0.1em;margin-bottom:8px;">LOADING KERNEL</div>
+                        <div class="px-progress-wrap" style="width:100%;">
+                            <div class="px-progress-fill" id="pxProgressFill" style="width:0%;"></div>
+                        </div>
+                        <div style="font-family:var(--font-pixel);font-size:7px;color:var(--teal);letter-spacing:0.08em;margin-top:8px;" id="pxProgressLabel">READY</div>
+                        <a href="#" class="px-btn" style="font-size:7px;padding:8px 12px;margin-top:12px;display:inline-block;" id="pxProgressBtn">[ BOOT ]</a>
+                    </div>
+                </div>
+                <div class="pixel-demo-label">Pixel Progress · Dashed march fill · steps() transition</div>
+            </div>
+
+            <!-- 11. Scanline reveal -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap" style="flex-direction:column;gap:0;padding:20px;align-items:center;justify-content:center;" id="scanlineBox">
+                    <div id="scanlineTarget" style="position:relative;z-index:3;text-align:center;">
+                        <div class="px-heading" style="font-size:11px;color:var(--teal);">SYSTEM</div>
+                        <div class="px-heading" style="font-size:11px;color:var(--teal);">INITIALISED</div>
+                    </div>
+                    <a href="#" class="px-btn" style="font-size:7px;padding:8px 12px;margin-top:16px;position:relative;z-index:3;" id="scanlineBtn">[ REPLAY ]</a>
+                </div>
+                <div class="pixel-demo-label">Scanline Reveal · steps(16, end) · Clip-path wipe</div>
+            </div>
+
+            <!-- 12. Flicker boot -->
+            <div class="pixel-demo-box">
+                <div class="pixel-demo-canvas-wrap" style="flex-direction:column;gap:8px;" id="flickerBox">
+                    <div id="flickerTarget" style="position:relative;z-index:3;text-align:center;padding:0 20px;">
+                        <div class="px-heading" style="font-size:10px;margin-bottom:12px;">INITIALIZING...</div>
+                        <div class="px-label" style="color:var(--teal);">BUILD_01 · PARCHMENT MODE</div>
+                    </div>
+                    <a href="#" class="px-btn" style="font-size:7px;padding:8px 12px;position:relative;z-index:3;" id="flickerReplayBtn">[ REPLAY ]</a>
+                </div>
+                <div class="pixel-demo-label">Flicker Boot · steps(3, end) · 300ms · Page load animation</div>
+            </div>
+
+        </div>
+
+        <!-- Pixel font showcase strip -->
+        <div style="margin-top: 48px; border: 1px solid var(--border-dim); padding: 32px; background: var(--surface-alt);">
+            <div class="px-label" style="margin-bottom:20px;">Press Start 2P — Usage Scale</div>
+            <div style="display:flex;flex-direction:column;gap:20px;">
+                <div style="display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--border-dim);padding-bottom:16px;">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);min-width:120px;">32px — Hero brand</div>
+                    <div style="font-family:var(--font-pixel);font-size:32px;color:var(--teal);letter-spacing:0.04em;line-height:1.4;">SZ</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--border-dim);padding-bottom:16px;">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);min-width:120px;">18px — Display</div>
+                    <div style="font-family:var(--font-pixel);font-size:18px;color:var(--teal);letter-spacing:0.04em;line-height:1.6;">SILICON ZEN</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--border-dim);padding-bottom:16px;">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);min-width:120px;">14px — Heading</div>
+                    <div style="font-family:var(--font-pixel);font-size:14px;color:var(--text);letter-spacing:0.04em;line-height:1.8;">[ SYSTEM READY ]</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--border-dim);padding-bottom:16px;">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);min-width:120px;">10px — UI label</div>
+                    <div style="font-family:var(--font-pixel);font-size:10px;color:var(--teal);letter-spacing:0.08em;">KERNEL · BUILD_01 · 4PX GRID</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:24px;">
+                    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);min-width:120px;">8px — Micro</div>
+                    <div style="font-family:var(--font-pixel);font-size:8px;color:var(--text-dim);letter-spacing:0.12em;">v1.1.0 · BY KING525DEV · PARCHMENT + OBSIDIAN</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ── TOKENS ─────────────────────────────────── -->
+    <section id="tokens" class="reveal">
+        <span class="label">08 — Design Tokens</span>
+        <h2>The atomic source of truth.</h2>
+
+        <div class="grid-2">
+            <div>
+                <h3>Spacing (4px grid)</h3>
+                <table class="data-table">
+                    <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+                    <tbody>
+                        <tr><td class="teal">xs</td><td>4px</td><td class="muted">Fine detail</td></tr>
+                        <tr><td class="teal">s</td><td>8px</td><td class="muted">Tight padding</td></tr>
+                        <tr><td class="teal">m</td><td>16px</td><td class="muted">Standard</td></tr>
+                        <tr><td class="teal">l</td><td>32px</td><td class="muted">Section gap</td></tr>
+                        <tr><td class="teal">xl</td><td>64px</td><td class="muted">Major spacing</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h3>Animation</h3>
+                <table class="data-table">
+                    <thead><tr><th>Token</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td class="teal">--snap</td><td>150ms ease-out</td></tr>
+                        <tr><td class="teal">--flicker</td><td>steps(3, end)</td></tr>
+                        <tr><td class="teal">border.width</td><td>1px</td></tr>
+                        <tr><td class="teal">border.radius</td><td>0px</td></tr>
+                        <tr><td class="teal">grid</td><td>4px base unit</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ═══════ FOOTER ════════════════════════════════════ -->
+<footer>
+    <div>
+        <div class="px-heading" style="font-size:10px;margin-bottom:8px;color:var(--teal);">SILICON ZEN</div>
+        <strong>Silicon Zen</strong> — Design System<br>
+        by king525dev · v1.1.0 · Build_01
+    </div>
+    <div style="text-align:right;">
+        Parchment &amp; Obsidian · 4px rhythm<br>
+        Dock &amp; Bar nav · Pixel-march loader<br>
+        <span style="font-family:var(--font-pixel);font-size:8px;color:var(--teal);">PRESS START 2P · PIXEL LAB</span>
+    </div>
+</footer>
+
+<!-- ═══════ DOCK NAV ══════════════════════════════════ -->
+<nav class="dock" id="dock">
+    <a href="#hero"       class="dock-item is-active">HME</a>
+    <a href="#colors"     class="dock-item">CLR</a>
+    <a href="#components" class="dock-item">CMP</a>
+    <a href="#dashboard"  class="dock-item">DSH</a>
+    <a href="#cli"        class="dock-item">CLI</a>
+    <a href="#loading"    class="dock-item">LDR</a>
+    <a href="#motion"     class="dock-item">MOT</a>
+    <a href="#pixellab"   class="dock-item" style="border-color:var(--teal);color:var(--teal);">PIX</a>
+</nav>
+
+<!-- ═══════ JAVASCRIPT ═══════════════════════════════ -->
+<script>
+/* ── helpers ──────────────────────────────────── */
+const html = document.documentElement;
+const $ = id => document.getElementById(id);
+
+/* ── STYLE TOGGLE (Parchment ↔ Obsidian) ─────── */
+const btnP = $('btnParchment'), btnO = $('btnObsidian');
+btnP.addEventListener('click', () => {
+    html.dataset.theme = 'parchment';
+    btnP.classList.add('is-on'); btnO.classList.remove('is-on');
+});
+btnO.addEventListener('click', () => {
+    html.dataset.theme = 'obsidian';
+    btnO.classList.add('is-on'); btnP.classList.remove('is-on');
+});
+
+/* ── NAV TOGGLE (Dock ↔ Bar) ─────────────────── */
+const btnDock = $('btnDock'), btnBar = $('btnBar');
+btnDock.addEventListener('click', () => {
+    html.dataset.nav = 'dock';
+    document.body.style.paddingBottom = '100px';
+    btnDock.classList.add('is-on'); btnBar.classList.remove('is-on');
+});
+btnBar.addEventListener('click', () => {
+    html.dataset.nav = 'bar';
+    document.body.style.paddingBottom = '0';
+    btnBar.classList.add('is-on'); btnDock.classList.remove('is-on');
+});
+
+/* ── FLICKER on hero CTA ──────────────────────── */
+const heroBtn = $('heroBtn');
+if (heroBtn) {
+    heroBtn.addEventListener('click', e => {
+        e.preventDefault();
+        const prev = document.body.style.backgroundColor;
+        document.body.style.backgroundColor = 'var(--teal)';
+        setTimeout(() => { document.body.style.backgroundColor = prev; }, 60);
+    });
+}
+
+/* ── LOADING BAR (deep.html logic, SZ colours) ── */
+const loadFill   = $('mainLoadFill');
+const loadStatus = $('mainLoadStatus');
+const startBtn   = $('startLoadBtn');
+const resetBtn   = $('resetLoadBtn');
+let loadInterval = null;
+
+function runLoader() {
+    if (loadInterval) clearInterval(loadInterval);
+    let prog = 0;
+    loadFill.style.width = '0%';
+    loadStatus.textContent = 'LOADING... ▒▒▒▒▒▒▒▒▒▒';
+    loadInterval = setInterval(() => {
+        prog += Math.random() * 13 + 4;
+        if (prog >= 100) {
+            prog = 100;
+            loadFill.style.width = '100%';
+            loadStatus.textContent = '✓ PIXEL_MARCH_COMPLETE';
+            clearInterval(loadInterval); loadInterval = null;
+        } else {
+            loadFill.style.width = prog + '%';
+            const f = Math.floor(prog / 10), e = 10 - f;
+            loadStatus.textContent = `LOADING ${Math.floor(prog)}%  ${'█'.repeat(f)}${'▒'.repeat(e)}`;
+        }
+    }, 110);
+}
+function resetLoader() {
+    if (loadInterval) { clearInterval(loadInterval); loadInterval = null; }
+    loadFill.style.width = '0%';
+    loadStatus.textContent = 'READY';
+}
+
+startBtn?.addEventListener('click', e => { e.preventDefault(); runLoader(); });
+resetBtn?.addEventListener('click', e => { e.preventDefault(); resetLoader(); });
+
+/* ── CLI ANIMATION ────────────────────────────── */
+// CLI output is static HTML pre-built for fidelity.
+// We just append the live cursor — already done in markup.
+
+/* ── SCROLL: reveal + nav active ─────────────── */
+const sections  = ['hero','colors','type','components','dashboard','cli','loading','motion','pixellab','tokens'];
+const dockItems = document.querySelectorAll('.dock-item');
+const topLinks  = document.querySelectorAll('.top-nav-links a');
+const reveals   = document.querySelectorAll('.reveal');
+
+const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+reveals.forEach(el => io.observe(el));
+
+function updateNav() {
+    let current = 'hero';
+    sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= el.offsetTop - 140) current = id;
+    });
+    dockItems.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + current));
+    topLinks.forEach(a =>  a.classList.toggle('is-active',  a.getAttribute('href') === '#' + current));
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+
+/* ═══════════════════════════════════════════════
+   PIXEL ANIMATIONS
+═══════════════════════════════════════════════ */
+
+/* ── helper: Silicon Zen palette ── */
+const SZ = { teal:'#5BA8A0', tealDim:'#3D7A74', amber:'#FFB86C', bg:'#0D0D0D', text:'#F4F4F1', dim:'#444' };
+
+/* ── ISOMETRIC CANVAS (hero) ──────────────────── */
+(function drawHeroIso() {
+    const c = $('isoCanvas'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const W = c.width, H = c.height, S = 7;
+
+    function iso(x, y, z) {
+        return { sx: W/2 + (x - y) * S, sy: H/2 + (x + y) * S * 0.5 - z * S };
+    }
+    function cube(x, y, z, top, right, left) {
+        const tl=iso(x,y,z+1), tr=iso(x+1,y,z+1), tm=iso(x+1,y+1,z+1), bl=iso(x,y+1,z+1);
+        const rtr=iso(x+1,y,z), rtm=iso(x+1,y+1,z), lbl=iso(x,y+1,z);
+        ctx.strokeStyle='#0D0D0D'; ctx.lineWidth=0.4;
+        [[tl,tr,tm,bl,tl],[[tr,rtr,rtm,tm,tr]],[[bl,tm,rtm,lbl,bl]]].forEach((pts,i) => {
+            const fills=[top,right,left]; ctx.beginPath();
+            const p=pts.flat?pts:[pts]; (i===0?[tl,tr,tm,bl]:(i===1?[tr,rtr,rtm,tm]:[bl,tm,rtm,lbl])).forEach((pt,j)=>{ j?ctx.lineTo(pt.sx,pt.sy):ctx.moveTo(pt.sx,pt.sy); });
+            ctx.closePath(); ctx.fillStyle=fills[i]; ctx.fill(); ctx.stroke();
+        });
+    }
+    // Redraw as one draw call with correct loop
+    ctx.clearRect(0,0,W,H);
+    for (let x=-4;x<=4;x++) for (let y=-4;y<=4;y++) {
+        const dark=['#1A1A1A','#141414','#111111'];
+        ctx.beginPath();
+        const tl=iso(x,y,0),tr=iso(x+1,y,0),tm=iso(x+1,y+1,0),bl=iso(x,y+1,0);
+        ctx.moveTo(tl.sx,tl.sy); ctx.lineTo(tr.sx,tr.sy); ctx.lineTo(tm.sx,tm.sy); ctx.lineTo(bl.sx,bl.sy);
+        ctx.closePath(); ctx.fillStyle='#111'; ctx.fill();
+        ctx.strokeStyle='#222'; ctx.lineWidth=0.3; ctx.stroke();
+    }
+    const blocks=[
+        // server racks
+        {x:-4,y:-2,z:0,h:3,top:'#222',r:'#1a1a1a',l:'#1c1c1c'},
+        {x:-4,y:-1,z:0,h:4,top:SZ.teal,r:SZ.tealDim,l:'#2d7a72'},
+        {x:-4,y:0, z:0,h:2,top:'#222',r:'#1a1a1a',l:'#1c1c1c'},
+        // desk
+        {x:-1,y:0, z:0,h:1,top:'#333',r:'#2a2a2a',l:'#2e2e2e'},
+        {x:0, y:0, z:0,h:1,top:'#222',r:'#1a1a1a',l:'#1e1e1e'},
+        {x:1, y:0, z:0,h:1,top:'#333',r:'#2a2a2a',l:'#2e2e2e'},
+        // monitor
+        {x:0, y:0, z:1,h:1,top:'#0a0a0a',r:'#060606',l:'#080808'},
+        {x:0, y:0, z:2,h:1,top:SZ.teal, r:SZ.tealDim,l:'#2d7a72'},
+        // character
+        {x:1, y:1, z:0,h:1,top:SZ.amber,r:'#cc8b3d',l:'#e0a05a'},
+        {x:1, y:1, z:1,h:1,top:'#eee',r:'#bbb',l:'#ccc'},
+        // accent objects
+        {x:2, y:-1,z:0,h:2,top:SZ.teal,r:SZ.tealDim,l:'#2d7a72'},
+        {x:-1,y:2, z:0,h:1,top:SZ.amber,r:'#cc8b3d',l:'#e0a05a'},
+    ];
+
+    function drawBlock(bx,by,bz,bh,top,right,left) {
+        for(let i=0;i<bh;i++) {
+            const tl=iso(bx,by,bz+i+1),tr=iso(bx+1,by,bz+i+1),tm=iso(bx+1,by+1,bz+i+1),bl=iso(bx,by+1,bz+i+1);
+            const rtr=iso(bx+1,by,bz+i),rtm=iso(bx+1,by+1,bz+i),lbl=iso(bx,by+1,bz+i);
+            ctx.strokeStyle='rgba(0,0,0,0.5)'; ctx.lineWidth=0.4;
+            [[tl,tr,tm,bl],[tr,rtr,rtm,tm],[bl,tm,rtm,lbl]].forEach((pts,fi)=>{
+                ctx.beginPath(); pts.forEach((p,j)=>j?ctx.lineTo(p.sx,p.sy):ctx.moveTo(p.sx,p.sy));
+                ctx.closePath(); ctx.fillStyle=[top,right,left][fi]; ctx.fill(); ctx.stroke();
+            });
+        }
+    }
+
+    blocks.forEach(b => drawBlock(b.x,b.y,b.z,b.h,b.top,b.r,b.l));
+})();
+
+/* ── ISO MINI CANVAS (pixel lab) ─────────────── */
+(function drawMiniIso() {
+    const c = $('isoMiniCanvas'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const W=c.width, H=c.height, S=5;
+    function iso(x,y,z){ return {sx:W/2+(x-y)*S, sy:H/2+(x+y)*S*.5-z*S}; }
+    function block(bx,by,bz,h,top,right,left) {
+        for(let i=0;i<h;i++){
+            const tl=iso(bx,by,bz+i+1),tr=iso(bx+1,by,bz+i+1),tm=iso(bx+1,by+1,bz+i+1),bl=iso(bx,by+1,bz+i+1);
+            const rtr=iso(bx+1,by,bz+i),rtm=iso(bx+1,by+1,bz+i),lbl=iso(bx,by+1,bz+i);
+            [[tl,tr,tm,bl],[tr,rtr,rtm,tm],[bl,tm,rtm,lbl]].forEach((pts,fi)=>{
+                ctx.beginPath(); pts.forEach((p,j)=>j?ctx.lineTo(p.sx,p.sy):ctx.moveTo(p.sx,p.sy));
+                ctx.closePath(); ctx.fillStyle=[top,right,left][fi]; ctx.fill();
+                ctx.strokeStyle='#0a0a0a'; ctx.lineWidth=0.4; ctx.stroke();
+            });
+        }
+    }
+    ctx.clearRect(0,0,W,H);
+    for(let x=-3;x<=3;x++) for(let y=-3;y<=3;y++){
+        const tl=iso(x,y,0),tr=iso(x+1,y,0),tm=iso(x+1,y+1,0),bl=iso(x,y+1,0);
+        ctx.beginPath();ctx.moveTo(tl.sx,tl.sy);ctx.lineTo(tr.sx,tr.sy);ctx.lineTo(tm.sx,tm.sy);ctx.lineTo(bl.sx,bl.sy);ctx.closePath();
+        ctx.fillStyle='#111';ctx.fill();ctx.strokeStyle='#1a1a1a';ctx.lineWidth=0.3;ctx.stroke();
+    }
+    [[0,0,0,2,SZ.teal,SZ.tealDim,'#2d7a72'],[-2,0,0,3,'#222','#1a1a1a','#1e1e1e'],
+     [1,1,0,1,SZ.amber,'#cc8b3d','#e0a05a'],[0,0,2,1,'#111','#0a0a0a','#0d0d0d'],
+     [2,-1,0,1,SZ.teal,SZ.tealDim,'#2d7a72'],[-1,2,0,2,'#333','#2a2a2a','#2e2e2e']
+    ].forEach(([bx,by,bz,h,top,r,l])=>block(bx,by,bz,h,top,r,l));
+})();
+
+/* ── SPRITE WALKER ────────────────────────────── */
+(function initSprite() {
+    const c = $('spriteWalker'); if (!c) return;
+    c.width=16; c.height=16;
+    const ctx = c.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    const strip = c.parentElement;
+    let pos = 0, frame = 0;
+    const frames = [
+        // frame 0 — body, legs split
+        (ctx) => {
+            ctx.fillStyle=SZ.amber; ctx.fillRect(6,0,4,4);    // head
+            ctx.fillStyle=SZ.teal;  ctx.fillRect(5,4,6,5);    // body
+            ctx.fillStyle=SZ.amber; ctx.fillRect(4,9,3,5);    // left leg
+            ctx.fillRect(9,9,3,5);                             // right leg
+            ctx.fillStyle=SZ.tealDim; ctx.fillRect(3,4,2,4);  // left arm
+            ctx.fillRect(11,4,2,4);                            // right arm
+        },
+        // frame 1 — legs together
+        (ctx) => {
+            ctx.fillStyle=SZ.amber; ctx.fillRect(6,1,4,4);
+            ctx.fillStyle=SZ.teal;  ctx.fillRect(5,5,6,5);
+            ctx.fillStyle=SZ.amber; ctx.fillRect(5,10,3,4);
+            ctx.fillRect(8,10,3,4);
+            ctx.fillStyle=SZ.tealDim; ctx.fillRect(3,5,2,4);
+            ctx.fillRect(11,5,2,4);
+        },
+        // frame 2 — other split
+        (ctx) => {
+            ctx.fillStyle=SZ.amber; ctx.fillRect(6,0,4,4);
+            ctx.fillStyle=SZ.teal;  ctx.fillRect(5,4,6,5);
+            ctx.fillStyle=SZ.amber; ctx.fillRect(9,9,3,5);
+            ctx.fillRect(4,9,3,5);
+            ctx.fillStyle=SZ.tealDim; ctx.fillRect(11,4,2,4);
+            ctx.fillRect(3,4,2,4);
+        }
+    ];
+    function step() {
+        const stripW = strip.offsetWidth || 260;
+        ctx.clearRect(0,0,16,16);
+        frames[frame](ctx);
+        frame = (frame+1) % 3;
+        pos = (pos + 2) % (stripW + 64);
+        c.style.left = pos + 'px';
+        setTimeout(step, 120);
+    }
+    step();
+})();
+
+/* ── STAR FIELD ───────────────────────────────── */
+(function initStars() {
+    const c = $('starCanvas'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const W=c.width, H=c.height;
+    const stars = Array.from({length:80}, () => ({
+        x: Math.random()*W, y: Math.random()*H,
+        s: Math.random()<0.2 ? 2 : 1,
+        sp: Math.random()*0.4+0.1,
+        br: Math.random()
+    }));
+    let t=0;
+    function draw() {
+        ctx.fillStyle='#050505'; ctx.fillRect(0,0,W,H);
+        stars.forEach(s => {
+            const blink = Math.sin(t*0.05 + s.br*10) > 0.6 ? 0.4 : 1;
+            ctx.fillStyle = `rgba(91,168,160,${0.4*blink + s.br*0.6})`;
+            ctx.fillRect(Math.floor(s.x), Math.floor(s.y), s.s, s.s);
+            s.y += s.sp;
+            if (s.y > H) { s.y=0; s.x=Math.random()*W; }
+        });
+        // occasional amber star
+        if (Math.floor(t)%60===0) {
+            ctx.fillStyle=SZ.amber;
+            const sx=Math.random()*W, sy=Math.random()*H;
+            ctx.fillRect(Math.floor(sx),Math.floor(sy),2,2);
+        }
+        t++; requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+/* ── PIXEL RAIN ───────────────────────────────── */
+(function initRain() {
+    const c = $('pixelRainCanvas'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const W=c.width, H=c.height, COL=4;
+    const cols = Math.floor(W/COL);
+    const drops = Array.from({length:cols}, ()=>Math.floor(Math.random()*(H/COL)));
+    const chars = '01アイウエオカキクケコSILICONZEN'.split('');
+    function draw() {
+        ctx.fillStyle='rgba(5,5,5,0.18)'; ctx.fillRect(0,0,W,H);
+        ctx.font = `${COL*2}px "Press Start 2P", monospace`;
+        drops.forEach((y,i) => {
+            const ch = chars[Math.floor(Math.random()*chars.length)];
+            const bright = y < 2;
+            ctx.fillStyle = bright ? '#FFFFFF' : SZ.teal;
+            ctx.globalAlpha = bright ? 1 : 0.5 + Math.random()*0.4;
+            ctx.fillText(ch, i*COL, y*COL);
+            ctx.globalAlpha = 1;
+            if (y*COL > H && Math.random()>0.96) drops[i]=0; else drops[i]++;
+        });
+        setTimeout(draw, 80);
+    }
+    draw();
+})();
+
+/* ── OSCILLOSCOPE WAVE ────────────────────────── */
+(function initWave() {
+    const c = $('waveCanvas'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const W=c.width, H=c.height;
+    let phase=0;
+    function draw() {
+        ctx.fillStyle='#050e0d'; ctx.fillRect(0,0,W,H);
+        // grid
+        ctx.strokeStyle='rgba(91,168,160,0.1)'; ctx.lineWidth=0.5;
+        for(let x=0;x<W;x+=16){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+        for(let y=0;y<H;y+=16){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+        // stepped wave (pixel style)
+        const step=4;
+        ctx.fillStyle=SZ.teal;
+        for(let x=0;x<W;x+=step) {
+            const angle = (x/W)*Math.PI*4 + phase;
+            const raw = Math.sin(angle)*0.4 + Math.sin(angle*2)*0.15;
+            const y = Math.round((H/2 + raw*(H*0.35)) / step) * step;
+            ctx.fillRect(x, y, step-1, 2);
+        }
+        // second wave (amber, lower amplitude)
+        ctx.fillStyle=SZ.amber;
+        for(let x=0;x<W;x+=step) {
+            const angle=(x/W)*Math.PI*6+phase*1.3;
+            const raw=Math.sin(angle)*0.25;
+            const y=Math.round((H/2+raw*(H*0.25))/step)*step;
+            ctx.fillRect(x,y,step-1,1);
+        }
+        phase+=0.04;
+        setTimeout(draw, 50);
+    }
+    draw();
+})();
+
+/* ── ARCADE SCORE COUNTER ─────────────────────── */
+(function initArcade() {
+    const el = $('arcadeScore');
+    const btn = $('arcadeStartBtn');
+    if (!el || !btn) return;
+    let score=0, ticker=null, lives=3;
+    const livesEl = el.parentElement.querySelector('.arcade-lives');
+    function fmt(n){ return String(n).padStart(6,'0'); }
+    function startGame() {
+        if (ticker) clearInterval(ticker);
+        score=0; lives=3;
+        if(livesEl) livesEl.textContent='♥ ♥ ♥';
+        el.textContent = fmt(0);
+        let speed=80;
+        ticker = setInterval(()=>{
+            score += Math.floor(Math.random()*150+50);
+            if(score>999999) score=0;
+            el.textContent = fmt(score);
+            speed = Math.max(30, speed-0.5);
+            // occasional life loss
+            if(Math.random()<0.003 && lives>0){
+                lives--;
+                if(livesEl) livesEl.textContent = '♥ '.repeat(lives).trim() || '☠';
+            }
+        }, speed);
+    }
+    btn.addEventListener('click', e=>{ e.preventDefault(); startGame(); });
+})();
+
+/* ── PIXEL TYPEWRITER ─────────────────────────── */
+(function initPxTypewriter() {
+    const el = $('pxTypeTarget'); if (!el) return;
+    const lines = ['SYSTEM READY','LOADING_KERNEL','DITHER.SYS OK','PRESS_START_2P','SILICON_ZEN_ON'];
+    let li=0, ci=0, deleting=false;
+    function tick() {
+        const word=lines[li];
+        if(!deleting){ el.textContent=word.slice(0,ci+1); ci++; if(ci===word.length){deleting=true;setTimeout(tick,1200);return;} }
+        else { el.textContent=word.slice(0,ci-1); ci--; if(ci===0){deleting=false;li=(li+1)%lines.length;} }
+        setTimeout(tick, deleting?60:130);
+    }
+    setTimeout(tick, 600);
+})();
+
+/* ── SCANLINE REVEAL ──────────────────────────── */
+(function initScanline() {
+    const btn=$('scanlineBtn'), target=$('scanlineTarget'); if(!btn||!target) return;
+    function play(){
+        target.style.clipPath='inset(0 0 100% 0)';
+        target.style.transition='none';
+        setTimeout(()=>{
+            target.style.transition='clip-path 1s steps(16,end)';
+            target.style.clipPath='inset(0 0 0% 0)';
+        },50);
+    }
+    play();
+    btn.addEventListener('click',e=>{ e.preventDefault(); play(); });
+})();
+
+/* ── FLICKER BOOT ─────────────────────────────── */
+(function initFlickerBoot() {
+    const btn=$('flickerReplayBtn'), target=$('flickerTarget'); if(!btn||!target) return;
+    function play(){
+        target.style.animation='none';
+        void target.offsetWidth;
+        target.style.animation='flicker-in 0.35s steps(3) forwards';
+    }
+    play();
+    btn.addEventListener('click',e=>{ e.preventDefault(); play(); });
+})();
+
+/* ── PIXEL PROGRESS ───────────────────────────── */
+(function initPxProgress(){
+    const fill=$('pxProgressFill'), label=$('pxProgressLabel'), btn=$('pxProgressBtn');
+    if(!fill||!btn) return;
+    let inv=null;
+    btn.addEventListener('click',e=>{
+        e.preventDefault();
+        if(inv) clearInterval(inv);
+        let p=0; fill.style.width='0%'; label.textContent='BOOTING...';
+        const msgs=['LOADING KERNEL','INIT DITHER.SYS','MOUNT PIXEL.FS','START 2P.FONT','SYSTEM READY'];
+        inv=setInterval(()=>{
+            p+=Math.random()*12+3;
+            if(p>=100){ p=100; fill.style.width='100%'; label.textContent='✓ ONLINE'; clearInterval(inv); return; }
+            fill.style.width=p+'%';
+            label.textContent=msgs[Math.floor(p/25)]||'LOADING...';
+        },200);
+    });
+})();
+</script>
+</body>
+</html>
