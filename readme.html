@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="en" data-sz-theme="parchment">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silicon Zen — by king525dev</title>
+    <meta name="description" content="A retro-pixel + modern-minimalist UI library for the calm internet.">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- sz.css — Silicon Zen UI Library v1.1.0 -->
+    <style>
+        /*!
+         * sz.css — Silicon Zen UI Library v1.1.0
+         * by king525dev
+         * A retro-pixel + modern-minimalist component library
+         * https://github.com/king525dev/silicon-zen
+         */
+
+        /* ═══════════════════════════════════════════════════════════
+           1. DESIGN TOKENS
+        ═══════════════════════════════════════════════════════════ */
+        :root {
+            --sz-teal: #5BA8A0;
+            --sz-teal-dim: #3D7A74;
+            --sz-amber: #FFB86C;
+            --sz-amber-dim: #CC8B3D;
+            --sz-red: #D94F3D;
+            --sz-green: #4FA878;
+            --sz-grid: 4px;
+            --sz-font-serif: "Newsreader", "Source Serif 4", Georgia, serif;
+            --sz-font-mono: "JetBrains Mono", "Courier New", Courier, monospace;
+            --sz-font-pixel: "Press Start 2P", monospace;
+            --sz-snap: 150ms cubic-bezier(0, 0, 0.2, 1);
+            --sz-spring: 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+            --sz-flicker: steps(3, end);
+            --sz-bg: #F4F4F1;
+            --sz-bg-alt: #EAEAE7;
+            --sz-surface: #FFFFFF;
+            --sz-surface-alt: #F0F0ED;
+            --sz-border: #333333;
+            --sz-border-dim: #888888;
+            --sz-text: #0D0D0D;
+            --sz-text-dim: #555555;
+            --sz-text-inv: #F4F4F1;
+            --sz-dither-dot: rgba(0, 0, 0, 0.10);
+            --sz-card-bg: #FFFFFF;
+            --sz-cli-bg: #0D0D0D;
+            --sz-cli-text: #F4F4F1;
+        }
+
+        [data-sz-theme="obsidian"] {
+            --sz-bg: #0D0D0D;
+            --sz-bg-alt: #111111;
+            --sz-surface: #1A1A1A;
+            --sz-surface-alt: #222222;
+            --sz-border: #3A3A3A;
+            --sz-border-dim: #2A2A2A;
+            --sz-text: #F4F4F1;
+            --sz-text-dim: #888888;
+            --sz-text-inv: #0D0D0D;
+            --sz-dither-dot: rgba(255, 255, 255, 0.05);
+            --sz-card-bg: #1A1A1A;
+            --sz-cli-bg: #050505;
+            --sz-cli-text: #F4F4F1;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           2. BASE RESET
+        ═══════════════════════════════════════════════════════════ */
+        .sz-reset,
+        .sz-reset * {
+            box-sizing: border-box;
+        }
+        .sz-body {
+            background-color: var(--sz-bg);
+            color: var(--sz-text);
+            font-family: var(--sz-font-serif);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+        .sz-body ::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sz-body ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sz-body ::-webkit-scrollbar-thumb {
+            background: var(--sz-teal);
+        }
+        .sz-dither {
+            background-image: radial-gradient(var(--sz-dither-dot) 0.6px, transparent 0.6px);
+            background-size: 8px 8px;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           3. LAYOUT
+        ═══════════════════════════════════════════════════════════ */
+        .sz-container {
+            max-width: 1040px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: calc(var(--sz-grid) * 10);
+            padding-right: calc(var(--sz-grid) * 10);
+        }
+        .sz-container--sm {
+            max-width: 720px;
+        }
+        .sz-container--lg {
+            max-width: 1280px;
+        }
+        .sz-container--full {
+            max-width: none;
+        }
+        .sz-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: calc(var(--sz-grid) * 6);
+        }
+        .sz-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: calc(var(--sz-grid) * 6);
+        }
+        .sz-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: calc(var(--sz-grid) * 5);
+        }
+        .sz-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: calc(var(--sz-grid) * 4);
+        }
+        .sz-flex--center {
+            align-items: center;
+        }
+        .sz-flex--between {
+            justify-content: space-between;
+        }
+        .sz-flex--col {
+            flex-direction: column;
+        }
+        .sz-flex-1 {
+            flex: 1;
+            min-width: 0;
+        }
+        .sz-divider {
+            border: none;
+            border-top: 1px solid var(--sz-border-dim);
+            opacity: 0.35;
+            margin: calc(var(--sz-grid) * 12) 0;
+        }
+        .sz-mt-1 {
+            margin-top: calc(var(--sz-grid) * 1);
+        }
+        .sz-mt-2 {
+            margin-top: calc(var(--sz-grid) * 2);
+        }
+        .sz-mt-4 {
+            margin-top: calc(var(--sz-grid) * 4);
+        }
+        .sz-mt-6 {
+            margin-top: calc(var(--sz-grid) * 6);
+        }
+        .sz-mt-8 {
+            margin-top: calc(var(--sz-grid) * 8);
+        }
+        .sz-mt-12 {
+            margin-top: calc(var(--sz-grid) * 12);
+        }
+        .sz-mb-1 {
+            margin-bottom: calc(var(--sz-grid) * 1);
+        }
+        .sz-mb-2 {
+            margin-bottom: calc(var(--sz-grid) * 2);
+        }
+        .sz-mb-4 {
+            margin-bottom: calc(var(--sz-grid) * 4);
+        }
+        .sz-mb-6 {
+            margin-bottom: calc(var(--sz-grid) * 6);
+        }
+        .sz-mb-8 {
+            margin-bottom: calc(var(--sz-grid) * 8);
+        }
+        .sz-p-4 {
+            padding: calc(var(--sz-grid) * 4);
+        }
+        .sz-p-6 {
+            padding: calc(var(--sz-grid) * 6);
+        }
+        .sz-p-8 {
+            padding: calc(var(--sz-grid) * 8);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           4. TYPOGRAPHY
+        ═══════════════════════════════════════════════════════════ */
+        .sz-display {
+            font-family: var(--sz-font-serif);
+            font-size: clamp(2.4rem, 5vw, 4rem);
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            color: var(--sz-text);
+        }
+        .sz-h1 {
+            font-family: var(--sz-font-serif);
+            font-size: clamp(1.8rem, 3vw, 2.4rem);
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+            color: var(--sz-text);
+        }
+        .sz-h2 {
+            font-family: var(--sz-font-serif);
+            font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+            font-weight: 400;
+            line-height: 1.25;
+            color: var(--sz-text);
+        }
+        .sz-h3 {
+            font-family: var(--sz-font-mono);
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--sz-text-dim);
+        }
+        .sz-body-text {
+            font-family: var(--sz-font-serif);
+            font-size: 1rem;
+            line-height: 1.65;
+            color: var(--sz-text);
+            max-width: 62ch;
+        }
+        .sz-lead {
+            font-family: var(--sz-font-serif);
+            font-size: 1.2rem;
+            color: var(--sz-text-dim);
+            max-width: 56ch;
+            line-height: 1.6;
+        }
+        .sz-mono {
+            font-family: var(--sz-font-mono);
+            font-size: 0.85em;
+        }
+        .sz-label {
+            display: block;
+            font-family: var(--sz-font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--sz-teal);
+            margin-bottom: calc(var(--sz-grid) * 2);
+        }
+        .sz-pixel {
+            font-family: var(--sz-font-pixel);
+            letter-spacing: 0.06em;
+            line-height: 1.6;
+        }
+        .sz-pixel--hero {
+            font-family: var(--sz-font-pixel);
+            font-size: clamp(18px, 3vw, 32px);
+            color: var(--sz-teal);
+            letter-spacing: 0.04em;
+            line-height: 1.6;
+        }
+        .sz-pixel--heading {
+            font-family: var(--sz-font-pixel);
+            font-size: 14px;
+            letter-spacing: 0.06em;
+            line-height: 1.8;
+        }
+        .sz-pixel--label {
+            font-family: var(--sz-font-pixel);
+            font-size: 8px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--sz-text-dim);
+        }
+        .sz-code {
+            font-family: var(--sz-font-mono);
+            font-size: 0.85em;
+            background: var(--sz-surface-alt);
+            border: 1px solid var(--sz-border-dim);
+            padding: 1px 6px;
+            color: var(--sz-teal);
+        }
+        .sz-text-teal {
+            color: var(--sz-teal);
+        }
+        .sz-text-amber {
+            color: var(--sz-amber);
+        }
+        .sz-text-dim {
+            color: var(--sz-text-dim);
+        }
+        .sz-text-red {
+            color: var(--sz-red);
+        }
+        .sz-text-green {
+            color: var(--sz-green);
+        }
+        .sz-text-inv {
+            color: var(--sz-text-inv);
+        }
+        .sz-glitch {
+            position: relative;
+            display: inline-block;
+            color: var(--sz-teal);
+        }
+        .sz-glitch::before,
+        .sz-glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .sz-glitch::before {
+            color: var(--sz-amber);
+            animation: sz-glitch-before 2.5s steps(1) infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+        .sz-glitch::after {
+            color: var(--sz-red);
+            animation: sz-glitch-after 2.5s steps(1) infinite;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+        @keyframes sz-glitch-before {
+            0%,
+            90%,
+            100% {
+                transform: translate(0);
+                opacity: 0;
+            }
+            91% {
+                transform: translate(-3px, 1px);
+                opacity: 1;
+            }
+            93% {
+                transform: translate(3px, -1px);
+            }
+            95% {
+                transform: translate(-2px, 0);
+            }
+            97% {
+                opacity: 0;
+            }
+        }
+        @keyframes sz-glitch-after {
+            0%,
+            90%,
+            100% {
+                transform: translate(0);
+                opacity: 0;
+            }
+            92% {
+                transform: translate(4px, -2px);
+                opacity: 1;
+            }
+            94% {
+                transform: translate(-4px, 2px);
+            }
+            96% {
+                transform: translate(2px, 1px);
+            }
+            98% {
+                opacity: 0;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           5. BUTTONS
+        ═══════════════════════════════════════════════════════════ */
+        .sz-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--sz-border);
+            padding: calc(var(--sz-grid) * 3) calc(var(--sz-grid) * 6);
+            font-family: var(--sz-font-mono);
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-decoration: none;
+            color: var(--sz-text);
+            background: transparent;
+            cursor: pointer;
+            transition: var(--sz-snap);
+            white-space: nowrap;
+            border-radius: 0;
+            line-height: 1;
+        }
+        .sz-btn:hover {
+            background: var(--sz-teal);
+            color: #0D0D0D;
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0 var(--sz-border);
+        }
+        .sz-btn:active {
+            transform: translate(0, 0);
+            box-shadow: none;
+        }
+        .sz-btn:focus-visible {
+            outline: 2px solid var(--sz-teal);
+            outline-offset: 2px;
+        }
+        .sz-btn--solid {
+            background: var(--sz-teal);
+            color: #0D0D0D;
+            border-color: var(--sz-teal-dim);
+        }
+        .sz-btn--solid:hover {
+            background: var(--sz-teal-dim);
+            color: #F4F4F1;
+        }
+        .sz-btn--amber {
+            border-color: var(--sz-amber-dim);
+            color: var(--sz-amber);
+        }
+        .sz-btn--amber:hover {
+            background: var(--sz-amber);
+            color: #0D0D0D;
+        }
+        .sz-btn--ghost {
+            border-color: transparent;
+        }
+        .sz-btn--ghost:hover {
+            background: var(--sz-surface-alt);
+            border-color: var(--sz-border-dim);
+            box-shadow: none;
+            transform: none;
+            color: var(--sz-text);
+        }
+        .sz-btn--danger {
+            border-color: var(--sz-red);
+            color: var(--sz-red);
+        }
+        .sz-btn--danger:hover {
+            background: var(--sz-red);
+            color: #F4F4F1;
+            box-shadow: 4px 4px 0 var(--sz-border);
+        }
+        .sz-btn--sm {
+            padding: calc(var(--sz-grid) * 2) calc(var(--sz-grid) * 4);
+            font-size: 10px;
+        }
+        .sz-btn--lg {
+            padding: calc(var(--sz-grid) * 4) calc(var(--sz-grid) * 8);
+            font-size: 14px;
+        }
+        .sz-btn--disabled,
+        .sz-btn[disabled] {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .sz-btn--full {
+            width: 100%;
+            justify-content: center;
+        }
+        .sz-btn--pixel {
+            font-family: var(--sz-font-pixel);
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            background: var(--sz-teal);
+            color: #0D0D0D;
+            border: none;
+            box-shadow: 4px 4px 0 var(--sz-teal-dim);
+            padding: 12px 16px;
+        }
+        .sz-btn--pixel:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--sz-teal-dim);
+            background: var(--sz-teal);
+            color: #0D0D0D;
+        }
+        .sz-btn--pixel:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--sz-teal-dim);
+        }
+        .sz-btn--pixel.sz-btn--amber {
+            background: var(--sz-amber);
+            box-shadow: 4px 4px 0 var(--sz-amber-dim);
+        }
+        .sz-btn--pixel.sz-btn--amber:hover {
+            box-shadow: 6px 6px 0 var(--sz-amber-dim);
+            background: var(--sz-amber);
+            color: #0D0D0D;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           6. BADGES
+        ═══════════════════════════════════════════════════════════ */
+        .sz-badge {
+            display: inline-block;
+            font-family: var(--sz-font-mono);
+            font-size: 10px;
+            letter-spacing: 1px;
+            padding: 2px 8px;
+            border: 1px solid;
+            border-radius: 0;
+            line-height: 1.6;
+        }
+        .sz-badge--teal {
+            background: var(--sz-teal);
+            color: #0D0D0D;
+            border-color: var(--sz-teal-dim);
+        }
+        .sz-badge--amber {
+            background: var(--sz-amber);
+            color: #0D0D0D;
+            border-color: var(--sz-amber-dim);
+        }
+        .sz-badge--red {
+            background: var(--sz-red);
+            color: #F4F4F1;
+            border-color: #A03020;
+        }
+        .sz-badge--green {
+            background: var(--sz-green);
+            color: #0D0D0D;
+            border-color: #2F7050;
+        }
+        .sz-badge--outline {
+            background: transparent;
+            color: var(--sz-text-dim);
+            border-color: var(--sz-border-dim);
+        }
+        .sz-badge--pixel {
+            font-family: var(--sz-font-pixel);
+            font-size: 8px;
+            letter-spacing: 0.08em;
+            padding: 4px 10px;
+            border-width: 2px;
+            box-shadow: 3px 3px 0 var(--sz-teal-dim);
+            color: var(--sz-teal);
+            border-color: var(--sz-teal);
+        }
+        .sz-badge--pixel.sz-badge--amber {
+            color: var(--sz-amber);
+            border-color: var(--sz-amber);
+            box-shadow: 3px 3px 0 var(--sz-amber-dim);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           7. CARD / PANEL
+        ═══════════════════════════════════════════════════════════ */
+        .sz-card {
+            background: var(--sz-card-bg);
+            border: 1px solid var(--sz-border);
+        }
+        .sz-card__header {
+            background: var(--sz-teal);
+            border-bottom: 1px solid var(--sz-border);
+            padding: calc(var(--sz-grid) * 2) calc(var(--sz-grid) * 4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sz-card__title {
+            font-family: var(--sz-font-mono);
+            font-size: 12px;
+            color: #0D0D0D;
+            letter-spacing: 0.5px;
+        }
+        .sz-card__body {
+            padding: calc(var(--sz-grid) * 6);
+        }
+        .sz-card__footer {
+            padding: calc(var(--sz-grid) * 4) calc(var(--sz-grid) * 6);
+            border-top: 1px solid var(--sz-border-dim);
+            display: flex;
+            align-items: center;
+            gap: calc(var(--sz-grid) * 3);
+        }
+        .sz-card--window .sz-card__header {
+            background: var(--sz-surface-alt);
+            border-bottom: 1px solid var(--sz-border-dim);
+        }
+        .sz-card--window .sz-card__title {
+            color: var(--sz-teal);
+        }
+        .sz-card__dots {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .sz-card__dot {
+            width: 9px;
+            height: 9px;
+            border: 1px solid var(--sz-border-dim);
+        }
+        .sz-card__dot--r {
+            background: #D94F3D;
+            border-color: #B03020;
+        }
+        .sz-card__dot--g {
+            background: #4FA878;
+            border-color: #2F8050;
+        }
+        .sz-card__dot--b {
+            background: #5BA8A0;
+            border-color: #3D7A74;
+        }
+        .sz-card--amber .sz-card__header {
+            background: var(--sz-amber);
+        }
+        .sz-card--hover {
+            transition: var(--sz-snap);
+            cursor: pointer;
+        }
+        .sz-card--hover:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0 var(--sz-border-dim);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           8. FORMS
+        ═══════════════════════════════════════════════════════════ */
+        .sz-field {
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--sz-grid) * 2);
+            margin-bottom: calc(var(--sz-grid) * 5);
+        }
+        .sz-field__label {
+            font-family: var(--sz-font-mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--sz-text-dim);
+        }
+        .sz-field__hint {
+            font-family: var(--sz-font-mono);
+            font-size: 10px;
+            color: var(--sz-text-dim);
+            margin-top: 2px;
+        }
+        .sz-field__error {
+            font-family: var(--sz-font-mono);
+            font-size: 10px;
+            color: var(--sz-red);
+            margin-top: 2px;
+        }
+        .sz-input {
+            background: var(--sz-surface-alt);
+            border: 1px solid var(--sz-border-dim);
+            border-bottom: 2px solid var(--sz-border);
+            padding: calc(var(--sz-grid) * 3);
+            font-family: var(--sz-font-mono);
+            font-size: 13px;
+            color: var(--sz-text);
+            outline: none;
+            transition: var(--sz-snap);
+            border-radius: 0;
+            width: 100%;
+        }
+        .sz-input::placeholder {
+            color: var(--sz-text-dim);
+            opacity: 0.6;
+        }
+        .sz-input:focus {
+            border-bottom-color: var(--sz-teal);
+            background: var(--sz-surface);
+        }
+        .sz-input--error {
+            border-bottom-color: var(--sz-red);
+        }
+        .sz-input--error:focus {
+            border-bottom-color: var(--sz-red);
+        }
+        .sz-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235BA8A0'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+            cursor: pointer;
+        }
+        .sz-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .sz-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .sz-checkbox__box {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            border: 1px solid var(--sz-border);
+            background: var(--sz-surface-alt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--sz-font-mono);
+            font-size: 10px;
+            color: transparent;
+            transition: var(--sz-snap);
+        }
+        .sz-checkbox.is-checked .sz-checkbox__box {
+            background: var(--sz-teal);
+            border-color: var(--sz-teal-dim);
+            color: #0D0D0D;
+        }
+        .sz-checkbox__label {
+            font-family: var(--sz-font-mono);
+            font-size: 12px;
+            color: var(--sz-text-dim);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           9. PROGRESS BARS
+        ═══════════════════════════════════════════════════════════ */
+        .sz-progress {
+            height: 8px;
+            background: var(--sz-border-dim);
+            border: 1px solid var(--sz-border);
+            overflow: hidden;
+        }
+        .sz-progress__fill {
+            height: 100%;
+            background: var(--sz-teal);
+            transition: width 0.3s ease-out;
+            width: 0%;
+        }
+        .sz-progress--striped .sz-progress__fill {
+            background: repeating-linear-gradient(90deg,
+                    var(--sz-teal) 0, var(--sz-teal) 8px,
+                    var(--sz-amber) 8px, var(--sz-amber) 16px);
+        }
+        .sz-progress--pixel {
+            border-width: 2px;
+            border-color: var(--sz-teal);
+            height: 12px;
+        }
+        .sz-progress--pixel .sz-progress__fill {
+            background: repeating-linear-gradient(90deg,
+                    var(--sz-teal) 0, var(--sz-teal) 6px,
+                    transparent 6px, transparent 8px);
+            animation: sz-march 0.4s steps(1) infinite;
+        }
+        @keyframes sz-march {
+            0% {
+                background-position: 0 0
+            }
+            100% {
+                background-position: 8px 0
+            }
+        }
+        .sz-progress--thin {
+            height: 4px;
+        }
+        .sz-progress--amber .sz-progress__fill {
+            background: var(--sz-amber);
+        }
+        .sz-progress--green .sz-progress__fill {
+            background: var(--sz-green);
+        }
+        .sz-stat-bar {
+            height: 4px;
+            background: var(--sz-border-dim);
+            margin: calc(var(--sz-grid)*2) 0;
+        }
+        .sz-stat-bar__fill {
+            height: 100%;
+            background: var(--sz-teal);
+        }
+        .sz-stat-bar__fill--amber {
+            background: var(--sz-amber);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           10. CLI TERMINAL
+        ═══════════════════════════════════════════════════════════ */
+        .sz-cli {
+            background: var(--sz-cli-bg);
+            color: var(--sz-cli-text);
+            font-family: var(--sz-font-mono);
+            font-size: 13px;
+            line-height: 1.8;
+            padding: calc(var(--sz-grid) * 5);
+            border: 1px solid var(--sz-border);
+            position: relative;
+            overflow: hidden;
+        }
+        .sz-cli::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0, 0, 0, 0.07) 2px, rgba(0, 0, 0, 0.07) 4px);
+            z-index: 1;
+        }
+        .sz-cli__inner {
+            position: relative;
+            z-index: 2;
+        }
+        .sz-cli .sz-prompt {
+            color: var(--sz-teal);
+        }
+        .sz-cli .sz-ok {
+            color: #4FA878;
+        }
+        .sz-cli .sz-warn {
+            color: var(--sz-amber);
+        }
+        .sz-cli .sz-err {
+            color: var(--sz-red);
+        }
+        .sz-cli .sz-muted {
+            color: #444;
+        }
+        .sz-cli__cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: var(--sz-teal);
+            vertical-align: text-bottom;
+            animation: sz-blink 1s steps(2) infinite;
+        }
+        @keyframes sz-blink {
+            50% {
+                opacity: 0;
+            }
+        }
+        .sz-crt {
+            position: relative;
+            border: 3px solid var(--sz-teal);
+            box-shadow: 0 0 0 1px var(--sz-teal-dim), 4px 4px 0 var(--sz-teal-dim);
+            background: #050e0d;
+            overflow: hidden;
+            padding: 20px;
+        }
+        .sz-crt::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(0, 180, 150, 0.04) 3px, rgba(0, 180, 150, 0.04) 4px);
+        }
+        .sz-crt::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.55) 100%);
+        }
+        .sz-crt__inner {
+            position: relative;
+            z-index: 3;
+            font-family: var(--sz-font-mono);
+            font-size: 12px;
+            color: var(--sz-teal);
+            line-height: 2;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           11. DATA TABLE
+        ═══════════════════════════════════════════════════════════ */
+        .sz-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--sz-font-mono);
+            font-size: 12px;
+        }
+        .sz-table th {
+            text-align: left;
+            padding: calc(var(--sz-grid)*2) calc(var(--sz-grid)*3);
+            border-bottom: 2px solid var(--sz-teal);
+            color: var(--sz-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        .sz-table td {
+            padding: calc(var(--sz-grid)*3);
+            border-bottom: 1px solid var(--sz-border-dim);
+            color: var(--sz-text);
+        }
+        .sz-table tr:hover td {
+            background: var(--sz-surface-alt);
+        }
+        .sz-table .sz-teal {
+            color: var(--sz-teal);
+        }
+        .sz-table .sz-amber {
+            color: var(--sz-amber);
+        }
+        .sz-table .sz-muted {
+            color: var(--sz-text-dim);
+        }
+        .sz-table .sz-red {
+            color: var(--sz-red);
+        }
+        .sz-table .sz-green {
+            color: var(--sz-green);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           12. CALLOUT / ALERT
+        ═══════════════════════════════════════════════════════════ */
+        .sz-callout {
+            border-left: 3px solid var(--sz-teal);
+            padding: calc(var(--sz-grid)*4) calc(var(--sz-grid)*5);
+            background: rgba(91, 168, 160, 0.07);
+            font-size: 14px;
+            color: var(--sz-text-dim);
+        }
+        .sz-callout--warn {
+            border-left-color: var(--sz-amber);
+            background: rgba(255, 184, 108, 0.07);
+        }
+        .sz-callout--error {
+            border-left-color: var(--sz-red);
+            background: rgba(217, 79, 61, 0.07);
+        }
+        .sz-callout--info {
+            border-left-color: var(--sz-teal);
+            background: rgba(91, 168, 160, 0.07);
+        }
+        .sz-callout strong {
+            color: var(--sz-teal);
+        }
+        .sz-callout--warn strong {
+            color: var(--sz-amber);
+        }
+        .sz-callout--error strong {
+            color: var(--sz-red);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           13. NAVIGATION — FLOATING DOCK
+        ═══════════════════════════════════════════════════════════ */
+        .sz-dock {
+            position: fixed;
+            bottom: calc(var(--sz-grid) * 6);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(13, 13, 13, 0.92);
+            border: 1px solid #3A3A3A;
+            padding: calc(var(--sz-grid) * 2);
+            display: flex;
+            gap: calc(var(--sz-grid) * 3);
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+        .sz-dock__item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: 1px solid #444;
+            color: #888;
+            font-family: var(--sz-font-mono);
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            transition: var(--sz-snap);
+            background: transparent;
+            cursor: pointer;
+        }
+        .sz-dock__item:hover {
+            border-color: var(--sz-teal);
+            color: var(--sz-teal);
+        }
+        .sz-dock__item.is-active,
+        .sz-dock__item[aria-current] {
+            background: var(--sz-teal);
+            color: #0D0D0D;
+            border-color: var(--sz-teal);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           14. NAVIGATION — TOP BAR
+        ═══════════════════════════════════════════════════════════ */
+        .sz-topnav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: calc(var(--sz-grid)*4);
+            height: 56px;
+            padding: 0 calc(var(--sz-grid)*10);
+            background: var(--sz-bg);
+            border-bottom: 2px solid var(--sz-teal);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+        .sz-topnav__logo {
+            font-family: var(--sz-font-mono);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--sz-text);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .sz-topnav__logo span {
+            color: var(--sz-teal);
+        }
+        .sz-topnav__links {
+            display: flex;
+            gap: calc(var(--sz-grid)*8);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            align-items: center;
+        }
+        .sz-topnav__links a {
+            font-family: var(--sz-font-mono);
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--sz-text-dim);
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+            transition: var(--sz-snap);
+        }
+        .sz-topnav__links a:hover,
+        .sz-topnav__links a.is-active,
+        .sz-topnav__links a[aria-current] {
+            color: var(--sz-teal);
+            border-bottom-color: var(--sz-teal);
+        }
+        .sz-topnav__actions {
+            display: flex;
+            gap: calc(var(--sz-grid)*2);
+            align-items: center;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           15. MODAL
+        ═══════════════════════════════════════════════════════════ */
+        .sz-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.72);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .sz-modal-overlay.is-open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .sz-modal {
+            background: var(--sz-surface);
+            border: 1px solid var(--sz-border);
+            padding: calc(var(--sz-grid)*8);
+            max-width: 520px;
+            width: 90%;
+            transform: scale(0.96);
+            transition: transform 0.2s var(--sz-spring);
+        }
+        .sz-modal-overlay.is-open .sz-modal {
+            transform: scale(1);
+        }
+        .sz-modal__header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: calc(var(--sz-grid)*4);
+        }
+        .sz-modal__title {
+            font-family: var(--sz-font-mono);
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            color: var(--sz-text);
+        }
+        .sz-modal__close {
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            border: 1px solid var(--sz-border-dim);
+            font-family: var(--sz-font-mono);
+            font-size: 14px;
+            color: var(--sz-text-dim);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--sz-snap);
+        }
+        .sz-modal__close:hover {
+            border-color: var(--sz-red);
+            color: var(--sz-red);
+        }
+        .sz-modal__body {
+            font-size: 14px;
+            color: var(--sz-text-dim);
+            line-height: 1.6;
+            margin-bottom: calc(var(--sz-grid)*6);
+        }
+        .sz-modal__footer {
+            display: flex;
+            gap: calc(var(--sz-grid)*3);
+            justify-content: flex-end;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           16. TABS
+        ═══════════════════════════════════════════════════════════ */
+        .sz-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--sz-border-dim);
+        }
+        .sz-tabs__item {
+            font-family: var(--sz-font-mono);
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: calc(var(--sz-grid)*3) calc(var(--sz-grid)*5);
+            color: var(--sz-text-dim);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: var(--sz-snap);
+            background: transparent;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            text-decoration: none;
+        }
+        .sz-tabs__item:hover {
+            color: var(--sz-text);
+        }
+        .sz-tabs__item.is-active {
+            color: var(--sz-teal);
+            border-bottom-color: var(--sz-teal);
+        }
+        .sz-tab-panel {
+            display: none;
+            padding: calc(var(--sz-grid)*6) 0;
+        }
+        .sz-tab-panel.is-active {
+            display: block;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           17. TOOLTIP
+        ═══════════════════════════════════════════════════════════ */
+        .sz-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .sz-tooltip::after {
+            content: attr(data-sz-tip);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: var(--sz-obsidian, #0D0D0D);
+            color: var(--sz-cli-text);
+            font-family: var(--sz-font-mono);
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            white-space: nowrap;
+            border: 1px solid var(--sz-border);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s, transform 0.15s;
+            z-index: 50;
+        }
+        .sz-tooltip:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           18. ACCORDION
+        ═══════════════════════════════════════════════════════════ */
+        .sz-accordion {
+            border: 1px solid var(--sz-border-dim);
+        }
+        .sz-accordion__item {
+            border-bottom: 1px solid var(--sz-border-dim);
+        }
+        .sz-accordion__item:last-child {
+            border-bottom: none;
+        }
+        .sz-accordion__trigger {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: calc(var(--sz-grid)*4) calc(var(--sz-grid)*5);
+            font-family: var(--sz-font-mono);
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            color: var(--sz-text);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: var(--sz-snap);
+        }
+        .sz-accordion__trigger:hover {
+            background: var(--sz-surface-alt);
+            color: var(--sz-teal);
+        }
+        .sz-accordion__trigger::after {
+            content: '+';
+            color: var(--sz-teal);
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .sz-accordion__item.is-open .sz-accordion__trigger::after {
+            content: '−';
+        }
+        .sz-accordion__body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s cubic-bezier(0, 0, 0.2, 1), padding 0.25s;
+            font-size: 14px;
+            color: var(--sz-text-dim);
+            padding: 0 calc(var(--sz-grid)*5);
+        }
+        .sz-accordion__item.is-open .sz-accordion__body {
+            max-height: 400px;
+            padding: calc(var(--sz-grid)*4) calc(var(--sz-grid)*5);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           19. TOAST
+        ═══════════════════════════════════════════════════════════ */
+        .sz-toast-container {
+            position: fixed;
+            bottom: calc(var(--sz-grid)*8);
+            right: calc(var(--sz-grid)*6);
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--sz-grid)*3);
+            z-index: 300;
+        }
+        .sz-toast {
+            background: var(--sz-surface);
+            border: 1px solid var(--sz-border);
+            border-left: 3px solid var(--sz-teal);
+            padding: calc(var(--sz-grid)*3) calc(var(--sz-grid)*5);
+            font-family: var(--sz-font-mono);
+            font-size: 12px;
+            color: var(--sz-text);
+            max-width: 320px;
+            animation: sz-toast-in 0.2s var(--sz-snap) forwards;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sz-toast--warn {
+            border-left-color: var(--sz-amber);
+        }
+        .sz-toast--error {
+            border-left-color: var(--sz-red);
+        }
+        .sz-toast--ok {
+            border-left-color: var(--sz-green);
+        }
+        .sz-toast.is-exiting {
+            animation: sz-toast-out 0.2s var(--sz-snap) forwards;
+        }
+        @keyframes sz-toast-in {
+            from {
+                opacity: 0;
+                transform: translateX(20px)
+            }
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+        @keyframes sz-toast-out {
+            from {
+                opacity: 1;
+                transform: none
+            }
+            to {
+                opacity: 0;
+                transform: translateX(20px)
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           20. ANIMATIONS
+        ═══════════════════════════════════════════════════════════ */
+        .sz-flicker {
+            animation: sz-flicker-in 0.3s steps(3) forwards;
+        }
+        @keyframes sz-flicker-in {
+            0% {
+                opacity: 0;
+            }
+            33% {
+                opacity: 0.6;
+            }
+            66% {
+                opacity: 0.15;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        .sz-reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .sz-reveal.is-visible {
+            opacity: 1;
+            transform: none;
+        }
+        .sz-reveal--delay-1 {
+            transition-delay: 0.1s;
+        }
+        .sz-reveal--delay-2 {
+            transition-delay: 0.2s;
+        }
+        .sz-reveal--delay-3 {
+            transition-delay: 0.3s;
+        }
+        .sz-scanline-in {
+            animation: sz-scanline 0.8s steps(16, end) forwards;
+        }
+        @keyframes sz-scanline {
+            from {
+                clip-path: inset(0 0 100% 0);
+            }
+            to {
+                clip-path: inset(0 0 0% 0);
+            }
+        }
+        .sz-pulse {
+            animation: sz-pulse 2s ease-in-out infinite;
+        }
+        @keyframes sz-pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(91, 168, 160, .5)
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(91, 168, 160, 0)
+            }
+        }
+        .sz-pixel-blink {
+            animation: sz-px-blink 0.6s steps(1) infinite;
+        }
+        @keyframes sz-px-blink {
+            0%,
+            100% {
+                opacity: 1
+            }
+            50% {
+                opacity: 0
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           21. PIXEL CHART
+        ═══════════════════════════════════════════════════════════ */
+        .sz-pixel-chart {
+            height: 80px;
+            display: flex;
+            align-items: flex-end;
+            border: 1px dashed var(--sz-border-dim);
+            padding: 8px;
+            gap: 3px;
+            background: var(--sz-surface-alt);
+        }
+        .sz-pixel-chart__bar {
+            flex: 1;
+            background: var(--sz-teal);
+        }
+        .sz-pixel-chart__bar--amber {
+            background: var(--sz-amber);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           22. COLOUR SWATCH
+        ═══════════════════════════════════════════════════════════ */
+        .sz-swatch {
+            border: 1px solid var(--sz-border);
+            overflow: hidden;
+        }
+        .sz-swatch__color {
+            height: 56px;
+        }
+        .sz-swatch__meta {
+            padding: calc(var(--sz-grid)*2) calc(var(--sz-grid)*3);
+            background: var(--sz-surface);
+        }
+        .sz-swatch__name {
+            font-family: var(--sz-font-mono);
+            font-size: 11px;
+            color: var(--sz-text);
+            font-weight: 500;
+        }
+        .sz-swatch__hex {
+            font-family: var(--sz-font-mono);
+            font-size: 10px;
+            color: var(--sz-text-dim);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           23. RESPONSIVE UTILITIES
+        ═══════════════════════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            .sz-container {
+                padding-left: calc(var(--sz-grid)*5);
+                padding-right: calc(var(--sz-grid)*5);
+            }
+            .sz-topnav {
+                padding: 0 calc(var(--sz-grid)*5);
+            }
+            .sz-topnav__links {
+                display: none;
+            }
+            .sz-grid-2,
+            .sz-grid-3,
+            .sz-grid-4 {
+                grid-template-columns: 1fr;
+            }
+            .sz-hide-mobile {
+                display: none;
+            }
+        }
+        @media (min-width: 769px) {
+            .sz-hide-desktop {
+                display: none;
+            }
+        }
+
+        /* ── Additional doc-specific tweaks ── */
+        .sz-cli pre {
+            margin: 0;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .sz-cli--sm {
+            font-size: 11px;
+            padding: calc(var(--sz-grid) * 3);
+        }
+        .sz-section-anchor {
+            scroll-margin-top: 80px;
+        }
+        .sz-inline-flex-wrap {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: calc(var(--sz-grid) * 2);
+            align-items: center;
+        }
+        .sz-color-swatch-row {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--sz-grid) * 3);
+            margin-bottom: calc(var(--sz-grid) * 1);
+        }
+        .sz-color-dot {
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--sz-border-dim);
+            flex-shrink: 0;
+        }
+        .sz-footer-note {
+            text-align: center;
+            font-family: var(--sz-font-serif);
+            font-style: italic;
+            color: var(--sz-text-dim);
+            padding: calc(var(--sz-grid) * 10) 0;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body class="sz-body sz-dither">
+
+    <!-- ═══════════════════════════════════════════ TOP NAV ═══════════════════════════════════════════ -->
+    <nav class="sz-topnav" aria-label="Main navigation">
+        <a class="sz-topnav__logo" href="#"><span>Silicon</span> Zen</a>
+        <ul class="sz-topnav__links">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#installation">Install</a></li>
+            <li><a href="#usage">Usage</a></li>
+            <li><a href="#colours">Colours</a></li>
+            <li><a href="#fonts">Fonts</a></li>
+            <li><a href="#quick-reference">Reference</a></li>
+        </ul>
+        <div class="sz-topnav__actions">
+            <button class="sz-btn sz-btn--ghost sz-btn--sm" data-sz-theme-toggle aria-label="Toggle theme" title="Toggle Parchment / Obsidian">
+                ◐ Theme
+            </button>
+            <a href="#overview" class="sz-btn sz-btn--solid sz-btn--sm">[ Get Started ]</a>
+        </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════ HERO ═══════════════════════════════════════════ -->
+    <header class="sz-container sz-mt-8">
+        <!-- ASCII Logo in CRT -->
+        <div class="sz-crt sz-mb-6 sz-flicker">
+            <div class="sz-crt__inner">
+                <pre style="margin:0;color:var(--sz-teal);font-size:10px;line-height:1.4;">
+ _____ _ _ _                 ____
+/ ____(_) (_)               |_  /
+| (__ _ | |_  ___ ___  _ __  / /  ___ _ __
+\___ \| | | |/ __/ _ \| '_ \/ /| |/ _ \ '_ \
+ ___) | | | | (_| (_) | | |/\_ \ |  __/ | | |
+|_____/|_|_|_|\___\___/|_| |_/___|\___|_| |_|
+                </pre>
+            </div>
+        </div>
+
+        <span class="sz-label">UI Library v1.1.0</span>
+        <h1 class="sz-display">Silicon Zen</h1>
+        <h3 class="sz-h3 sz-mb-4">by king525dev</h3>
+
+        <p class="sz-lead sz-mb-4">
+            <em>A retro-pixel + modern-minimalist UI library for the calm internet.</em>
+        </p>
+
+        <!-- Badges -->
+        <div class="sz-inline-flex-wrap sz-mb-6">
+            <span class="sz-badge sz-badge--teal">v1.1.0</span>
+            <span class="sz-badge sz-badge--amber">MIT License</span>
+            <span class="sz-badge sz-badge--teal">2 Themes</span>
+            <span class="sz-badge sz-badge--outline">No Dependencies</span>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════ MAIN CONTENT ═══════════════════════════════════════════ -->
+    <main class="sz-container">
+
+        <hr class="sz-divider">
+
+        <!-- OVERVIEW -->
+        <section id="overview" class="sz-section-anchor">
+            <span class="sz-label">Section 01</span>
+            <h2 class="sz-h1 sz-mb-4">Overview</h2>
+
+            <div class="sz-body-text sz-mb-6">
+                <p>Silicon Zen is a CSS component library built on a single idea: <strong>the pixel is a deliberate unit, not a limitation.</strong> It draws equal inspiration from the discipline of early computing and the spacious calm of modern minimal design — blending both into something that feels genuinely distinct.</p>
+                <p>The system runs on two themes — <strong>Parchment</strong> (light, serif-warm) and <strong>Obsidian</strong> (dark, terminal-dense) — and a palette of two accent colours that never change between them. Switching themes costs one attribute. Nothing else moves.</p>
+            </div>
+
+            <!-- Inspiration -->
+            <h3 class="sz-h2 sz-mb-4">Inspiration</h3>
+            <p class="sz-body-text sz-mb-4">Silicon Zen was shaped by several projects that treat constraints as craft:</p>
+
+            <div class="sz-table sz-mb-8" style="overflow-x:auto;">
+                <table style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>What it taught</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="https://100r.co" style="color:var(--sz-teal);">100r.co</a> &amp; the Uxn ecosystem</td>
+                            <td>That constraint forces honesty. Every pixel earns its place.</td>
+                        </tr>
+                        <tr>
+                            <td><a href="https://zen-browser.app" style="color:var(--sz-teal);">Zen Browser</a></td>
+                            <td>That modern UI can be genuinely calm — not just minimal for minimalism's sake.</td>
+                        </tr>
+                        <tr>
+                            <td><a href="https://wiki.xxiivv.com/site/varvara_zine.html" style="color:var(--sz-teal);">XXIIVV / Varvara Zine</a></td>
+                            <td>That playfulness and precision are not opposites.</td>
+                        </tr>
+                        <tr>
+                            <td>Personal sandbox experiments</td>
+                            <td>That a design language should feel like a natural extension of how you think.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sz-callout sz-callout--info sz-mb-6">
+                You can read the full design philosophy — including colour decisions, font choices, animation rules, and what to <em>never</em> do — in <strong>philosophy.html</strong>.
+            </div>
+        </section>
+
+        <hr class="sz-divider">
+
+        <!-- INSTALLATION -->
+        <section id="installation" class="sz-section-anchor">
+            <span class="sz-label">Section 02</span>
+            <h2 class="sz-h1 sz-mb-4">Installation</h2>
+            <p class="sz-body-text sz-mb-4">Silicon Zen is two files. No build step, no package manager, no configuration.</p>
+
+            <h3 class="sz-h2 sz-mb-2">Step 1 — Add the fonts</h3>
+            <p class="sz-body-text sz-mb-4">Silicon Zen uses three Google Fonts. Add this to your <span class="sz-code">&lt;head&gt;</span> before the stylesheet:</p>
+
+            <div class="sz-cli sz-mb-6">
+                <div class="sz-cli__inner">
+                    <pre>&lt;link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet"&gt;</pre>
+                </div>
+            </div>
+
+            <h3 class="sz-h2 sz-mb-2">Step 2 — Link the stylesheet</h3>
+            <div class="sz-cli sz-mb-6">
+                <div class="sz-cli__inner">
+                    <pre>&lt;link rel="stylesheet" href="library/sz.css"&gt;</pre>
+                </div>
+            </div>
+
+            <h3 class="sz-h2 sz-mb-2">Step 3 — Add the JS plugin <span class="sz-badge sz-badge--outline">optional</span></h3>
+            <p class="sz-body-text sz-mb-4">The JS plugin powers modals, tabs, accordions, toast notifications, scroll reveal, and theme toggling. Without it, the visual styles still work — you just wire interactions yourself.</p>
+            <div class="sz-cli sz-mb-6">
+                <div class="sz-cli__inner">
+                    <pre>&lt;!-- Place before &lt;/body&gt; --&gt;
+&lt;script src="library/sz.js"&gt;&lt;/script&gt;</pre>
+                </div>
+            </div>
+
+            <h3 class="sz-h2 sz-mb-2">Step 4 — Set your theme and go</h3>
+            <div class="sz-cli sz-mb-6">
+                <div class="sz-cli__inner">
+                    <pre>&lt;html lang="en" data-sz-theme="obsidian"&gt;
+&lt;body class="sz-body sz-dither"&gt;
+
+&lt;div class="sz-container"&gt;
+&lt;span class="sz-label"&gt;Hello, world&lt;/span&gt;
+&lt;h1 class="sz-display"&gt;Silicon Zen.&lt;/h1&gt;
+&lt;p class="sz-lead"&gt;A calm, pixel-precise UI library.&lt;/p&gt;
+&lt;button class="sz-btn sz-btn--solid"&gt;[ Get Started ]&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;/body&gt;</pre>
+                </div>
+            </div>
+
+            <p class="sz-body-text">That's it. You're running Silicon Zen.</p>
+            <div class="sz-callout sz-callout--info sz-mb-6">
+                <strong>Further reading:</strong> <code class="sz-code">sz-docs.html</code> covers every component, modifier, and JS API method with live demos and copyable code.
+            </div>
+        </section>
+
+        <hr class="sz-divider">
+
+        <!-- USAGE & EXAMPLES -->
+        <section id="usage" class="sz-section-anchor">
+            <span class="sz-label">Section 03</span>
+            <h2 class="sz-h1 sz-mb-4">Usage &amp; Examples</h2>
+            <p class="sz-body-text sz-mb-6">Every class in Silicon Zen is prefixed <span class="sz-code">sz-</span> so it never collides with your existing styles. You can drop it into a project incrementally — style one button, one card, one section at a time.</p>
+
+            <!-- Themes -->
+            <h3 class="sz-h2 sz-mb-2" id="usage-themes">Themes</h3>
+            <p class="sz-body-text sz-mb-4">Apply a theme with a single data attribute on any ancestor element:</p>
+            <div class="sz-cli sz-mb-4">
+                <div class="sz-cli__inner">
+                    <pre>&lt;!-- Light mode --&gt;
+&lt;html data-sz-theme="parchment"&gt;
+
+&lt;!-- Dark mode --&gt;
+&lt;html data-sz-theme="obsidian"&gt;
+
+&lt;!-- Scoped to a section only --&gt;
+&lt;section data-sz-theme="obsidian"&gt;
+&lt;!-- Everything inside renders in Obsidian --&gt;
+&lt;/section&gt;</pre>
+                </div>
+            </div>
+            <p class="sz-body-text sz-mb-4">Toggle themes from a button with no JavaScript:</p>
+            <div class="sz-cli sz-mb-4">
+                <div class="sz-cli__inner">
+                    <pre>&lt;button data-sz-theme-toggle&gt;Toggle Theme&lt;/button&gt;</pre>
+                </div>
+            </div>
+            <p class="sz-body-text sz-mb-6">Or with JS: <span class="sz-code">SZ.theme('obsidian');</span> or <span class="sz-code">SZ.toggleTheme();</span></p>
+
+            <!-- Buttons Card -->
+            <h3 class="sz-h2 sz-mb-2">Buttons</h3>
+            <div class="sz-card sz-mb-6">
+                <div class="sz-card__header">
+                    <span class="sz-card__title">BUTTON_VARIANTS</span>
+                    <span class="sz-card__title">_ □ ×</span>
+                </div>
+                <div class="sz-card__body">
+                    <div class="sz-flex sz-mb-4">
+                        <button class="sz-btn">Default</button>
+                        <button class="sz-btn sz-btn--solid">Primary</button>
+                        <button class="sz-btn sz-btn--amber">Amber</button>
+                        <button class="sz-btn sz-btn--ghost">Ghost</button>
+                        <button class="sz-btn sz-btn--danger">Danger</button>
+                        <button class="sz-btn sz-btn--pixel">[ PIXEL ]</button>
+                    </div>
+                    <div class="sz-flex">
+                        <button class="sz-btn sz-btn--sm">Small</button>
+                        <button class="sz-btn sz-btn--lg">Large</button>
+                        <a href="#" class="sz-btn sz-btn--solid">[ Link Button ]</a>
+                    </div>
+                </div>
+            </div>
+            <p class="sz-body-text sz-mb-6">Every button has built-in hover (−2px offset + hard shadow) and active (snap back) interaction. No extra CSS needed.</p>
+
+            <!-- Cards -->
+            <h3 class="sz-h2 sz-mb-2">Cards</h3>
+            <div class="sz-grid-2 sz-mb-6">
+                <div class="sz-card">
+                    <div class="sz-card__header">
+                        <span class="sz-card__title">PROJECT_NAME</span>
+                        <span class="sz-card__title">_ □ ×</span>
+                    </div>
+                    <div class="sz-card__body">
+                        <p class="sz-body-text">Standard card — teal title bar. Your content here.</p>
+                    </div>
+                    <div class="sz-card__footer">
+                        <button class="sz-btn sz-btn--sm sz-btn--solid">Open</button>
+                    </div>
+                </div>
+                <div class="sz-card sz-card--window">
+                    <div class="sz-card__header">
+                        <div class="sz-card__dots">
+                            <div class="sz-card__dot sz-card__dot--r"></div>
+                            <div class="sz-card__dot sz-card__dot--g"></div>
+                            <div class="sz-card__dot sz-card__dot--b"></div>
+                        </div>
+                        <span class="sz-card__title">WINDOW.APP</span>
+                    </div>
+                    <div class="sz-card__body">
+                        <p class="sz-body-text">Window-chrome variant with traffic-light dots.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bars -->
+            <h3 class="sz-h2 sz-mb-2">Progress Bars</h3>
+            <div class="sz-card sz-mb-6">
+                <div class="sz-card__body">
+                    <div class="sz-mb-4">
+                        <span class="sz-field__label">Default teal fill</span>
+                        <div class="sz-progress"><div class="sz-progress__fill" style="width:72%"></div></div>
+                    </div>
+                    <div class="sz-mb-4">
+                        <span class="sz-field__label">Teal/amber stripe — the Silicon Zen signature fill</span>
+                        <div class="sz-progress sz-progress--striped"><div class="sz-progress__fill" style="width:55%"></div></div>
+                    </div>
+                    <div class="sz-mb-4">
+                        <span class="sz-field__label">Pixel dashed fill with marching animation</span>
+                        <div class="sz-progress sz-progress--pixel"><div class="sz-progress__fill" style="width:40%"></div></div>
+                    </div>
+                    <div>
+                        <span class="sz-field__label">Animated (click Run)</span>
+                        <div id="demo-bar" class="sz-progress sz-progress--striped"><div class="sz-progress__fill"></div></div>
+                        <span id="demo-label" class="sz-mono sz-text-dim" style="font-size:10px;">READY</span>
+                        <button data-sz-progress-run="#demo-bar" data-sz-progress-label="#demo-label" class="sz-btn sz-btn--sm sz-mt-2">Run</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLI Terminal -->
+            <h3 class="sz-h2 sz-mb-2">CLI Terminal</h3>
+            <div class="sz-cli sz-mb-6">
+                <div class="sz-cli__inner">
+                    <span class="sz-prompt">user@zen:~$</span> npm init silicon-zen<br>
+                    <span class="sz-ok">✓</span> <span class="sz-muted">Downloaded 2 files in 0.4s</span><br>
+                    <span class="sz-prompt">user@zen:~$</span> echo "Hello, calm web."<br>
+                    Hello, calm web.<br>
+                    <span class="sz-prompt">user@zen:~$</span> <span class="sz-cli__cursor"></span>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <h3 class="sz-h2 sz-mb-2">Tabs</h3>
+            <div data-sz-tabs-scope class="sz-mb-6">
+                <div class="sz-tabs">
+                    <button class="sz-tabs__item is-active" data-sz-tab="panel-a">Overview</button>
+                    <button class="sz-tabs__item" data-sz-tab="panel-b">Details</button>
+                    <button class="sz-tabs__item" data-sz-tab="panel-c">CLI</button>
+                </div>
+                <div id="panel-a" class="sz-tab-panel is-active">
+                    <p class="sz-body-text">Overview content. Switch tabs to see more.</p>
+                </div>
+                <div id="panel-b" class="sz-tab-panel">
+                    <p class="sz-body-text">Details content. This is panel B.</p>
+                </div>
+                <div id="panel-c" class="sz-tab-panel">
+                    <div class="sz-cli sz-cli--sm"><div class="sz-cli__inner"><span class="sz-prompt">$</span> cat details.txt<br><span class="sz-muted">CLI panel active.</span></div></div>
+                </div>
+            </div>
+
+            <!-- Accordion -->
+            <h3 class="sz-h2 sz-mb-2">Accordion</h3>
+            <div class="sz-accordion sz-mb-6" data-sz-single>
+                <div class="sz-accordion__item is-open">
+                    <button class="sz-accordion__trigger">What is Silicon Zen?</button>
+                    <div class="sz-accordion__body">
+                        A retro-pixel + modern-minimalist UI library. Two themes. Zero dependencies.
+                    </div>
+                </div>
+                <div class="sz-accordion__item">
+                    <button class="sz-accordion__trigger">How do I install it?</button>
+                    <div class="sz-accordion__body">
+                        Two files — sz.css and sz.js. See Installation above.
+                    </div>
+                </div>
+                <div class="sz-accordion__item">
+                    <button class="sz-accordion__trigger">Can I theme it?</button>
+                    <div class="sz-accordion__body">
+                        Yes — switch between Parchment and Obsidian with one data attribute.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Animations -->
+            <h3 class="sz-h2 sz-mb-2">Animations</h3>
+            <div class="sz-card sz-mb-6">
+                <div class="sz-card__body">
+                    <div class="sz-flex sz-flex--col" style="gap:16px;">
+                        <div><span class="sz-badge sz-badge--teal sz-mb-2">sz-flicker</span> <span class="sz-body-text">3-frame retro CRT boot</span></div>
+                        <div><span class="sz-badge sz-badge--teal sz-mb-2">sz-reveal</span> <span class="sz-body-text">Fades up on scroll</span></div>
+                        <div><span class="sz-badge sz-badge--teal sz-mb-2">sz-scanline-in</span> <span class="sz-body-text">Clip-path top-down wipe</span></div>
+                        <div>
+                            <span class="sz-badge sz-badge--teal sz-mb-2">sz-glitch</span>
+                            <span class="sz-glitch sz-pixel--heading" data-text="SILICON ZEN">SILICON ZEN</span>
+                        </div>
+                        <div>
+                            <span class="sz-badge sz-badge--teal sz-mb-2">sz-pixel-blink</span>
+                            <span class="sz-pixel-blink sz-pixel--heading sz-text-teal">◼ BLINKING</span>
+                        </div>
+                        <div>
+                            <span class="sz-badge sz-badge--teal sz-mb-2">sz-pulse</span>
+                            <button class="sz-btn sz-btn--solid sz-pulse">Pulsing Button</button>
+                        </div>
+                        <div>
+                            <span class="sz-badge sz-badge--teal sz-mb-2">typewriter</span>
+                            <span data-sz-typewriter data-sz-tw-words="DEVELOPER.,DESIGNER.,CRAFTSMAN." data-sz-tw-speed="100" class="sz-mono sz-text-teal" style="font-size:13px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sz-callout sz-callout--info sz-mb-6">
+                <strong>See it all in action:</strong> <code class="sz-code">demo.html</code> is a full portfolio site that uses every component, modifier, and JS method in the library.<br>
+                <strong>Full API reference:</strong> <code class="sz-code">sz-docs.html</code> documents every class, data attribute, and JavaScript method with live interactive demos.
+            </div>
+        </section>
+
+        <hr class="sz-divider">
+
+        <!-- COLOUR REFERENCE -->
+        <section id="colours" class="sz-section-anchor">
+            <span class="sz-label">Section 04</span>
+            <h2 class="sz-h1 sz-mb-4">Colour Reference</h2>
+            <p class="sz-body-text sz-mb-6">Two themes, one accent palette. The six accent colours never change — only the surfaces invert. This is the connective tissue that makes both themes feel like the same system.</p>
+
+            <h3 class="sz-h2 sz-mb-4">Shared Accents</h3>
+            <p class="sz-body-text sz-mb-4">These values are constant across Parchment and Obsidian:</p>
+
+            <div class="sz-table sz-mb-6" style="overflow-x:auto;">
+                <table style="width:100%;">
+                    <thead>
+                        <tr><th>Swatch</th><th>Name</th><th>Hex</th><th>Token</th><th>Usage</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="sz-color-dot" style="background:#5BA8A0;display:inline-block;"></span></td>
+                            <td>Terminal Teal</td>
+                            <td class="sz-teal">#5BA8A0</td>
+                            <td><code class="sz-code">--sz-teal</code></td>
+                            <td>Primary accent. Buttons, links, active states, CLI prompts, progress fills.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sz-color-dot" style="background:#3D7A74;display:inline-block;"></span></td>
+                            <td>Teal Dim</td>
+                            <td class="sz-muted">#3D7A74</td>
+                            <td><code class="sz-code">--sz-teal-dim</code></td>
+                            <td>Hover + shadow of teal elements.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sz-color-dot" style="background:#FFB86C;display:inline-block;"></span></td>
+                            <td>Ghost Amber</td>
+                            <td class="sz-amber">#FFB86C</td>
+                            <td><code class="sz-code">--sz-amber</code></td>
+                            <td>Secondary accent. Warnings, highlights, alternate buttons, pixel badges.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sz-color-dot" style="background:#CC8B3D;display:inline-block;"></span></td>
+                            <td>Amber Dim</td>
+                            <td class="sz-muted">#CC8B3D</td>
+                            <td><code class="sz-code">--sz-amber-dim</code></td>
+                            <td>Hover + shadow of amber elements.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sz-color-dot" style="background:#D94F3D;display:inline-block;"></span></td>
+                            <td>Signal Red</td>
+                            <td class="sz-red">#D94F3D</td>
+                            <td><code class="sz-code">--sz-red</code></td>
+                            <td>Errors and destructive actions only. Never decorative.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sz-color-dot" style="background:#4FA878;display:inline-block;"></span></td>
+                            <td>Signal Green</td>
+                            <td class="sz-green">#4FA878</td>
+                            <td><code class="sz-code">--sz-green</code></td>
+                            <td>Success and passing states only. Never decorative.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sz-callout sz-callout--warn sz-mb-6">
+                <strong>Rules:</strong>
+                <ul style="margin:8px 0 0 0;padding-left:20px;font-family:var(--sz-font-serif);">
+                    <li>Teal and amber must never appear on the same interactive element.</li>
+                    <li>Red and green are strictly semantic — never used for decoration or branding.</li>
+                    <li>One warm accent focal element per viewport. Don't shout.</li>
+                </ul>
+            </div>
+
+            <!-- Theme tables side by side -->
+            <div class="sz-grid-2 sz-mb-6">
+                <div>
+                    <h3 class="sz-h2 sz-mb-2">Parchment — Light Theme</h3>
+                    <p class="sz-mono sz-text-dim sz-mb-2" style="font-size:10px;">data-sz-theme="parchment"</p>
+                    <div class="sz-table" style="overflow-x:auto;">
+                        <table style="width:100%;">
+                            <thead><tr><th>Token</th><th>Hex</th><th>Usage</th></tr></thead>
+                            <tbody>
+                                <tr><td><code class="sz-code">--sz-bg</code></td><td>#F4F4F1</td><td>Page canvas</td></tr>
+                                <tr><td><code class="sz-code">--sz-bg-alt</code></td><td>#EAEAE7</td><td>Alt section bg</td></tr>
+                                <tr><td><code class="sz-code">--sz-surface</code></td><td>#FFFFFF</td><td>Cards, modals</td></tr>
+                                <tr><td><code class="sz-code">--sz-surface-alt</code></td><td>#F0F0ED</td><td>Inputs, code blocks</td></tr>
+                                <tr><td><code class="sz-code">--sz-border</code></td><td>#333333</td><td>Primary borders</td></tr>
+                                <tr><td><code class="sz-code">--sz-border-dim</code></td><td>#888888</td><td>Dimmed borders</td></tr>
+                                <tr><td><code class="sz-code">--sz-text</code></td><td>#0D0D0D</td><td>Primary text</td></tr>
+                                <tr><td><code class="sz-code">--sz-text-dim</code></td><td>#555555</td><td>Muted text</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="sz-h2 sz-mb-2">Obsidian — Dark Theme</h3>
+                    <p class="sz-mono sz-text-dim sz-mb-2" style="font-size:10px;">data-sz-theme="obsidian"</p>
+                    <div class="sz-table" style="overflow-x:auto;">
+                        <table style="width:100%;">
+                            <thead><tr><th>Token</th><th>Hex</th><th>Usage</th></tr></thead>
+                            <tbody>
+                                <tr><td><code class="sz-code">--sz-bg</code></td><td>#0D0D0D</td><td>Page canvas</td></tr>
+                                <tr><td><code class="sz-code">--sz-bg-alt</code></td><td>#111111</td><td>Alt section bg</td></tr>
+                                <tr><td><code class="sz-code">--sz-surface</code></td><td>#1A1A1A</td><td>Cards, modals</td></tr>
+                                <tr><td><code class="sz-code">--sz-surface-alt</code></td><td>#222222</td><td>Inputs, hover</td></tr>
+                                <tr><td><code class="sz-code">--sz-border</code></td><td>#3A3A3A</td><td>Primary borders</td></tr>
+                                <tr><td><code class="sz-code">--sz-border-dim</code></td><td>#2A2A2A</td><td>Dimmed borders</td></tr>
+                                <tr><td><code class="sz-code">--sz-text</code></td><td>#F4F4F1</td><td>Primary text</td></tr>
+                                <tr><td><code class="sz-code">--sz-text-dim</code></td><td>#888888</td><td>Muted text</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="sz-h2 sz-mb-2">Overriding Tokens</h3>
+            <p class="sz-body-text sz-mb-4">Every value is a CSS custom property. Override them in your own <span class="sz-code">:root</span> to reskin the library without touching any component:</p>
+            <div class="sz-cli sz-mb-6">
+                <div class="sz-cli__inner">
+                    <pre>/* Example: swap teal for a purple accent */
+:root {
+--sz-teal:     #8B5BA8;
+--sz-teal-dim: #6B4080;
+}</pre>
+                </div>
+            </div>
+            <p class="sz-body-text sz-mb-6">The override flows through every button, badge, progress bar, and nav item automatically.</p>
+        </section>
+
+        <hr class="sz-divider">
+
+        <!-- FONTS REFERENCE -->
+        <section id="fonts" class="sz-section-anchor">
+            <span class="sz-label">Section 05</span>
+            <h2 class="sz-h1 sz-mb-4">Fonts Reference</h2>
+            <p class="sz-body-text sz-mb-6">Silicon Zen uses three font layers. Each has a strict domain.</p>
+
+            <div class="sz-grid-3 sz-mb-6">
+                <div class="sz-card sz-card--window">
+                    <div class="sz-card__header">
+                        <span class="sz-card__title">NEWSREADER</span>
+                    </div>
+                    <div class="sz-card__body">
+                        <p class="sz-body-text"><strong>Role:</strong> Anything the user <em>reads</em>. Headings, body copy, lead paragraphs, long-form prose.</p>
+                        <p class="sz-mono sz-text-dim" style="font-size:10px;">Token: --sz-font-serif</p>
+                        <p class="sz-mono sz-text-dim" style="font-size:10px;">Weights: 400, 700, 400 italic</p>
+                        <p class="sz-body-text"><strong>Classes:</strong> <span class="sz-code">sz-display</span>, <span class="sz-code">sz-h1</span>, <span class="sz-code">sz-h2</span>, <span class="sz-code">sz-body-text</span>, <span class="sz-code">sz-lead</span></p>
+                        <p class="sz-text-red sz-mono" style="font-size:10px;">Never: button labels, nav, badges, code, UI controls.</p>
+                    </div>
+                </div>
+                <div class="sz-card sz-card--window">
+                    <div class="sz-card__header">
+                        <span class="sz-card__title">JETBRAINS MONO</span>
+                    </div>
+                    <div class="sz-card__body">
+                        <p class="sz-body-text"><strong>Role:</strong> Everything machine-facing. Button text, labels, navigation, stats, file paths, code, CLI output, metadata, section eyebrows.</p>
+                        <p class="sz-mono sz-text-dim" style="font-size:10px;">Token: --sz-font-mono</p>
+                        <p class="sz-mono sz-text-dim" style="font-size:10px;">Weights: 400, 500</p>
+                        <p class="sz-body-text"><strong>Classes:</strong> <span class="sz-code">sz-label</span>, <span class="sz-code">sz-h3</span>, <span class="sz-code">sz-mono</span>, <span class="sz-code">sz-code</span>, <span class="sz-code">sz-btn</span>, <span class="sz-code">sz-badge</span></p>
+                        <p class="sz-text-red sz-mono" style="font-size:10px;">Never: long-form body prose or editorial headings.</p>
+                    </div>
+                </div>
+                <div class="sz-card sz-card--window">
+                    <div class="sz-card__header">
+                        <span class="sz-card__title">PRESS START 2P</span>
+                    </div>
+                    <div class="sz-card__body">
+                        <p class="sz-body-text"><strong>Role:</strong> Pixel font for brand moments only. Logo, hero display text, pixel-style buttons, pixel badges, glitch effect.</p>
+                        <p class="sz-mono sz-text-dim" style="font-size:10px;">Token: --sz-font-pixel</p>
+                        <p class="sz-mono sz-text-dim" style="font-size:10px;">Min size: 8px rendered</p>
+                        <p class="sz-body-text"><strong>Classes:</strong> <span class="sz-code">sz-pixel--hero</span>, <span class="sz-code">sz-pixel--heading</span>, <span class="sz-code">sz-pixel--label</span>, <span class="sz-code">sz-btn--pixel</span>, <span class="sz-code">sz-badge--pixel</span>, <span class="sz-code">sz-glitch</span></p>
+                        <p class="sz-text-red sz-mono" style="font-size:10px;">Never: body text, nav links, descriptions, blocks over ~30 chars.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="sz-h2 sz-mb-2">Complete Import</h3>
+            <p class="sz-body-text sz-mb-4">All three fonts in a single <span class="sz-code">&lt;link&gt;</span>:</p>
+            <div class="sz-cli sz-mb-6">
+                <div class="sz-cli__inner">
+                    <pre>&lt;link
+href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap"
+rel="stylesheet"
+&gt;</pre>
+                </div>
+            </div>
+        </section>
+
+        <hr class="sz-divider">
+
+        <!-- FILE STRUCTURE -->
+        <section class="sz-section-anchor sz-mb-8">
+            <span class="sz-label">Section 06</span>
+            <h2 class="sz-h1 sz-mb-4">File Structure</h2>
+            <div class="sz-cli sz-mb-6">
+                <div class="sz-cli__inner">
+                    <pre>silicon-zen/
+│
+├── library/
+│   ├── sz.css          ← Component library stylesheet (~18kb)
+│   └── sz.js           ← Interactive behaviour plugin (~5kb minified)
+│
+├── design-iterations/  ← Early explorations and prototypes
+│   ├── pragma.html
+│   ├── voxel.html
+│   ├── szv1.html
+│   └── pixel-modernism.html
+│
+├── inspiration/        ← Reference images from 100r, Uxn, Zen Browser, Sandbox
+│
+├── demo.html           ← Full sample site using every library feature
+├── philosophy.html     ← Design language and component showcase
+└── sz-docs.html        ← Interactive documentation with live demos</pre>
+                </div>
+            </div>
+        </section>
+
+        <hr class="sz-divider">
+
+        <!-- QUICK REFERENCE -->
+        <section id="quick-reference" class="sz-section-anchor sz-mb-8">
+            <span class="sz-label">Section 07</span>
+            <h2 class="sz-h1 sz-mb-4">Quick Reference</h2>
+            <div class="sz-cli sz-mb-6">
+                <div class="sz-cli__inner">
+                    <pre>sz-btn                     Base button
+sz-btn--solid              Teal fill — primary CTA
+sz-btn--amber              Amber variant
+sz-btn--ghost              No border, subtle
+sz-btn--danger             Red — destructive
+sz-btn--pixel              Press Start 2P, hard shadow
+sz-btn--sm / --lg          Size modifiers
+sz-btn--disabled           Greyed out
+
+sz-badge                   Inline label chip
+sz-badge--teal/amber/red/green/outline
+sz-badge--pixel            Press Start 2P badge
+
+sz-card                    Container with 1px border
+sz-card--window            Traffic-light dot header
+sz-card--amber             Amber header variant
+sz-card--hover             Lifts on hover
+
+sz-field                   Form field wrapper
+sz-input                   Text input / textarea / select
+sz-input--error            Red underline state
+sz-checkbox                Custom checkbox
+
+sz-progress                Progress bar wrapper
+sz-progress--striped       Teal/amber march stripe
+sz-progress--pixel         Dashed march fill
+sz-progress--thin          4px height
+sz-progress--amber         Amber fill
+
+sz-cli                     Terminal block
+sz-crt                     CRT screen wrapper
+
+sz-table                   Data table
+
+sz-callout                 Left-border notice
+sz-callout--warn           Amber variant
+sz-callout--error          Red variant
+
+sz-modal-overlay           Modal backdrop
+sz-modal                   Modal container
+
+sz-tabs                    Tab strip
+sz-tabs__item              Individual tab
+sz-tab-panel               Tab content panel
+
+sz-accordion               Expand/collapse list
+sz-accordion__item         Individual row
+
+sz-toast                   Notification (via JS only)
+
+sz-dock                    Fixed bottom nav
+sz-topnav                  Sticky top bar
+
+sz-flicker                 3-frame CRT flicker animation
+sz-reveal                  Scroll fade-up reveal
+sz-scanline-in             Clip-path top-down wipe
+sz-pulse                   Looping teal ring
+sz-pixel-blink             Steps-based blink
+sz-glitch                  CSS glitch text effect
+
+sz-display / sz-h1 / sz-h2 / sz-h3   Type scale
+sz-body-text / sz-lead     Prose sizes
+sz-label                   Teal mono eyebrow
+sz-pixel--hero/heading/label          Pixel font sizes
+sz-mono / sz-code          Mono and inline code
+
+sz-container               Centred content wrapper
+sz-grid-2 / sz-grid-3 / sz-grid-4    Responsive grid
+sz-flex                    Flex row
+sz-dither                  Dot-grid background texture
+sz-divider                 Horizontal rule</pre>
+                </div>
+            </div>
+        </section>
+
+        <hr class="sz-divider">
+
+        <!-- AUTHOR -->
+        <section class="sz-section-anchor sz-mb-8">
+            <span class="sz-label">Author</span>
+            <h2 class="sz-h1 sz-mb-4">king525dev</h2>
+            <p class="sz-body-text sz-mb-6">Designed and built Silicon Zen — a design language for the calm internet.</p>
+            <div class="sz-flex sz-mb-6">
+                <a href="#" class="sz-btn sz-btn--solid">[ Demo ]</a>
+                <a href="#" class="sz-btn sz-btn--amber">[ Philosophy ]</a>
+                <a href="#" class="sz-btn sz-btn--ghost">[ Docs ]</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="sz-container">
+        <hr class="sz-divider">
+        <p class="sz-footer-note">
+            <em>Silicon Zen v1.1.0 · Apply consistently. Break rules deliberately. Never break them lazily.</em>
+        </p>
+    </footer>
+
+    <!-- FLOATING DOCK -->
+    <nav class="sz-dock" aria-label="Quick navigation">
+        <a href="#overview" class="sz-dock__item is-active">OVR</a>
+        <a href="#installation" class="sz-dock__item">INS</a>
+        <a href="#usage" class="sz-dock__item">USE</a>
+        <a href="#colours" class="sz-dock__item">CLR</a>
+        <a href="#quick-reference" class="sz-dock__item">REF</a>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════ sz.js ═══════════════════════════════════════════ -->
+    <script>
+        /*!
+         * sz.js — Silicon Zen UI Library v1.1.0
+         * by king525dev
+         * Vanilla JS plugin for interactive SZ components.
+         * No dependencies. ~5kb minified.
+         */
+        (function(global) {
+            'use strict';
+
+            const $ = (sel, ctx = document) => ctx.querySelector(sel);
+            const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+            const on = (el, ev, fn, opts) => el && el.addEventListener(ev, fn, opts);
+
+            function theme(name, target = document.documentElement) {
+                if (!['parchment', 'obsidian'].includes(name)) {
+                    console.warn(`[SZ] Unknown theme "${name}". Use "parchment" or "obsidian".`);
+                    return;
+                }
+                target.dataset.szTheme = name;
+                document.dispatchEvent(new CustomEvent('sz:theme', { detail: { theme: name } }));
+            }
+
+            function toggleTheme(target = document.documentElement) {
+                const current = target.dataset.szTheme || 'parchment';
+                theme(current === 'parchment' ? 'obsidian' : 'parchment', target);
+            }
+
+            const modal = {
+                open(target) {
+                    const el = typeof target === 'string' ? $(target) : target;
+                    if (!el) return;
+                    el.classList.add('is-open');
+                    el.removeAttribute('aria-hidden');
+                    document.body.style.overflow = 'hidden';
+                    const firstFocusable = el.querySelector(
+                        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                    if (firstFocusable) firstFocusable.focus();
+                    document.dispatchEvent(new CustomEvent('sz:modal:open', { detail: { el } }));
+                },
+                close(target) {
+                    const el = typeof target === 'string' ? $(target) : target;
+                    if (!el) return;
+                    el.classList.remove('is-open');
+                    el.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = '';
+                    document.dispatchEvent(new CustomEvent('sz:modal:close', { detail: { el } }));
+                },
+                toggle(target) {
+                    const el = typeof target === 'string' ? $(target) : target;
+                    if (!el) return;
+                    el.classList.contains('is-open') ? this.close(el) : this.open(el);
+                }
+            };
+
+            function wireModals() {
+                $$('[data-sz-modal-open]').forEach(trigger => {
+                    on(trigger, 'click', e => {
+                        e.preventDefault();
+                        modal.open(trigger.dataset.szModalOpen);
+                    });
+                });
+                $$('[data-sz-modal-close]').forEach(btn => {
+                    on(btn, 'click', e => {
+                        e.preventDefault();
+                        const overlay = btn.closest('.sz-modal-overlay');
+                        if (overlay) modal.close(overlay);
+                    });
+                });
+                $$('.sz-modal-overlay').forEach(overlay => {
+                    on(overlay, 'click', e => {
+                        if (e.target === overlay) modal.close(overlay);
+                    });
+                });
+                on(document, 'keydown', e => {
+                    if (e.key !== 'Escape') return;
+                    $$('.sz-modal-overlay.is-open').forEach(el => modal.close(el));
+                });
+            }
+
+            function progress(target, percent, opts = {}) {
+                const wrap = typeof target === 'string' ? $(target) : target;
+                if (!wrap) return;
+                const fill = wrap.querySelector('.sz-progress__fill') || wrap;
+                const label = opts.labelEl ? (typeof opts.labelEl === 'string' ? $(opts.labelEl) : opts
+                    .labelEl) : null;
+                const pct = Math.max(0, Math.min(100, percent));
+                fill.style.width = pct + '%';
+                fill.setAttribute('aria-valuenow', pct);
+                if (label) label.textContent = opts.labelText || pct + '%';
+                if (pct >= 100 && opts.onComplete) opts.onComplete();
+            }
+
+            function progressRun(target, opts = {}) {
+                const wrap = typeof target === 'string' ? $(target) : target;
+                if (!wrap) return;
+                const fill = wrap.querySelector('.sz-progress__fill') || wrap;
+                const labelEl = opts.labelEl ? (typeof opts.labelEl === 'string' ? $(opts.labelEl) : opts
+                    .labelEl) : null;
+                const stages = opts.stages || ['LOADING...', 'PARSING...', 'COMPILING...', 'OPTIMISING...',
+                    'COMPLETE'
+                ];
+                let pct = 0;
+                fill.style.width = '0%';
+                const iv = setInterval(() => {
+                    pct += Math.random() * 14 + 3;
+                    if (pct >= 100) {
+                        pct = 100;
+                        fill.style.width = '100%';
+                        if (labelEl) labelEl.textContent = opts.doneText || '✓ COMPLETE';
+                        clearInterval(iv);
+                        if (opts.onComplete) opts.onComplete();
+                        return;
+                    }
+                    fill.style.width = pct + '%';
+                    if (labelEl) {
+                        const idx = Math.floor(pct / (100 / stages.length));
+                        const stage = stages[Math.min(idx, stages.length - 1)];
+                        const filled = Math.floor(pct / 10);
+                        const empty = 10 - filled;
+                        labelEl.textContent =
+                            `${stage} ${'█'.repeat(filled)}${'▒'.repeat(empty)} ${Math.floor(pct)}%`;
+                    }
+                }, opts.interval || 110);
+                return { stop: () => clearInterval(iv) };
+            }
+
+            function wireTabs() {
+                $$('.sz-tabs').forEach(tabGroup => {
+                    const items = $$('.sz-tabs__item', tabGroup);
+                    items.forEach(item => {
+                        on(item, 'click', e => {
+                            e.preventDefault();
+                            const panelId = item.dataset.szTab || item.getAttribute('aria-controls');
+                            items.forEach(i => {
+                                i.classList.remove('is-active');
+                                i.setAttribute('aria-selected', 'false');
+                            });
+                            item.classList.add('is-active');
+                            item.setAttribute('aria-selected', 'true');
+                            const scope = tabGroup.closest('[data-sz-tabs-scope]') || document;
+                            $$('.sz-tab-panel', scope).forEach(p => p.classList.remove(
+                                'is-active'));
+                            const panel = $('#' + panelId, scope) || $(panelId, scope);
+                            if (panel) panel.classList.add('is-active');
+                            document.dispatchEvent(new CustomEvent('sz:tab', { detail: { tab: item,
+                                    panel } }));
+                        });
+                    });
+                });
+            }
+
+            function wireAccordions() {
+                $$('.sz-accordion__trigger').forEach(trigger => {
+                    on(trigger, 'click', () => {
+                        const item = trigger.closest('.sz-accordion__item');
+                        const parent = item.closest('.sz-accordion');
+                        const isOpen = item.classList.contains('is-open');
+                        if (parent && parent.dataset.szSingle !== undefined) {
+                            $$('.sz-accordion__item.is-open', parent).forEach(i => i.classList
+                                .remove('is-open'));
+                        }
+                        item.classList.toggle('is-open', !isOpen);
+                    });
+                });
+            }
+
+            function wireCheckboxes() {
+                $$('.sz-checkbox').forEach(el => {
+                    if (el.querySelector('input[type=checkbox]')) {
+                        const input = el.querySelector('input[type=checkbox]');
+                        const box = el.querySelector('.sz-checkbox__box');
+                        const sync = () => el.classList.toggle('is-checked', input.checked);
+                        sync();
+                        on(input, 'change', sync);
+                        return;
+                    }
+                    on(el, 'click', () => el.classList.toggle('is-checked'));
+                    on(el, 'keydown', e => {
+                        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault();
+                            el.classList.toggle('is-checked'); }
+                    });
+                    el.setAttribute('tabindex', '0');
+                    el.setAttribute('role', 'checkbox');
+                });
+            }
+
+            let toastContainer = null;
+
+            function ensureToastContainer() {
+                if (toastContainer) return toastContainer;
+                toastContainer = document.createElement('div');
+                toastContainer.className = 'sz-toast-container';
+                document.body.appendChild(toastContainer);
+                return toastContainer;
+            }
+
+            function toast(message, type = 'info', duration = 3500) {
+                const container = ensureToastContainer();
+                const el = document.createElement('div');
+                const icons = { ok: '✓', warn: '⚠', error: '✗', info: '◈' };
+                el.className = `sz-toast${type !== 'info' ? ' sz-toast--' + type : ''}`;
+                el.innerHTML = `<span>${icons[type] || icons.info}</span><span>${message}</span>`;
+                container.appendChild(el);
+                setTimeout(() => {
+                    el.classList.add('is-exiting');
+                    setTimeout(() => el.remove(), 250);
+                }, duration);
+                return el;
+            }
+
+            function wireReveal() {
+                if (!('IntersectionObserver' in window)) {
+                    $$('.sz-reveal').forEach(el => el.classList.add('is-visible'));
+                    return;
+                }
+                const io = new IntersectionObserver(entries => {
+                    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('is-visible'); });
+                }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+                $$('.sz-reveal').forEach(el => io.observe(el));
+            }
+
+            function wireDock() {
+                const items = $$('.sz-dock__item');
+                const topLinks = $$('.sz-topnav__links a');
+                if (!items.length && !topLinks.length) return;
+                const all = [...items, ...topLinks];
+                const sectionIds = all
+                    .map(a => (a.getAttribute('href') || '').replace('#', ''))
+                    .filter(Boolean)
+                    .filter((v, i, arr) => arr.indexOf(v) === i);
+
+                function update() {
+                    let current = sectionIds[0];
+                    sectionIds.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && window.scrollY >= el.offsetTop - 120) current = id;
+                    });
+                    all.forEach(a => {
+                        const id = (a.getAttribute('href') || '').replace('#', '');
+                        a.classList.toggle('is-active', id === current);
+                        a.setAttribute('aria-current', id === current ? 'page' : 'false');
+                    });
+                }
+                on(window, 'scroll', update, { passive: true });
+                update();
+            }
+
+            function wireThemeToggles() {
+                $$('[data-sz-theme-toggle]').forEach(btn => {
+                    on(btn, 'click', () => toggleTheme());
+                });
+                $$('[data-sz-theme-set]').forEach(btn => {
+                    on(btn, 'click', () => theme(btn.dataset.szThemeSet));
+                });
+            }
+
+            function wireFlicker() {
+                $$('[data-sz-flicker]').forEach(btn => {
+                    on(btn, 'click', e => {
+                        e.preventDefault();
+                        const targetSel = btn.dataset.szFlicker;
+                        const targets = targetSel ? $$(targetSel) : [document.body];
+                        targets.forEach(t => {
+                            t.classList.remove('sz-flicker');
+                            void t.offsetWidth;
+                            t.classList.add('sz-flicker');
+                        });
+                    });
+                });
+            }
+
+            function wireProgressButtons() {
+                $$('[data-sz-progress-run]').forEach(btn => {
+                    on(btn, 'click', e => {
+                        e.preventDefault();
+                        const barEl = $(btn.dataset.szProgressRun);
+                        const labelEl = btn.dataset.szProgressLabel ? $(btn.dataset
+                            .szProgressLabel) : null;
+                        progressRun(barEl, { labelEl });
+                    });
+                });
+            }
+
+            function wireTypewriters() {
+                $$('[data-sz-typewriter]').forEach(el => {
+                    const words = (el.dataset.szTwWords || 'SILICON ZEN').split(',');
+                    const speed = parseInt(el.dataset.szTwSpeed || '130', 10);
+                    let wi = 0,
+                        ci = 0,
+                        deleting = false;
+
+                    function tick() {
+                        const word = words[wi];
+                        if (!deleting) {
+                            el.textContent = word.slice(0, ci + 1);
+                            ci++;
+                            if (ci === word.length) { deleting = true;
+                                setTimeout(tick, 1200); return; }
+                        } else {
+                            el.textContent = word.slice(0, ci - 1);
+                            ci--;
+                            if (ci === 0) { deleting = false;
+                                wi = (wi + 1) % words.length; }
+                        }
+                        setTimeout(tick, deleting ? 60 : speed);
+                    }
+                    setTimeout(tick, 400);
+                });
+            }
+
+            function init() {
+                wireModals();
+                wireTabs();
+                wireAccordions();
+                wireCheckboxes();
+                wireReveal();
+                wireDock();
+                wireThemeToggles();
+                wireFlicker();
+                wireProgressButtons();
+                wireTypewriters();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            global.SZ = {
+                init,
+                theme,
+                toggleTheme,
+                modal,
+                progress,
+                progressRun,
+                toast,
+                version: '1.1.0',
+                author: 'king525dev'
+            };
+
+        }(window));
+    </script>
+
+</body>
+</html>
